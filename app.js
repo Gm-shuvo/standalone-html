@@ -15,7 +15,7 @@ class EditRecordsMockService {
                 amount: "25000",
                 dueDate: "15/01/2025",
                 frequency: "Monthly",
-                endDate: "15/12/2025"
+                endDate: "15/12/2025",
             },
             {
                 id: 2,
@@ -28,7 +28,7 @@ class EditRecordsMockService {
                 amount: "50000",
                 dueDate: "10/02/2025",
                 frequency: "Half Yearly",
-                endDate: "10/08/2025"
+                endDate: "10/08/2025",
             },
             {
                 id: 3,
@@ -41,8 +41,8 @@ class EditRecordsMockService {
                 amount: "100000",
                 dueDate: "12/03/2025",
                 frequency: "Half Yearly",
-                endDate: "31/03/2025"
-            }
+                endDate: "31/03/2025",
+            },
         ];
 
         this.mockDetailedData = {
@@ -56,15 +56,15 @@ class EditRecordsMockService {
                     address: "A-123, Sector 15, Noida",
                     city: "Delhi",
                     pincode: "110053",
-                    panNo: "BXNPC7894C"
+                    panNo: "BXNPC7894C",
                 },
                 tenancyDetails: {
                     rentAmount: "14000",
                     frequency: "Half Yearly",
                     dueDate: "2024-11-14",
                     tenancyEndDate: "2024-12-20",
-                    cardIssuingBank: "Axis Bank"
-                }
+                    cardIssuingBank: "Axis Bank",
+                },
             },
             "RG-4000182596": {
                 registration: this.mockRegistrations[1],
@@ -74,14 +74,14 @@ class EditRecordsMockService {
                     dob: "06/12/2005",
                     email: "himanshu.gupta@redgiraffe.com",
                     mobile: "918527586945",
-                    panNo: "BXNPC7894C"
+                    panNo: "BXNPC7894C",
                 },
                 educationDetails: {
                     feeAmount: "50000",
                     frequency: "Half Yearly",
                     dueDate: "2024-11-14",
-                    cardIssuingBank: "HDFC Bank"
-                }
+                    cardIssuingBank: "HDFC Bank",
+                },
             },
             "RG-6000182595": {
                 registration: this.mockRegistrations[2],
@@ -89,9 +89,9 @@ class EditRecordsMockService {
                     amount: "100000",
                     frequency: "Half Yearly",
                     dueDate: "12/03/2025",
-                    cardIssuingBank: "Axis Bank"
-                }
-            }
+                    cardIssuingBank: "Axis Bank",
+                },
+            },
         };
 
         this.auditLog = [
@@ -103,7 +103,7 @@ class EditRecordsMockService {
                 ipAddress: "192.168.1.15",
                 registrationId: "RG-0000182568",
                 registrationType: "Rent",
-                changeType: "Field Update"
+                changeType: "Field Update",
             },
             {
                 field: "Due Date",
@@ -113,43 +113,47 @@ class EditRecordsMockService {
                 ipAddress: "192.168.1.15",
                 registrationId: "RG-0000182568",
                 registrationType: "Rent",
-                changeType: "Field Update"
-            }
+                changeType: "Field Update",
+            },
         ];
     }
 
     async getRegistrations(userId) {
         // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 300));
-        return this.mockRegistrations.filter(reg => reg.userId === userId);
+        await new Promise((resolve) => setTimeout(resolve, 300));
+        return this.mockRegistrations.filter((reg) => reg.userId === userId);
     }
 
     async getRegistrationByRgId(rgId) {
-        await new Promise(resolve => setTimeout(resolve, 300));
+        await new Promise((resolve) => setTimeout(resolve, 300));
         const data = this.mockDetailedData[rgId];
         if (!data) {
-            throw new Error('Registration not found');
+            throw new Error("Registration not found");
         }
         return data;
     }
 
     async saveRegistration(rgId, formData) {
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         // In real implementation, this would save to backend
-        console.log('Saving registration:', rgId, formData);
+        console.log("Saving registration:", rgId, formData);
         return { success: true };
     }
 
     getAuditLog(filters = {}) {
         let filteredLog = [...this.auditLog];
 
-        if (filters.registrationType && filters.registrationType !== 'All') {
-            filteredLog = filteredLog.filter(entry => entry.registrationType === filters.registrationType);
+        if (filters.registrationType && filters.registrationType !== "All") {
+            filteredLog = filteredLog.filter(
+                (entry) => entry.registrationType === filters.registrationType
+            );
         }
 
         if (filters.registrationId) {
-            filteredLog = filteredLog.filter(entry =>
-                entry.registrationId.toLowerCase().includes(filters.registrationId.toLowerCase())
+            filteredLog = filteredLog.filter((entry) =>
+                entry.registrationId
+                    .toLowerCase()
+                    .includes(filters.registrationId.toLowerCase())
             );
         }
 
@@ -157,7 +161,7 @@ class EditRecordsMockService {
             entries: filteredLog,
             totalPages: Math.ceil(filteredLog.length / 10),
             currentPage: 1,
-            totalEntries: filteredLog.length
+            totalEntries: filteredLog.length,
         };
     }
 
@@ -165,7 +169,7 @@ class EditRecordsMockService {
         this.auditLog.unshift({
             ...entry,
             timestamp: new Date().toLocaleString(),
-            ipAddress: '192.168.1.1'
+            ipAddress: "192.168.1.1",
         });
     }
 }
@@ -188,7 +192,347 @@ class RedGiraffeDashboard {
         this.activeEditForm = null;
         this.selectedRegistration = null;
 
+        // Initialize Gift Cards data
+        this.initializeGiftCardsData();
+
         this.init();
+    }
+
+    initializeGiftCardsData() {
+        // Categories for gift cards
+        this.categories = [
+            "All Products",
+            "E-commerce/Online",
+            "Grocery",
+            "Fashion & Lifestyle",
+            "Home Needs & Furnishings",
+            "Food & Beverages",
+            "Sportswear & Footwear",
+            "Travel & Hospitality",
+            "Health & Beauty",
+            "Jewellery",
+            "Entertainment",
+            "Finance and Insurance",
+            "Others",
+        ];
+
+        // Mock gift cards data
+        this.mockGiftCards = [
+            {
+                id: "1",
+                name: "Amazon Shopping Voucher",
+                brand: "Amazon",
+                category: "E-commerce/Online",
+                denomination: 2000,
+                discount: 6,
+                finalPrice: 1880,
+                image: "https://placehold.co/300x200/ff9500/ffffff?text=Amazon",
+                description:
+                    "Shop for everything you need on Amazon with this versatile gift card",
+                terms: "Valid for 12 months from date of issue",
+                popularity: 95,
+                isPopular: true,
+                addedDate: "2024-01-15",
+                redemptionValue: "94%",
+            },
+            {
+                id: "2",
+                name: "Myntra CHECKOUT e-Gift Card",
+                brand: "Myntra",
+                category: "Fashion & Lifestyle",
+                denomination: 1000,
+                discount: 8,
+                finalPrice: 920,
+                image: "https://placehold.co/300x200/ff3f6c/ffffff?text=Myntra",
+                description: "Fashion and lifestyle products for men, women and kids",
+                terms: "Valid for 12 months from date of issue",
+                popularity: 88,
+                isPopular: true,
+                addedDate: "2024-02-01",
+                redemptionValue: "92%",
+            },
+            {
+                id: "3",
+                name: "Flipkart Gift Card",
+                brand: "Flipkart",
+                category: "E-commerce/Online",
+                denomination: 1500,
+                discount: 5,
+                finalPrice: 1425,
+                image: "https://placehold.co/300x200/047bd6/ffffff?text=Flipkart",
+                description:
+                    "India's leading e-commerce platform for all your shopping needs",
+                terms: "Valid for 12 months from date of issue",
+                popularity: 92,
+                isPopular: true,
+                addedDate: "2024-01-20",
+                redemptionValue: "95%",
+            },
+            {
+                id: "4",
+                name: "BigBasket Gift Voucher",
+                brand: "BigBasket",
+                category: "Grocery",
+                denomination: 500,
+                discount: 4,
+                finalPrice: 480,
+                image: "https://placehold.co/300x200/84c225/ffffff?text=BigBasket",
+                description:
+                    "Fresh groceries and daily essentials delivered to your doorstep",
+                terms: "Valid for 6 months from date of issue",
+                popularity: 75,
+                isPopular: false,
+                addedDate: "2024-03-01",
+                redemptionValue: "96%",
+            },
+            {
+                id: "5",
+                name: "Zomato Gift Card",
+                brand: "Zomato",
+                category: "Food & Beverages",
+                denomination: 1000,
+                discount: 7,
+                finalPrice: 930,
+                image: "https://placehold.co/300x200/e23744/ffffff?text=Zomato",
+                description: "Order food from your favorite restaurants",
+                terms: "Valid for 12 months from date of issue",
+                popularity: 85,
+                isPopular: true,
+                addedDate: "2024-02-15",
+                redemptionValue: "93%",
+            },
+            {
+                id: "6",
+                name: "BookMyShow Gift Card",
+                brand: "BookMyShow",
+                category: "Entertainment",
+                denomination: 750,
+                discount: 6,
+                finalPrice: 705,
+                image: "https://placehold.co/300x200/dc2626/ffffff?text=BookMyShow",
+                description: "Book movie tickets and entertainment events",
+                terms: "Valid for 12 months from date of issue",
+                popularity: 70,
+                isPopular: false,
+                addedDate: "2024-03-10",
+                redemptionValue: "94%",
+            },
+            {
+                id: "7",
+                name: "Nykaa Gift Voucher",
+                brand: "Nykaa",
+                category: "Health & Beauty",
+                denomination: 2000,
+                discount: 9,
+                finalPrice: 1820,
+                image: "https://placehold.co/300x200/fc0fc0/ffffff?text=Nykaa",
+                description: "Beauty and wellness products for all your needs",
+                terms: "Valid for 12 months from date of issue",
+                popularity: 82,
+                isPopular: true,
+                addedDate: "2024-01-25",
+                redemptionValue: "91%",
+            },
+            {
+                id: "8",
+                name: "Lifestyle Gift Card",
+                brand: "Lifestyle",
+                category: "Fashion & Lifestyle",
+                denomination: 3000,
+                discount: 5,
+                finalPrice: 2850,
+                image: "https://placehold.co/300x200/000000/ffffff?text=Lifestyle",
+                description: "Fashion, footwear and accessories for the entire family",
+                terms: "Valid for 12 months from date of issue",
+                popularity: 78,
+                isPopular: false,
+                addedDate: "2024-02-20",
+                redemptionValue: "95%",
+            },
+            {
+                id: "9",
+                name: "Swiggy Gift Card",
+                brand: "Swiggy",
+                category: "Food & Beverages",
+                denomination: 800,
+                discount: 8,
+                finalPrice: 736,
+                image: "https://placehold.co/300x200/fc8019/ffffff?text=Swiggy",
+                description: "Food delivery from restaurants near you",
+                terms: "Valid for 12 months from date of issue",
+                popularity: 87,
+                isPopular: true,
+                addedDate: "2024-03-05",
+                redemptionValue: "92%",
+            },
+            {
+                id: "10",
+                name: "Tanishq Gift Card",
+                brand: "Tanishq",
+                category: "Jewellery",
+                denomination: 5000,
+                discount: 3,
+                finalPrice: 4850,
+                image: "https://placehold.co/300x200/d4af37/ffffff?text=Tanishq",
+                description: "Exquisite jewelry and precious ornaments",
+                terms: "Valid for 12 months from date of issue",
+                popularity: 65,
+                isPopular: false,
+                addedDate: "2024-01-30",
+                redemptionValue: "97%",
+            },
+        ];
+
+        // Mock purchase history data
+        this.mockPurchases = [
+            {
+                id: "1",
+                name: "Amazon Shopping",
+                orderId: "REDG-2411283541",
+                amount: 250,
+                placedOn: "22-11-2024",
+                quantity: 1,
+                status: "Expired",
+                paymentDetails: {
+                    totalValue: 250,
+                    savings: 6,
+                    netAmount: 244,
+                },
+            },
+            {
+                id: "2",
+                name: "Myntra CHECKOUT",
+                orderId: "REDG-2408207897B",
+                amount: 50,
+                placedOn: "20-08-2024",
+                quantity: 1,
+                status: "Expired",
+            },
+            {
+                id: "3",
+                name: "Myntra CHECKOUT",
+                orderId: "REDG-2407297790S",
+                amount: 50,
+                placedOn: "29-07-2024",
+                quantity: 1,
+                status: "Cancelled",
+            },
+        ];
+
+        // Mock cash points transaction history (expanded for better history view)
+        this.mockCashPointsTransactions = [
+            {
+                id: "1",
+                type: "Earned",
+                description: "Points earned from new payment",
+                amount: 100,
+                date: "11-09-2024",
+                balance: 5000,
+                category: "Payment",
+                transactionId: "TXN-001",
+            },
+            {
+                id: "2",
+                type: "Redeemed",
+                description: "Redeemed for Amazon Gift Card",
+                amount: -250,
+                date: "10-08-2024",
+                balance: 4900,
+                category: "Gift Card",
+                transactionId: "TXN-002",
+            },
+            {
+                id: "3",
+                type: "Earned",
+                description: "Points earned from RedGirraffe payment",
+                amount: 75,
+                date: "05-08-2024",
+                balance: 5150,
+                category: "Payment",
+                transactionId: "TXN-003",
+            },
+            {
+                id: "4",
+                type: "Transferred",
+                description: "Points transferred to user@example.com",
+                amount: -50,
+                date: "01-08-2024",
+                balance: 5075,
+                category: "Transfer",
+                transactionId: "TXN-004",
+            },
+            {
+                id: "5",
+                type: "Received",
+                description: "Received from gift card RedGirraffe.com",
+                amount: 250,
+                date: "15-07-2024",
+                balance: 5025,
+                category: "Gift Card",
+                transactionId: "TXN-005",
+            },
+            {
+                id: "6",
+                type: "Earned",
+                description: "Referral bonus from friend signup",
+                amount: 500,
+                date: "10-07-2024",
+                balance: 4775,
+                category: "Referral",
+                transactionId: "TXN-006",
+            },
+            {
+                id: "7",
+                type: "Redeemed",
+                description: "Redeemed for Flipkart Gift Card",
+                amount: -300,
+                date: "05-07-2024",
+                balance: 4275,
+                category: "Gift Card",
+                transactionId: "TXN-007",
+            },
+            {
+                id: "8",
+                type: "Received",
+                description: "Received from john.doe@example.com",
+                amount: 100,
+                date: "01-07-2024",
+                balance: 4575,
+                category: "Transfer",
+                transactionId: "TXN-008",
+            },
+            {
+                id: "9",
+                type: "Earned",
+                description: "Monthly bonus points",
+                amount: 200,
+                date: "25-06-2024",
+                balance: 4475,
+                category: "Bonus",
+                transactionId: "TXN-009",
+            },
+            {
+                id: "10",
+                type: "Transferred",
+                description: "Points transferred to friend@example.com",
+                amount: -150,
+                date: "20-06-2024",
+                balance: 4275,
+                category: "Transfer",
+                transactionId: "TXN-010",
+            },
+        ];
+
+        // Initialize transfer points state
+        this.transferPointsState = {
+            step: "form", // form, confirmation, success
+            recipientType: "email", // email, phone, redgirraffe_id
+            recipientValue: "",
+            amount: "",
+            message: "",
+            transferFee: 0,
+            isLoading: false,
+        };
     }
 
     init() {
@@ -211,7 +555,7 @@ class RedGiraffeDashboard {
                 type: "Rent",
                 amount: 14000,
                 date: new Date("2025-01-15"),
-                status: "UPCOMING"
+                status: "UPCOMING",
             },
             {
                 id: 2,
@@ -219,7 +563,7 @@ class RedGiraffeDashboard {
                 type: "Education Fee",
                 amount: 10000,
                 date: new Date("2025-02-10"),
-                status: "SCHEDULED"
+                status: "SCHEDULED",
             },
             {
                 id: 3,
@@ -227,7 +571,7 @@ class RedGiraffeDashboard {
                 type: "Maintenance",
                 amount: 18000,
                 date: new Date("2025-03-12"),
-                status: "SCHEDULED"
+                status: "SCHEDULED",
             },
             // Completed payments
             {
@@ -236,7 +580,7 @@ class RedGiraffeDashboard {
                 type: "Rent",
                 amount: 14000,
                 date: new Date("2024-12-15"),
-                status: "PAID"
+                status: "PAID",
             },
             {
                 id: 5,
@@ -244,7 +588,7 @@ class RedGiraffeDashboard {
                 type: "Rent",
                 amount: 14000,
                 date: new Date("2024-11-15"),
-                status: "PAID"
+                status: "PAID",
             },
             {
                 id: 6,
@@ -252,7 +596,7 @@ class RedGiraffeDashboard {
                 type: "Education Fee",
                 amount: 10000,
                 date: new Date("2024-11-10"),
-                status: "PAID"
+                status: "PAID",
             },
             {
                 id: 7,
@@ -260,7 +604,7 @@ class RedGiraffeDashboard {
                 type: "Maintenance",
                 amount: 18000,
                 date: new Date("2024-12-12"),
-                status: "PAID"
+                status: "PAID",
             },
             {
                 id: 8,
@@ -268,7 +612,7 @@ class RedGiraffeDashboard {
                 type: "Education Fee",
                 amount: 10000,
                 date: new Date("2024-10-10"),
-                status: "FAILED"
+                status: "FAILED",
             },
             // Additional rent transactions
             {
@@ -277,7 +621,7 @@ class RedGiraffeDashboard {
                 type: "Rent",
                 amount: 32000,
                 date: new Date("2025-01-10"),
-                status: "UPCOMING"
+                status: "UPCOMING",
             },
             {
                 id: 10,
@@ -285,7 +629,7 @@ class RedGiraffeDashboard {
                 type: "Rent",
                 amount: 32000,
                 date: new Date("2024-12-10"),
-                status: "PAID"
+                status: "PAID",
             },
             // Additional education transactions
             {
@@ -294,7 +638,7 @@ class RedGiraffeDashboard {
                 type: "Education Fee",
                 amount: 45000,
                 date: new Date("2025-02-15"),
-                status: "SCHEDULED"
+                status: "SCHEDULED",
             },
             {
                 id: 12,
@@ -302,7 +646,7 @@ class RedGiraffeDashboard {
                 type: "Education Fee",
                 amount: 45000,
                 date: new Date("2024-11-15"),
-                status: "PAID"
+                status: "PAID",
             },
             // Additional maintenance transactions
             {
@@ -311,7 +655,7 @@ class RedGiraffeDashboard {
                 type: "Maintenance",
                 amount: 22000,
                 date: new Date("2025-03-20"),
-                status: "SCHEDULED"
+                status: "SCHEDULED",
             },
             {
                 id: 14,
@@ -319,8 +663,8 @@ class RedGiraffeDashboard {
                 type: "Maintenance",
                 amount: 22000,
                 date: new Date("2024-12-20"),
-                status: "PAID"
-            }
+                status: "PAID",
+            },
         ];
     }
 
@@ -594,10 +938,10 @@ class RedGiraffeDashboard {
         this.currentTransactionTab = tab;
 
         // Update active tab styling
-        document.querySelectorAll('.transaction-tab').forEach(tabEl => {
-            tabEl.classList.remove('active');
+        document.querySelectorAll(".transaction-tab").forEach((tabEl) => {
+            tabEl.classList.remove("active");
         });
-        document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+        document.querySelector(`[data-tab="${tab}"]`).classList.add("active");
 
         // Re-render with filtered data
         this.renderTransactionHistory();
@@ -609,16 +953,16 @@ class RedGiraffeDashboard {
 
         switch (this.currentTransactionTab) {
             case "rent":
-                filtered = filtered.filter(tx => tx.type === "Rent");
+                filtered = filtered.filter((tx) => tx.type === "Rent");
                 break;
             case "education":
-                filtered = filtered.filter(tx => tx.type === "Education Fee");
+                filtered = filtered.filter((tx) => tx.type === "Education Fee");
                 break;
             case "society":
-                filtered = filtered.filter(tx => tx.type === "Maintenance");
+                filtered = filtered.filter((tx) => tx.type === "Maintenance");
                 break;
             case "completed":
-                filtered = filtered.filter(tx => tx.status === "PAID");
+                filtered = filtered.filter((tx) => tx.status === "PAID");
                 break;
             case "all":
             default:
@@ -632,9 +976,9 @@ class RedGiraffeDashboard {
     // Render transaction history table
     renderTransactionHistory() {
         const filteredTransactions = this.getFilteredTransactions();
-        const tableBody = document.getElementById('transaction-table-body');
-        const emptyState = document.getElementById('transaction-empty-state');
-        const countBadge = document.getElementById('transaction-count-badge');
+        const tableBody = document.getElementById("transaction-table-body");
+        const emptyState = document.getElementById("transaction-empty-state");
+        const countBadge = document.getElementById("transaction-count-badge");
 
         if (!tableBody) return;
 
@@ -644,20 +988,20 @@ class RedGiraffeDashboard {
         }
 
         // Clear existing content
-        tableBody.innerHTML = '';
+        tableBody.innerHTML = "";
 
         if (filteredTransactions.length === 0) {
             // Show empty state
-            if (emptyState) emptyState.style.display = 'block';
+            if (emptyState) emptyState.style.display = "block";
             return;
         }
 
         // Hide empty state
-        if (emptyState) emptyState.style.display = 'none';
+        if (emptyState) emptyState.style.display = "none";
 
         // Render transactions
-        filteredTransactions.forEach(transaction => {
-            const row = document.createElement('tr');
+        filteredTransactions.forEach((transaction) => {
+            const row = document.createElement("tr");
 
             // Get transaction type icon and color
             const typeInfo = this.getTransactionTypeInfo(transaction.type);
@@ -674,7 +1018,8 @@ class RedGiraffeDashboard {
                 </td>
                 <td>
                     <div class="transaction-type">
-                        <i class="${typeInfo.icon}" style="color: ${typeInfo.color};"></i>
+                        <i class="${typeInfo.icon}" style="color: ${typeInfo.color
+                };"></i>
                         <span>${transaction.type}</span>
                     </div>
                 </td>
@@ -725,18 +1070,20 @@ class RedGiraffeDashboard {
 
     // Format transaction date
     formatTransactionDate(date) {
-        const options = { day: '2-digit', month: 'short', year: 'numeric' };
-        return new Date(date).toLocaleDateString('en-GB', options);
+        const options = { day: "2-digit", month: "short", year: "numeric" };
+        return new Date(date).toLocaleDateString("en-GB", options);
     }
 
     async loadEditRecords() {
         try {
-            const registrations = await this.editRecordsService.getRegistrations(this.userId);
+            const registrations = await this.editRecordsService.getRegistrations(
+                this.userId
+            );
             this.registrations = registrations;
             this.renderEditRecords(registrations);
         } catch (error) {
-            console.error('Error loading edit records:', error);
-            this.showNotification('Failed to load edit records', 'error');
+            console.error("Error loading edit records:", error);
+            this.showNotification("Failed to load edit records", "error");
         }
     }
 
@@ -784,122 +1131,98 @@ class RedGiraffeDashboard {
     }
 
     async loadRewards() {
-        // Mock data for rewards
-        const mockData = {
-            cashPoints: 5000,
-            transactions: [
-                {
-                    id: 1,
-                    type: "Earned",
-                    description: "Payment for RG-0000182568",
-                    amount: 140,
-                    date: "2024-11-14",
-                },
-                {
-                    id: 2,
-                    type: "Redeemed",
-                    description: "Gift card purchase",
-                    amount: -500,
-                    date: "2024-11-10",
-                },
-            ],
-            giftCards: [
-                {
-                    id: 1,
-                    name: "Amazon Gift Card",
-                    value: 500,
-                    discount: 10,
-                    category: "Shopping",
-                },
-                {
-                    id: 2,
-                    name: "Flipkart Gift Card",
-                    value: 1000,
-                    discount: 15,
-                    category: "Shopping",
-                },
-            ],
-        };
-        this.renderRewards(mockData);
+        // Default to Gift Cards tab
+        this.renderGiftCards();
+        this.showNotification("Rewards loaded successfully", "success");
     }
 
     async loadReports() {
         // Initialize reports data if not exists
         if (!this.reportsData) {
             this.reportsData = {
-                currentTab: 'payments',
-                period: '6months',
+                currentTab: "payments",
+                period: "6months",
                 payments: {
                     overview: {
                         currentMonthTotal: 28800,
                         ytdSpending: 318200,
                         largestPayment: 48000,
-                        nextDuePayment: 26000
+                        nextDuePayment: 26000,
                     },
                     barChart: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
                         datasets: [
                             {
-                                label: 'Rent Payments',
+                                label: "Rent Payments",
                                 data: [25000, 25000, 25000, 25000, 28800, 28800, 28800, 28800],
-                                backgroundColor: '#f97316'
+                                backgroundColor: "#f97316",
                             },
                             {
-                                label: 'Education Fees',
+                                label: "Education Fees",
                                 data: [0, 0, 45000, 0, 0, 0, 45000, 0],
-                                backgroundColor: '#3b82f6'
+                                backgroundColor: "#3b82f6",
                             },
                             {
-                                label: 'Society Charges',
+                                label: "Society Charges",
                                 data: [2500, 2500, 2500, 2500, 0, 0, 3000, 0],
-                                backgroundColor: '#10b981'
-                            }
-                        ]
+                                backgroundColor: "#10b981",
+                            },
+                        ],
                     },
                     pieChart: {
-                        labels: ['Rent', 'Education', 'Society', 'Utilities', 'Other'],
-                        datasets: [{
-                            data: [63, 28, 7, 1.5, 0.5],
-                            backgroundColor: ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#f43f5e']
-                        }]
-                    }
+                        labels: ["Rent", "Education", "Society", "Utilities", "Other"],
+                        datasets: [
+                            {
+                                data: [63, 28, 7, 1.5, 0.5],
+                                backgroundColor: [
+                                    "#f97316",
+                                    "#3b82f6",
+                                    "#10b981",
+                                    "#8b5cf6",
+                                    "#f43f5e",
+                                ],
+                            },
+                        ],
+                    },
                 },
                 cashpoints: {
                     overview: {
                         availableCashPoints: 2182,
                         pointsEarnedThisMonth: 288,
                         totalEarned: 8450,
-                        totalRedeemed: 6268
+                        totalRedeemed: 6268,
                     },
                     barChart: {
-                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                        labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug"],
                         datasets: [
                             {
-                                label: 'Points Earned',
+                                label: "Points Earned",
                                 data: [150, 200, 180, 220, 190, 250, 210, 288],
-                                backgroundColor: '#10b981'
+                                backgroundColor: "#10b981",
                             },
                             {
-                                label: 'Points Redeemed',
+                                label: "Points Redeemed",
                                 data: [100, 150, 120, 180, 140, 200, 160, 180],
-                                backgroundColor: '#f97316'
-                            }
-                        ]
+                                backgroundColor: "#f97316",
+                            },
+                        ],
                     },
                     pieChart: {
-                        labels: ['Available', 'Redeemed', 'Expired'],
-                        datasets: [{
-                            data: [35, 60, 5],
-                            backgroundColor: ['#10b981', '#f97316', '#ef4444']
-                        }]
-                    }
-                }
+                        labels: ["Available", "Redeemed", "Expired"],
+                        datasets: [
+                            {
+                                data: [35, 60, 5],
+                                backgroundColor: ["#10b981", "#f97316", "#ef4444"],
+                            },
+                        ],
+                    },
+                },
             };
         }
 
         // Set current tab and period from UI
-        this.reportsData.currentTab = this.reportsData.currentTab || 'payments';
-        this.reportsData.period = this.reportsData.period || '6months';
+        this.reportsData.currentTab = this.reportsData.currentTab || "payments";
+        this.reportsData.period = this.reportsData.period || "6months";
 
         // Update overview cards
         this.updateReportsOverview();
@@ -916,9 +1239,9 @@ class RedGiraffeDashboard {
         if (!container || !this.reportsData) return;
 
         const currentData = this.reportsData[this.reportsData.currentTab];
-        const isPayments = this.reportsData.currentTab === 'payments';
+        const isPayments = this.reportsData.currentTab === "payments";
 
-        let html = '';
+        let html = "";
 
         if (isPayments) {
             html = `
@@ -974,7 +1297,8 @@ class RedGiraffeDashboard {
                         <h4 style="font-size: 14px; font-weight: 500; color: #6b7280; margin: 0;">Points Earned this Month</h4>
                         <i class="fas fa-arrow-up-right" style="color: #10b981; font-size: 14px;"></i>
                     </div>
-                    <div style="font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 4px;">${currentData.overview.pointsEarnedThisMonth}</div>
+                    <div style="font-size: 24px; font-weight: 700; color: #111827; margin-bottom: 4px;">${currentData.overview.pointsEarnedThisMonth
+                }</div>
                     <p style="font-size: 12px; color: #6b7280; margin: 0;">+15.4% over last month</p>
                 </div>
 
@@ -1005,32 +1329,44 @@ class RedGiraffeDashboard {
         if (!this.reportsData) return;
 
         const currentData = this.reportsData[this.reportsData.currentTab];
-        const isPayments = this.reportsData.currentTab === 'payments';
+        const isPayments = this.reportsData.currentTab === "payments";
 
         // Update chart titles
         const mainChartTitle = document.getElementById("main-chart-title");
-        const mainChartDescription = document.getElementById("main-chart-description");
+        const mainChartDescription = document.getElementById(
+            "main-chart-description"
+        );
         const pieChartTitle = document.getElementById("pie-chart-title");
-        const pieChartDescription = document.getElementById("pie-chart-description");
+        const pieChartDescription = document.getElementById(
+            "pie-chart-description"
+        );
 
         if (mainChartTitle) {
-            mainChartTitle.textContent = isPayments ? 'Monthly Payment Breakdown' : 'Cash Points Activity';
+            mainChartTitle.textContent = isPayments
+                ? "Monthly Payment Breakdown"
+                : "Cash Points Activity";
         }
         if (mainChartDescription) {
-            mainChartDescription.textContent = isPayments ? 'Your regular payments by category' : 'Points earned vs redeemed each month';
+            mainChartDescription.textContent = isPayments
+                ? "Your regular payments by category"
+                : "Points earned vs redeemed each month";
         }
         if (pieChartTitle) {
-            pieChartTitle.textContent = isPayments ? 'Spending Distribution' : 'Cash Points Distribution';
+            pieChartTitle.textContent = isPayments
+                ? "Spending Distribution"
+                : "Cash Points Distribution";
         }
         if (pieChartDescription) {
-            pieChartDescription.textContent = isPayments ? 'Percentage breakdown by category' : 'Available vs redeemed points';
+            pieChartDescription.textContent = isPayments
+                ? "Percentage breakdown by category"
+                : "Available vs redeemed points";
         }
 
         // Update main chart
-        this.renderChart('main-chart', 'bar', currentData.barChart);
+        this.renderChart("main-chart", "bar", currentData.barChart);
 
         // Update pie chart
-        this.renderChart('pie-chart', 'pie', currentData.pieChart);
+        this.renderChart("pie-chart", "pie", currentData.pieChart);
     }
 
     renderChart(canvasId, type, data) {
@@ -1041,8 +1377,8 @@ class RedGiraffeDashboard {
         }
 
         // Check if Chart.js is available
-        if (typeof Chart === 'undefined') {
-            console.error('Chart.js library is not loaded');
+        if (typeof Chart === "undefined") {
+            console.error("Chart.js library is not loaded");
             return;
         }
 
@@ -1056,7 +1392,7 @@ class RedGiraffeDashboard {
             this.charts = {};
         }
 
-        const ctx = canvas.getContext('2d');
+        const ctx = canvas.getContext("2d");
 
         try {
             // Chart.js configuration
@@ -1068,51 +1404,56 @@ class RedGiraffeDashboard {
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: type === 'pie' ? 'bottom' : 'top',
+                            position: type === "pie" ? "bottom" : "top",
                             labels: {
                                 padding: 20,
                                 usePointStyle: true,
                                 font: {
-                                    size: 12
-                                }
-                            }
+                                    size: 12,
+                                },
+                            },
                         },
                         tooltip: {
-                            backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                            titleColor: '#f9fafb',
-                            bodyColor: '#f3f4f6',
+                            backgroundColor: "rgba(17, 24, 39, 0.9)",
+                            titleColor: "#f9fafb",
+                            bodyColor: "#f3f4f6",
                             padding: 10,
                             cornerRadius: 6,
-                            boxPadding: 4
-                        }
-                    },
-                    scales: type === 'pie' ? {} : {
-                        x: {
-                            grid: {
-                                display: false
-                            },
-                            ticks: {
-                                font: {
-                                    size: 11
-                                }
-                            }
+                            boxPadding: 4,
                         },
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: 'rgba(203, 213, 225, 0.2)'
-                            },
-                            ticks: {
-                                font: {
-                                    size: 11
+                    },
+                    scales:
+                        type === "pie"
+                            ? {}
+                            : {
+                                x: {
+                                    grid: {
+                                        display: false,
+                                    },
+                                    ticks: {
+                                        font: {
+                                            size: 11,
+                                        },
+                                    },
                                 },
-                                callback: function(value) {
-                                    return type === 'bar' && value >= 1000 ? '₹' + (value/1000) + 'k' : value;
-                                }
-                            }
-                        }
-                    }
-                }
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: "rgba(203, 213, 225, 0.2)",
+                                    },
+                                    ticks: {
+                                        font: {
+                                            size: 11,
+                                        },
+                                        callback: function (value) {
+                                            return type === "bar" && value >= 1000
+                                                ? "₹" + value / 1000 + "k"
+                                                : value;
+                                        },
+                                    },
+                                },
+                            },
+                },
             };
 
             // Create new chart
@@ -1131,10 +1472,16 @@ class RedGiraffeDashboard {
             <div class="chart-card">
                 <div class="chart-header">
                     <h3 class="chart-title">Quick Insights</h3>
-                    <p style="color: #6b7280; font-size: 14px; margin: 0;">Key takeaways from your ${this.reportsData.currentTab === 'payments' ? 'payment' : 'cash points'} data</p>
+                    <p style="color: #6b7280; font-size: 14px; margin: 0;">Key takeaways from your ${this.reportsData.currentTab === "payments"
+                ? "payment"
+                : "cash points"
+            } data</p>
                 </div>
                 <div style="padding: 20px;">
-                    ${this.reportsData.currentTab === 'payments' ? this.getPaymentInsights() : this.getCashPointsInsights()}
+                    ${this.reportsData.currentTab === "payments"
+                ? this.getPaymentInsights()
+                : this.getCashPointsInsights()
+            }
                 </div>
             </div>
         `;
@@ -1192,53 +1539,63 @@ class RedGiraffeDashboard {
 
     // Export functionality
     exportReport() {
-        const currentTab = this.reportsData?.currentTab || 'payments';
-        const period = this.reportsData?.period || '6months';
+        const currentTab = this.reportsData?.currentTab || "payments";
+        const period = this.reportsData?.period || "6months";
 
         // Create mock CSV data
         const csvData = this.generateReportCSV(currentTab, period);
 
         // Create and download file
-        const blob = new Blob([csvData], { type: 'text/csv' });
+        const blob = new Blob([csvData], { type: "text/csv" });
         const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
+        const a = document.createElement("a");
         a.href = url;
-        a.download = `${currentTab}_report_${period}_${new Date().toISOString().split('T')[0]}.csv`;
+        a.download = `${currentTab}_report_${period}_${new Date().toISOString().split("T")[0]
+            }.csv`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
 
-        this.showNotification(`${currentTab.charAt(0).toUpperCase() + currentTab.slice(1)} report downloaded successfully!`, 'success');
+        this.showNotification(
+            `${currentTab.charAt(0).toUpperCase() + currentTab.slice(1)
+            } report downloaded successfully!`,
+            "success"
+        );
     }
 
     generateReportCSV(type, period) {
-        if (type === 'payments') {
-            const headers = ['Month', 'Rent', 'Education', 'Society', 'Total'];
+        if (type === "payments") {
+            const headers = ["Month", "Rent", "Education", "Society", "Total"];
             const data = [
-                ['Jan 2025', '25000', '0', '2500', '27500'],
-                ['Feb 2025', '25000', '0', '2500', '27500'],
-                ['Mar 2025', '25000', '45000', '2500', '72500'],
-                ['Apr 2025', '25000', '0', '2500', '27500'],
-                ['May 2025', '28800', '0', '0', '28800'],
-                ['Jun 2025', '28800', '0', '0', '28800'],
-                ['Jul 2025', '28800', '45000', '3000', '76800'],
-                ['Aug 2025', '28800', '0', '0', '28800']
+                ["Jan 2025", "25000", "0", "2500", "27500"],
+                ["Feb 2025", "25000", "0", "2500", "27500"],
+                ["Mar 2025", "25000", "45000", "2500", "72500"],
+                ["Apr 2025", "25000", "0", "2500", "27500"],
+                ["May 2025", "28800", "0", "0", "28800"],
+                ["Jun 2025", "28800", "0", "0", "28800"],
+                ["Jul 2025", "28800", "45000", "3000", "76800"],
+                ["Aug 2025", "28800", "0", "0", "28800"],
             ];
-            return [headers, ...data].map(row => row.join(',')).join('\n');
+            return [headers, ...data].map((row) => row.join(",")).join("\n");
         } else {
-            const headers = ['Month', 'Points Earned', 'Points Redeemed', 'Net Change'];
-            const data = [
-                ['Jan 2025', '150', '100', '50'],
-                ['Feb 2025', '200', '150', '50'],
-                ['Mar 2025', '180', '120', '60'],
-                ['Apr 2025', '220', '180', '40'],
-                ['May 2025', '190', '140', '50'],
-                ['Jun 2025', '250', '200', '50'],
-                ['Jul 2025', '210', '160', '50'],
-                ['Aug 2025', '288', '180', '108']
+            const headers = [
+                "Month",
+                "Points Earned",
+                "Points Redeemed",
+                "Net Change",
             ];
-            return [headers, ...data].map(row => row.join(',')).join('\n');
+            const data = [
+                ["Jan 2025", "150", "100", "50"],
+                ["Feb 2025", "200", "150", "50"],
+                ["Mar 2025", "180", "120", "60"],
+                ["Apr 2025", "220", "180", "40"],
+                ["May 2025", "190", "140", "50"],
+                ["Jun 2025", "250", "200", "50"],
+                ["Jul 2025", "210", "160", "50"],
+                ["Aug 2025", "288", "180", "108"],
+            ];
+            return [headers, ...data].map((row) => row.join(",")).join("\n");
         }
     }
 
@@ -1258,7 +1615,7 @@ class RedGiraffeDashboard {
                         status: "Pending",
                         invitedAt: new Date("2025-05-15"),
                         completedAt: null,
-                        rewardAmount: "500"
+                        rewardAmount: "500",
                     },
                     {
                         id: 2,
@@ -1269,7 +1626,7 @@ class RedGiraffeDashboard {
                         status: "Pending",
                         invitedAt: new Date("2025-05-10"),
                         completedAt: null,
-                        rewardAmount: "500"
+                        rewardAmount: "500",
                     },
                     {
                         id: 3,
@@ -1280,7 +1637,7 @@ class RedGiraffeDashboard {
                         status: "Completed",
                         invitedAt: new Date("2025-04-28"),
                         completedAt: new Date("2025-04-30"),
-                        rewardAmount: "500"
+                        rewardAmount: "500",
                     },
                     {
                         id: 4,
@@ -1291,9 +1648,9 @@ class RedGiraffeDashboard {
                         status: "Completed",
                         invitedAt: new Date("2025-04-15"),
                         completedAt: new Date("2025-04-18"),
-                        rewardAmount: "500"
-                    }
-                ]
+                        rewardAmount: "500",
+                    },
+                ],
             };
         }
 
@@ -1301,7 +1658,7 @@ class RedGiraffeDashboard {
         this.updateReferralStats();
 
         // Load the current tab (default to active)
-        this.currentReferralTab = this.currentReferralTab || 'active';
+        this.currentReferralTab = this.currentReferralTab || "active";
         this.renderReferralTable(this.currentReferralTab);
     }
 
@@ -1310,10 +1667,17 @@ class RedGiraffeDashboard {
 
         const referrals = this.referralsData.referrals;
         const totalReferrals = referrals.length;
-        const completedReferrals = referrals.filter(ref => ref.status === "Completed");
-        const pendingReferrals = referrals.filter(ref => ref.status === "Pending");
+        const completedReferrals = referrals.filter(
+            (ref) => ref.status === "Completed"
+        );
+        const pendingReferrals = referrals.filter(
+            (ref) => ref.status === "Pending"
+        );
         const totalEarned = completedReferrals.length * 500;
-        const completionRate = totalReferrals > 0 ? Math.round((completedReferrals.length / totalReferrals) * 100) : 0;
+        const completionRate =
+            totalReferrals > 0
+                ? Math.round((completedReferrals.length / totalReferrals) * 100)
+                : 0;
 
         // Update stats in the DOM
         const totalElement = document.getElementById("total-referrals");
@@ -1323,10 +1687,13 @@ class RedGiraffeDashboard {
         const rateElement = document.getElementById("completion-rate");
 
         if (totalElement) totalElement.textContent = totalReferrals;
-        if (completedElement) completedElement.textContent = completedReferrals.length;
+        if (completedElement)
+            completedElement.textContent = completedReferrals.length;
         if (pendingElement) pendingElement.textContent = pendingReferrals.length;
-        if (earnedElement) earnedElement.textContent = `₹${totalEarned.toLocaleString()}`;
-        if (rateElement) rateElement.textContent = `${completionRate}% completion rate`;
+        if (earnedElement)
+            earnedElement.textContent = `₹${totalEarned.toLocaleString()}`;
+        if (rateElement)
+            rateElement.textContent = `${completionRate}% completion rate`;
     }
 
     renderReferralTable(tab) {
@@ -1334,24 +1701,28 @@ class RedGiraffeDashboard {
         if (!container || !this.referralsData) return;
 
         const referrals = this.referralsData.referrals;
-        const filteredReferrals = tab === 'active'
-            ? referrals.filter(ref => ref.status === "Pending")
-            : referrals.filter(ref => ref.status === "Completed");
+        const filteredReferrals =
+            tab === "active"
+                ? referrals.filter((ref) => ref.status === "Pending")
+                : referrals.filter((ref) => ref.status === "Completed");
 
-        let html = '';
+        let html = "";
 
         if (filteredReferrals.length === 0) {
-            const emptyMessage = tab === 'active'
-                ? 'No active referrals yet'
-                : 'No completed referrals yet';
-            const emptyDescription = tab === 'active'
-                ? 'Start sharing your referral link to invite friends'
-                : 'Your completed referrals will appear here';
+            const emptyMessage =
+                tab === "active"
+                    ? "No active referrals yet"
+                    : "No completed referrals yet";
+            const emptyDescription =
+                tab === "active"
+                    ? "Start sharing your referral link to invite friends"
+                    : "Your completed referrals will appear here";
 
             html = `
                 <div style="text-align: center; padding: 48px 24px;">
                     <div style="background: #f3f4f6; color: #9ca3af; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; font-size: 32px;">
-                        <i class="fas fa-${tab === 'active' ? 'user-plus' : 'check-circle'}"></i>
+                        <i class="fas fa-${tab === "active" ? "user-plus" : "check-circle"
+                }"></i>
                     </div>
                     <h3 style="font-size: 18px; font-weight: 600; color: #111827; margin-bottom: 8px;">${emptyMessage}</h3>
                     <p style="color: #6b7280; font-size: 14px; margin: 0;">${emptyDescription}</p>
@@ -1367,31 +1738,45 @@ class RedGiraffeDashboard {
                                 <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 1px solid #e5e7eb;">Email</th>
                                 <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 1px solid #e5e7eb;">Date</th>
                                 <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 1px solid #e5e7eb;">Status</th>
-                                ${tab === 'active' ? '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 1px solid #e5e7eb;">Action</th>' : '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 1px solid #e5e7eb;">Earned</th>'}
+                                ${tab === "active"
+                    ? '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 1px solid #e5e7eb;">Action</th>'
+                    : '<th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 1px solid #e5e7eb;">Earned</th>'
+                }
                             </tr>
                         </thead>
                         <tbody>
             `;
 
             filteredReferrals.forEach((referral, index) => {
-                const date = tab === 'completed' && referral.completedAt
-                    ? new Date(referral.completedAt).toLocaleDateString()
-                    : new Date(referral.invitedAt).toLocaleDateString();
+                const date =
+                    tab === "completed" && referral.completedAt
+                        ? new Date(referral.completedAt).toLocaleDateString()
+                        : new Date(referral.invitedAt).toLocaleDateString();
 
                 html += `
-                    <tr style="border-bottom: 1px solid #f3f4f6; ${index % 2 === 0 ? 'background: #fafafa;' : ''}">
-                        <td style="padding: 12px 16px; font-weight: 500; color: #111827;">${referral.referredName || "N/A"}</td>
-                        <td style="padding: 12px 16px; color: #6b7280;">${referral.referredEmail}</td>
+                    <tr style="border-bottom: 1px solid #f3f4f6; ${index % 2 === 0 ? "background: #fafafa;" : ""
+                    }">
+                        <td style="padding: 12px 16px; font-weight: 500; color: #111827;">${referral.referredName || "N/A"
+                    }</td>
+                        <td style="padding: 12px 16px; color: #6b7280;">${referral.referredEmail
+                    }</td>
                         <td style="padding: 12px 16px; color: #6b7280;">${date}</td>
                         <td style="padding: 12px 16px;">
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <i class="fas fa-${referral.status === 'Completed' ? 'check-circle' : 'clock'}" style="color: ${referral.status === 'Completed' ? '#10b981' : '#f59e0b'}; font-size: 14px;"></i>
-                                <span style="color: ${referral.status === 'Completed' ? '#10b981' : '#f59e0b'}; font-weight: 500;">${referral.status}</span>
+                                <i class="fas fa-${referral.status === "Completed"
+                        ? "check-circle"
+                        : "clock"
+                    }" style="color: ${referral.status === "Completed" ? "#10b981" : "#f59e0b"
+                    }; font-size: 14px;"></i>
+                                <span style="color: ${referral.status === "Completed"
+                        ? "#10b981"
+                        : "#f59e0b"
+                    }; font-weight: 500;">${referral.status}</span>
                             </div>
                         </td>
                 `;
 
-                if (tab === 'active') {
+                if (tab === "active") {
                     html += `
                         <td style="padding: 12px 16px;">
                             <button
@@ -1408,7 +1793,7 @@ class RedGiraffeDashboard {
                     `;
                 }
 
-                html += '</tr>';
+                html += "</tr>";
             });
 
             html += `
@@ -1425,7 +1810,7 @@ class RedGiraffeDashboard {
         // Initialize profile/settings data if not exists
         if (!this.profileData) {
             this.profileData = {
-                currentTab: 'account',
+                currentTab: "account",
                 user: {
                     fullName: "Piyush Kumar",
                     displayName: "Piyush",
@@ -1434,11 +1819,11 @@ class RedGiraffeDashboard {
                     address: "123 Main Street, New Delhi",
                     city: "New Delhi",
                     state: "Delhi",
-                    pincode: "110001"
+                    pincode: "110001",
                 },
                 formData: {
-                    displayName: "Piyush"
-                }
+                    displayName: "Piyush",
+                },
             };
         }
 
@@ -1458,22 +1843,22 @@ class RedGiraffeDashboard {
         }
 
         // Show/hide appropriate cards
-        const accountCard = document.getElementById('account-settings-card');
-        const pictureCard = document.getElementById('profile-picture-card');
-        const passwordCard = document.getElementById('password-settings-card');
+        const accountCard = document.getElementById("account-settings-card");
+        const pictureCard = document.getElementById("profile-picture-card");
+        const passwordCard = document.getElementById("password-settings-card");
 
-        if (tab === 'account') {
-            if (accountCard) accountCard.style.display = 'block';
-            if (pictureCard) pictureCard.style.display = 'block';
-            if (passwordCard) passwordCard.style.display = 'none';
-        } else if (tab === 'password') {
-            if (accountCard) accountCard.style.display = 'none';
-            if (pictureCard) pictureCard.style.display = 'none';
-            if (passwordCard) passwordCard.style.display = 'block';
+        if (tab === "account") {
+            if (accountCard) accountCard.style.display = "block";
+            if (pictureCard) pictureCard.style.display = "block";
+            if (passwordCard) passwordCard.style.display = "none";
+        } else if (tab === "password") {
+            if (accountCard) accountCard.style.display = "none";
+            if (pictureCard) pictureCard.style.display = "none";
+            if (passwordCard) passwordCard.style.display = "block";
         }
 
         // Update form values if on account tab
-        if (tab === 'account' && this.profileData) {
+        if (tab === "account" && this.profileData) {
             this.populateAccountForm();
         }
     }
@@ -1485,17 +1870,18 @@ class RedGiraffeDashboard {
         const formData = this.profileData.formData;
 
         // Populate form fields
-        const fullNameInput = document.getElementById('fullName');
-        const displayNameInput = document.getElementById('displayName');
-        const emailInput = document.getElementById('email');
-        const phoneInput = document.getElementById('phone');
-        const addressInput = document.getElementById('address');
-        const cityInput = document.getElementById('city');
-        const stateInput = document.getElementById('state');
-        const pincodeInput = document.getElementById('pincode');
+        const fullNameInput = document.getElementById("fullName");
+        const displayNameInput = document.getElementById("displayName");
+        const emailInput = document.getElementById("email");
+        const phoneInput = document.getElementById("phone");
+        const addressInput = document.getElementById("address");
+        const cityInput = document.getElementById("city");
+        const stateInput = document.getElementById("state");
+        const pincodeInput = document.getElementById("pincode");
 
         if (fullNameInput) fullNameInput.value = user.fullName;
-        if (displayNameInput) displayNameInput.value = formData.displayName || user.displayName;
+        if (displayNameInput)
+            displayNameInput.value = formData.displayName || user.displayName;
         if (emailInput) emailInput.value = user.email;
         if (phoneInput) phoneInput.value = user.phone;
         if (addressInput) addressInput.value = user.address;
@@ -1506,19 +1892,19 @@ class RedGiraffeDashboard {
 
     // Account settings save functionality
     saveAccountSettings() {
-        const saveBtn = document.getElementById('save-account-btn');
-        const saveText = document.getElementById('save-account-text');
-        const saveSpinner = document.getElementById('save-account-spinner');
+        const saveBtn = document.getElementById("save-account-btn");
+        const saveText = document.getElementById("save-account-text");
+        const saveSpinner = document.getElementById("save-account-spinner");
 
         if (!saveBtn || !saveText || !saveSpinner) return;
 
         // Show loading state
         saveBtn.disabled = true;
-        saveText.textContent = 'Saving...';
-        saveSpinner.style.display = 'block';
+        saveText.textContent = "Saving...";
+        saveSpinner.style.display = "block";
 
         // Get form data
-        const displayNameInput = document.getElementById('displayName');
+        const displayNameInput = document.getElementById("displayName");
 
         if (displayNameInput && this.profileData) {
             this.profileData.formData.displayName = displayNameInput.value;
@@ -1528,28 +1914,29 @@ class RedGiraffeDashboard {
         setTimeout(() => {
             // Reset button state
             saveBtn.disabled = false;
-            saveText.textContent = 'Save Changes';
-            saveSpinner.style.display = 'none';
+            saveText.textContent = "Save Changes";
+            saveSpinner.style.display = "none";
 
             // Show success notification
-            this.showNotification('Account settings saved successfully!', 'success');
+            this.showNotification("Account settings saved successfully!", "success");
         }, 1000);
     }
 
     // Password update functionality
     updatePassword() {
-        const updateBtn = document.getElementById('update-password-btn');
-        const updateText = document.getElementById('update-password-text');
-        const updateSpinner = document.getElementById('update-password-spinner');
+        const updateBtn = document.getElementById("update-password-btn");
+        const updateText = document.getElementById("update-password-text");
+        const updateSpinner = document.getElementById("update-password-spinner");
 
         if (!updateBtn || !updateText || !updateSpinner) return;
 
         // Get form inputs
-        const currentPasswordInput = document.getElementById('currentPassword');
-        const newPasswordInput = document.getElementById('newPassword');
-        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const currentPasswordInput = document.getElementById("currentPassword");
+        const newPasswordInput = document.getElementById("newPassword");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
 
-        if (!currentPasswordInput || !newPasswordInput || !confirmPasswordInput) return;
+        if (!currentPasswordInput || !newPasswordInput || !confirmPasswordInput)
+            return;
 
         const currentPassword = currentPasswordInput.value.trim();
         const newPassword = newPasswordInput.value.trim();
@@ -1557,72 +1944,78 @@ class RedGiraffeDashboard {
 
         // Validation
         if (!currentPassword) {
-            this.showNotification('Please enter your current password', 'error');
+            this.showNotification("Please enter your current password", "error");
             return;
         }
 
         if (!newPassword) {
-            this.showNotification('Please enter a new password', 'error');
+            this.showNotification("Please enter a new password", "error");
             return;
         }
 
         if (newPassword.length < 8) {
-            this.showNotification('New password must be at least 8 characters long', 'error');
+            this.showNotification(
+                "New password must be at least 8 characters long",
+                "error"
+            );
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            this.showNotification('New passwords do not match', 'error');
+            this.showNotification("New passwords do not match", "error");
             return;
         }
 
         // Show loading state
         updateBtn.disabled = true;
-        updateText.textContent = 'Updating...';
-        updateSpinner.style.display = 'block';
+        updateText.textContent = "Updating...";
+        updateSpinner.style.display = "block";
 
         // Simulate password update
         setTimeout(() => {
             // Reset button state
             updateBtn.disabled = false;
-            updateText.textContent = 'Update Password';
-            updateSpinner.style.display = 'none';
+            updateText.textContent = "Update Password";
+            updateSpinner.style.display = "none";
 
             // Clear form
-            currentPasswordInput.value = '';
-            newPasswordInput.value = '';
-            confirmPasswordInput.value = '';
+            currentPasswordInput.value = "";
+            newPasswordInput.value = "";
+            confirmPasswordInput.value = "";
 
             // Show success notification
-            this.showNotification('Password updated successfully!', 'success');
+            this.showNotification("Password updated successfully!", "success");
         }, 1200);
     }
 
     // Profile picture functionality
     uploadProfilePicture() {
         // Create file input
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = 'image/*';
-        fileInput.style.display = 'none';
+        const fileInput = document.createElement("input");
+        fileInput.type = "file";
+        fileInput.accept = "image/*";
+        fileInput.style.display = "none";
 
         fileInput.onchange = (event) => {
             const file = event.target.files[0];
             if (file) {
                 // Validate file size (max 5MB)
                 if (file.size > 5 * 1024 * 1024) {
-                    this.showNotification('File size must be less than 5MB', 'error');
+                    this.showNotification("File size must be less than 5MB", "error");
                     return;
                 }
 
                 // Validate file type
-                if (!file.type.startsWith('image/')) {
-                    this.showNotification('Please select a valid image file', 'error');
+                if (!file.type.startsWith("image/")) {
+                    this.showNotification("Please select a valid image file", "error");
                     return;
                 }
 
                 // Simulate upload
-                this.showNotification('Profile picture uploaded successfully!', 'success');
+                this.showNotification(
+                    "Profile picture uploaded successfully!",
+                    "success"
+                );
             }
         };
 
@@ -1633,8 +2026,8 @@ class RedGiraffeDashboard {
 
     removeProfilePicture() {
         // Show confirmation
-        if (confirm('Are you sure you want to remove your profile picture?')) {
-            this.showNotification('Profile picture removed successfully!', 'success');
+        if (confirm("Are you sure you want to remove your profile picture?")) {
+            this.showNotification("Profile picture removed successfully!", "success");
         }
     }
 
@@ -2238,30 +2631,40 @@ class RedGiraffeDashboard {
     // Edit Records Functions
     async handleEditClick(registrationType, rgId) {
         try {
-            this.showNotification(`Loading registration data for ${rgId}...`, 'info');
-            const registrationData = await this.editRecordsService.getRegistrationByRgId(rgId);
+            this.showNotification(`Loading registration data for ${rgId}...`, "info");
+            const registrationData =
+                await this.editRecordsService.getRegistrationByRgId(rgId);
 
             if (!registrationData) {
-                throw new Error('Registration not found');
+                throw new Error("Registration not found");
             }
 
             this.selectedRegistration = registrationData;
             this.activeEditForm = registrationType;
             this.showEditForm(registrationType, registrationData);
         } catch (error) {
-            console.error('Error loading registration data:', error);
-            this.showNotification('Failed to load registration data. Please try again.', 'error');
+            console.error("Error loading registration data:", error);
+            this.showNotification(
+                "Failed to load registration data. Please try again.",
+                "error"
+            );
         }
     }
 
     showEditForm(registrationType, registrationData) {
-        const modalHtml = this.generateEditFormModal(registrationType, registrationData);
+        const modalHtml = this.generateEditFormModal(
+            registrationType,
+            registrationData
+        );
         this.showModal(modalHtml);
     }
 
     generateEditFormModal(registrationType, registrationData) {
         const title = this.getEditFormTitle(registrationType);
-        const formFields = this.getEditFormFields(registrationType, registrationData);
+        const formFields = this.getEditFormFields(
+            registrationType,
+            registrationData
+        );
 
         return `
             <div style="background: white; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
@@ -2298,27 +2701,27 @@ class RedGiraffeDashboard {
 
     getEditFormTitle(registrationType) {
         switch (registrationType) {
-            case 'tenant':
-                return 'Edit Rent Registration';
-            case 'education':
-                return 'Edit Education Registration';
-            case 'society':
-                return 'Edit Society Registration';
+            case "tenant":
+                return "Edit Rent Registration";
+            case "education":
+                return "Edit Education Registration";
+            case "society":
+                return "Edit Society Registration";
             default:
-                return 'Edit Registration';
+                return "Edit Registration";
         }
     }
 
     getEditFormFields(registrationType, registrationData) {
         switch (registrationType) {
-            case 'tenant':
+            case "tenant":
                 return this.getTenantFormFields(registrationData);
-            case 'education':
+            case "education":
                 return this.getEducationFormFields(registrationData);
-            case 'society':
+            case "society":
                 return this.getSocietyFormFields(registrationData);
             default:
-                return '';
+                return "";
         }
     }
 
@@ -2328,36 +2731,63 @@ class RedGiraffeDashboard {
             <div style="display: grid; gap: 16px;">
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Rent Amount</label>
-                    <input type="text" name="rentAmount" value="${tenancyDetails.rentAmount || ''}"
+                    <input type="text" name="rentAmount" value="${tenancyDetails.rentAmount || ""
+            }"
                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Frequency</label>
                     <select name="frequency" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
-                        <option value="Monthly" ${tenancyDetails.frequency === 'Monthly' ? 'selected' : ''}>Monthly</option>
-                        <option value="Quarterly" ${tenancyDetails.frequency === 'Quarterly' ? 'selected' : ''}>Quarterly</option>
-                        <option value="Half Yearly" ${tenancyDetails.frequency === 'Half Yearly' ? 'selected' : ''}>Half Yearly</option>
-                        <option value="Yearly" ${tenancyDetails.frequency === 'Yearly' ? 'selected' : ''}>Yearly</option>
+                        <option value="Monthly" ${tenancyDetails.frequency === "Monthly"
+                ? "selected"
+                : ""
+            }>Monthly</option>
+                        <option value="Quarterly" ${tenancyDetails.frequency === "Quarterly"
+                ? "selected"
+                : ""
+            }>Quarterly</option>
+                        <option value="Half Yearly" ${tenancyDetails.frequency === "Half Yearly"
+                ? "selected"
+                : ""
+            }>Half Yearly</option>
+                        <option value="Yearly" ${tenancyDetails.frequency === "Yearly"
+                ? "selected"
+                : ""
+            }>Yearly</option>
                     </select>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Due Date</label>
-                    <input type="date" name="dueDate" value="${tenancyDetails.dueDate || ''}"
+                    <input type="date" name="dueDate" value="${tenancyDetails.dueDate || ""
+            }"
                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Tenancy End Date</label>
-                    <input type="date" name="tenancyEndDate" value="${tenancyDetails.tenancyEndDate || ''}"
+                    <input type="date" name="tenancyEndDate" value="${tenancyDetails.tenancyEndDate || ""
+            }"
                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Card Issuing Bank</label>
                     <select name="cardIssuingBank" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                         <option value="">Select Bank</option>
-                        <option value="HDFC Bank" ${tenancyDetails.cardIssuingBank === 'HDFC Bank' ? 'selected' : ''}>HDFC Bank</option>
-                        <option value="Axis Bank" ${tenancyDetails.cardIssuingBank === 'Axis Bank' ? 'selected' : ''}>Axis Bank</option>
-                        <option value="ICICI Bank" ${tenancyDetails.cardIssuingBank === 'ICICI Bank' ? 'selected' : ''}>ICICI Bank</option>
-                        <option value="SBI" ${tenancyDetails.cardIssuingBank === 'SBI' ? 'selected' : ''}>SBI</option>
+                        <option value="HDFC Bank" ${tenancyDetails.cardIssuingBank === "HDFC Bank"
+                ? "selected"
+                : ""
+            }>HDFC Bank</option>
+                        <option value="Axis Bank" ${tenancyDetails.cardIssuingBank === "Axis Bank"
+                ? "selected"
+                : ""
+            }>Axis Bank</option>
+                        <option value="ICICI Bank" ${tenancyDetails.cardIssuingBank === "ICICI Bank"
+                ? "selected"
+                : ""
+            }>ICICI Bank</option>
+                        <option value="SBI" ${tenancyDetails.cardIssuingBank === "SBI"
+                ? "selected"
+                : ""
+            }>SBI</option>
                     </select>
                 </div>
             </div>
@@ -2370,31 +2800,57 @@ class RedGiraffeDashboard {
             <div style="display: grid; gap: 16px;">
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Fee Amount</label>
-                    <input type="text" name="feeAmount" value="${educationDetails.feeAmount || ''}"
+                    <input type="text" name="feeAmount" value="${educationDetails.feeAmount || ""
+            }"
                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Frequency</label>
                     <select name="frequency" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
-                        <option value="Monthly" ${educationDetails.frequency === 'Monthly' ? 'selected' : ''}>Monthly</option>
-                        <option value="Quarterly" ${educationDetails.frequency === 'Quarterly' ? 'selected' : ''}>Quarterly</option>
-                        <option value="Half Yearly" ${educationDetails.frequency === 'Half Yearly' ? 'selected' : ''}>Half Yearly</option>
-                        <option value="Yearly" ${educationDetails.frequency === 'Yearly' ? 'selected' : ''}>Yearly</option>
+                        <option value="Monthly" ${educationDetails.frequency === "Monthly"
+                ? "selected"
+                : ""
+            }>Monthly</option>
+                        <option value="Quarterly" ${educationDetails.frequency === "Quarterly"
+                ? "selected"
+                : ""
+            }>Quarterly</option>
+                        <option value="Half Yearly" ${educationDetails.frequency === "Half Yearly"
+                ? "selected"
+                : ""
+            }>Half Yearly</option>
+                        <option value="Yearly" ${educationDetails.frequency === "Yearly"
+                ? "selected"
+                : ""
+            }>Yearly</option>
                     </select>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Due Date</label>
-                    <input type="date" name="dueDate" value="${educationDetails.dueDate || ''}"
+                    <input type="date" name="dueDate" value="${educationDetails.dueDate || ""
+            }"
                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Card Issuing Bank</label>
                     <select name="cardIssuingBank" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                         <option value="">Select Bank</option>
-                        <option value="HDFC Bank" ${educationDetails.cardIssuingBank === 'HDFC Bank' ? 'selected' : ''}>HDFC Bank</option>
-                        <option value="Axis Bank" ${educationDetails.cardIssuingBank === 'Axis Bank' ? 'selected' : ''}>Axis Bank</option>
-                        <option value="ICICI Bank" ${educationDetails.cardIssuingBank === 'ICICI Bank' ? 'selected' : ''}>ICICI Bank</option>
-                        <option value="SBI" ${educationDetails.cardIssuingBank === 'SBI' ? 'selected' : ''}>SBI</option>
+                        <option value="HDFC Bank" ${educationDetails.cardIssuingBank === "HDFC Bank"
+                ? "selected"
+                : ""
+            }>HDFC Bank</option>
+                        <option value="Axis Bank" ${educationDetails.cardIssuingBank === "Axis Bank"
+                ? "selected"
+                : ""
+            }>Axis Bank</option>
+                        <option value="ICICI Bank" ${educationDetails.cardIssuingBank === "ICICI Bank"
+                ? "selected"
+                : ""
+            }>ICICI Bank</option>
+                        <option value="SBI" ${educationDetails.cardIssuingBank === "SBI"
+                ? "selected"
+                : ""
+            }>SBI</option>
                     </select>
                 </div>
             </div>
@@ -2407,31 +2863,57 @@ class RedGiraffeDashboard {
             <div style="display: grid; gap: 16px;">
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Amount</label>
-                    <input type="text" name="amount" value="${societyDetails.amount || ''}"
+                    <input type="text" name="amount" value="${societyDetails.amount || ""
+            }"
                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Frequency</label>
                     <select name="frequency" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
-                        <option value="Monthly" ${societyDetails.frequency === 'Monthly' ? 'selected' : ''}>Monthly</option>
-                        <option value="Quarterly" ${societyDetails.frequency === 'Quarterly' ? 'selected' : ''}>Quarterly</option>
-                        <option value="Half Yearly" ${societyDetails.frequency === 'Half Yearly' ? 'selected' : ''}>Half Yearly</option>
-                        <option value="Yearly" ${societyDetails.frequency === 'Yearly' ? 'selected' : ''}>Yearly</option>
+                        <option value="Monthly" ${societyDetails.frequency === "Monthly"
+                ? "selected"
+                : ""
+            }>Monthly</option>
+                        <option value="Quarterly" ${societyDetails.frequency === "Quarterly"
+                ? "selected"
+                : ""
+            }>Quarterly</option>
+                        <option value="Half Yearly" ${societyDetails.frequency === "Half Yearly"
+                ? "selected"
+                : ""
+            }>Half Yearly</option>
+                        <option value="Yearly" ${societyDetails.frequency === "Yearly"
+                ? "selected"
+                : ""
+            }>Yearly</option>
                     </select>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Due Date</label>
-                    <input type="date" name="dueDate" value="${societyDetails.dueDate || ''}"
+                    <input type="date" name="dueDate" value="${societyDetails.dueDate || ""
+            }"
                            style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                 </div>
                 <div>
                     <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Card Issuing Bank</label>
                     <select name="cardIssuingBank" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
                         <option value="">Select Bank</option>
-                        <option value="HDFC Bank" ${societyDetails.cardIssuingBank === 'HDFC Bank' ? 'selected' : ''}>HDFC Bank</option>
-                        <option value="Axis Bank" ${societyDetails.cardIssuingBank === 'Axis Bank' ? 'selected' : ''}>Axis Bank</option>
-                        <option value="ICICI Bank" ${societyDetails.cardIssuingBank === 'ICICI Bank' ? 'selected' : ''}>ICICI Bank</option>
-                        <option value="SBI" ${societyDetails.cardIssuingBank === 'SBI' ? 'selected' : ''}>SBI</option>
+                        <option value="HDFC Bank" ${societyDetails.cardIssuingBank === "HDFC Bank"
+                ? "selected"
+                : ""
+            }>HDFC Bank</option>
+                        <option value="Axis Bank" ${societyDetails.cardIssuingBank === "Axis Bank"
+                ? "selected"
+                : ""
+            }>Axis Bank</option>
+                        <option value="ICICI Bank" ${societyDetails.cardIssuingBank === "ICICI Bank"
+                ? "selected"
+                : ""
+            }>ICICI Bank</option>
+                        <option value="SBI" ${societyDetails.cardIssuingBank === "SBI"
+                ? "selected"
+                : ""
+            }>SBI</option>
                     </select>
                 </div>
             </div>
@@ -2447,11 +2929,14 @@ class RedGiraffeDashboard {
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
 
-            this.showNotification('Saving registration data...', 'info');
+            this.showNotification("Saving registration data...", "info");
 
-            await this.editRecordsService.saveRegistration(this.selectedRegistration.registration.rgId, data);
+            await this.editRecordsService.saveRegistration(
+                this.selectedRegistration.registration.rgId,
+                data
+            );
 
-            this.showNotification('Registration updated successfully!', 'success');
+            this.showNotification("Registration updated successfully!", "success");
             this.closeModal();
             this.activeEditForm = null;
             this.selectedRegistration = null;
@@ -2459,26 +2944,30 @@ class RedGiraffeDashboard {
             // Reload the edit records to show updated data
             this.loadEditRecords();
         } catch (error) {
-            console.error('Error saving registration data:', error);
-            this.showNotification('There was an error updating your registration. Please try again.', 'error');
+            console.error("Error saving registration data:", error);
+            this.showNotification(
+                "There was an error updating your registration. Please try again.",
+                "error"
+            );
         }
     }
 
     showModal(content) {
-        const modalOverlay = document.getElementById('modal-overlay') || this.createModalOverlay();
+        const modalOverlay =
+            document.getElementById("modal-overlay") || this.createModalOverlay();
         modalOverlay.innerHTML = `
             <div style="display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 16px; width: 100%;">
                 ${content}
             </div>
         `;
-        modalOverlay.style.display = 'flex';
-        modalOverlay.style.opacity = '1';
-        document.body.style.overflow = 'hidden';
+        modalOverlay.style.display = "flex";
+        modalOverlay.style.opacity = "1";
+        document.body.style.overflow = "hidden";
     }
 
     createModalOverlay() {
-        const overlay = document.createElement('div');
-        overlay.id = 'modal-overlay';
+        const overlay = document.createElement("div");
+        overlay.id = "modal-overlay";
         overlay.style.cssText = `
             position: fixed;
             top: 0;
@@ -2496,15 +2985,15 @@ class RedGiraffeDashboard {
     }
 
     closeModal() {
-        const modalOverlay = document.getElementById('modal-overlay');
+        const modalOverlay = document.getElementById("modal-overlay");
         if (modalOverlay) {
-            modalOverlay.style.opacity = '0';
+            modalOverlay.style.opacity = "0";
             setTimeout(() => {
-                modalOverlay.style.display = 'none';
-                modalOverlay.innerHTML = '';
+                modalOverlay.style.display = "none";
+                modalOverlay.innerHTML = "";
             }, 300);
         }
-        document.body.style.overflow = 'auto';
+        document.body.style.overflow = "auto";
         this.activeEditForm = null;
         this.selectedRegistration = null;
     }
@@ -2556,9 +3045,12 @@ class RedGiraffeDashboard {
         event.preventDefault();
         const formData = new FormData(event.target);
         const files = event.target.querySelector('input[type="file"]').files;
-        const remarks = formData.get('remarks');
+        const remarks = formData.get("remarks");
 
-        this.showNotification(`Successfully uploaded ${files.length} document(s).`, 'success');
+        this.showNotification(
+            `Successfully uploaded ${files.length} document(s).`,
+            "success"
+        );
         this.closeModal();
     }
 
@@ -2602,10 +3094,12 @@ class RedGiraffeDashboard {
 
     renderAuditLogEntries(entries) {
         if (entries.length === 0) {
-            return '<p style="text-align: center; color: #6b7280; padding: 32px 0; font-family: \'Inter\', sans-serif;">No audit log entries found</p>';
+            return "<p style=\"text-align: center; color: #6b7280; padding: 32px 0; font-family: 'Inter', sans-serif;\">No audit log entries found</p>";
         }
 
-        return entries.map(entry => `
+        return entries
+            .map(
+                (entry) => `
             <div style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 12px; background: #f9fafb;">
                 <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 8px;">
                     <div style="flex: 1;">
@@ -2629,19 +3123,22 @@ class RedGiraffeDashboard {
                     <span>IP: ${entry.ipAddress}</span>
                 </div>
             </div>
-        `).join('');
+        `
+            )
+            .join("");
     }
 
     filterAuditLog() {
-        const typeFilter = document.getElementById('audit-type-filter')?.value || 'All';
-        const idFilter = document.getElementById('audit-id-filter')?.value || '';
+        const typeFilter =
+            document.getElementById("audit-type-filter")?.value || "All";
+        const idFilter = document.getElementById("audit-id-filter")?.value || "";
 
         const auditData = this.editRecordsService.getAuditLog({
             registrationType: typeFilter,
-            registrationId: idFilter
+            registrationId: idFilter,
         });
 
-        const contentDiv = document.getElementById('audit-log-content');
+        const contentDiv = document.getElementById("audit-log-content");
         if (contentDiv) {
             contentDiv.innerHTML = this.renderAuditLogEntries(auditData.entries);
         }
@@ -2774,9 +3271,12 @@ class RedGiraffeDashboard {
 
     renderEditRecords(registrations) {
         // Filter registrations by type
-        const rentRegistrations = registrations.filter(reg => reg.type === 'tenant') || [];
-        const educationRegistrations = registrations.filter(reg => reg.type === 'education') || [];
-        const societyRegistrations = registrations.filter(reg => reg.type === 'society') || [];
+        const rentRegistrations =
+            registrations.filter((reg) => reg.type === "tenant") || [];
+        const educationRegistrations =
+            registrations.filter((reg) => reg.type === "education") || [];
+        const societyRegistrations =
+            registrations.filter((reg) => reg.type === "society") || [];
 
         const html = `
             <div style="padding: 0 16px;">
@@ -2811,7 +3311,10 @@ class RedGiraffeDashboard {
                         </h3>
                     </div>
                     <div style="padding: 20px;">
-                        ${this.renderRegistrationCards(rentRegistrations, 'tenant')}
+                        ${this.renderRegistrationCards(
+            rentRegistrations,
+            "tenant"
+        )}
                     </div>
                 </div>
 
@@ -2824,7 +3327,10 @@ class RedGiraffeDashboard {
                         </h3>
                     </div>
                     <div style="padding: 20px;">
-                        ${this.renderRegistrationCards(educationRegistrations, 'education')}
+                        ${this.renderRegistrationCards(
+            educationRegistrations,
+            "education"
+        )}
                     </div>
                 </div>
 
@@ -2837,7 +3343,10 @@ class RedGiraffeDashboard {
                         </h3>
                     </div>
                     <div style="padding: 20px;">
-                        ${this.renderRegistrationCards(societyRegistrations, 'society')}
+                        ${this.renderRegistrationCards(
+            societyRegistrations,
+            "society"
+        )}
                     </div>
                 </div>
             </div>
@@ -2845,12 +3354,13 @@ class RedGiraffeDashboard {
 
         const container = document.getElementById("edit-records-section");
         if (container) {
-            const contentDiv = container.querySelector('.page-header').nextElementSibling;
+            const contentDiv =
+                container.querySelector(".page-header").nextElementSibling;
             if (contentDiv) {
                 contentDiv.innerHTML = html;
             } else {
                 // Create content div if it doesn't exist
-                const newContentDiv = document.createElement('div');
+                const newContentDiv = document.createElement("div");
                 newContentDiv.innerHTML = html;
                 container.appendChild(newContentDiv);
             }
@@ -2862,7 +3372,9 @@ class RedGiraffeDashboard {
             return `<p style="text-align: center; color: #6b7280; padding: 32px 0; font-family: 'Inter', sans-serif;">No ${type} registrations found</p>`;
         }
 
-        return registrations.map(registration => `
+        return registrations
+            .map(
+                (registration) => `
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px; border: 1px solid #e5e7eb; border-radius: 8px; margin-bottom: 16px; gap: 12px;">
                 <div style="flex: 1;">
                     <h3 style="font-weight: 600; font-size: 16px; color: #111827; margin: 0 0 8px 0; font-family: 'Inter', sans-serif;">${registration.rgId}</h3>
@@ -2879,7 +3391,9 @@ class RedGiraffeDashboard {
                     EDIT
                 </button>
             </div>
-        `).join('');
+        `
+            )
+            .join("");
     }
 
     getTypeLabel(type) {
@@ -2995,8 +3509,6 @@ class RedGiraffeDashboard {
         container.innerHTML = html;
     }
 
-
-
     renderProfile(data) {
         const container = document.getElementById("profile-content");
         if (!container) return;
@@ -3080,6 +3592,17 @@ class RedGiraffeDashboard {
                             </div>
                             <p style="color: #6b7280; margin: 0; margin-left: 28px;">(+91) 80-1019-1019</p>
                         </div>
+                        <div style="margin-top: 20px;">
+                            <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                                <i class="fas fa-clock" style="color: #ef4444; margin-right: 12px; width: 16px;"></i>
+                                <span className="font-medium">Business Hours</span>
+                            </div>
+
+                                <p className="text-sm text-muted-foreground mt-1" style="color: #6b7280; margin: 0; margin-left: 28px;">Monday - Friday: 9:00 AM - 6:00 PM</p>
+                                <p className="text-sm text-muted-foreground" style="color: #6b7280; margin: 0; margin-left: 28px;">Saturday: 10:00 AM - 2:00 PM</p>
+                                <p className="text-sm text-muted-foreground" style="color: #6b7280; margin: 0; margin-left: 28px;">Sunday: Closed</p>
+
+                        </div>
                     </div>
                 </div>
             </div>`;
@@ -3138,14 +3661,14 @@ class RedGiraffeDashboard {
 
         // Load appropriate content based on tab
         switch (tab) {
+            case "giftcards":
+                this.renderGiftCards();
+                break;
             case "wallet":
-                this.loadRewards();
+                this.renderMyWallet();
                 break;
             case "history":
                 this.renderRewardsPurchaseHistory();
-                break;
-            case "giftcards":
-                this.renderGiftCards();
                 break;
         }
     }
@@ -3193,23 +3716,32 @@ class RedGiraffeDashboard {
     // New referral-specific methods
     shareReferral(method) {
         const referralCode = this.referralsData?.referralCode || "PIYUSH500";
-        const referralLink = this.referralsData?.referralLink || "https://redgirraffe.com/ref/PIYUSH500";
+        const referralLink =
+            this.referralsData?.referralLink ||
+            "https://redgirraffe.com/ref/PIYUSH500";
 
-        if (method === 'email') {
+        if (method === "email") {
             const subject = encodeURIComponent("Join RedGirraffe - Get ₹500 Bonus!");
-            const body = encodeURIComponent(`Hi there!\n\nI'd like to invite you to join RedGirraffe, an amazing payment platform.\n\nUse my referral code: ${referralCode}\nOr click this link: ${referralLink}\n\nYou'll get ₹500 bonus when you sign up and make your first payment!\n\nBest regards`);
+            const body = encodeURIComponent(
+                `Hi there!\n\nI'd like to invite you to join RedGirraffe, an amazing payment platform.\n\nUse my referral code: ${referralCode}\nOr click this link: ${referralLink}\n\nYou'll get ₹500 bonus when you sign up and make your first payment!\n\nBest regards`
+            );
             window.open(`mailto:?subject=${subject}&body=${body}`);
-        } else if (method === 'whatsapp') {
-            const message = encodeURIComponent(`Join RedGirraffe and get ₹500 bonus! Use my referral code: ${referralCode} or click: ${referralLink}`);
-            window.open(`https://wa.me/?text=${message}`, '_blank');
+        } else if (method === "whatsapp") {
+            const message = encodeURIComponent(
+                `Join RedGirraffe and get ₹500 bonus! Use my referral code: ${referralCode} or click: ${referralLink}`
+            );
+            window.open(`https://wa.me/?text=${message}`, "_blank");
         }
 
-        this.showNotification(`Referral shared via ${method}!`, 'success');
+        this.showNotification(`Referral shared via ${method}!`, "success");
     }
 
     copyReferralLink() {
-        const referralLink = this.referralsData?.referralLink || "https://redgirraffe.com/ref/PIYUSH500";
-        navigator.clipboard.writeText(referralLink)
+        const referralLink =
+            this.referralsData?.referralLink ||
+            "https://redgirraffe.com/ref/PIYUSH500";
+        navigator.clipboard
+            .writeText(referralLink)
             .then(() => {
                 this.showNotification("Referral link copied to clipboard!", "success");
             })
@@ -3228,8 +3760,8 @@ class RedGiraffeDashboard {
 
         // Clear previous errors
         if (errorDiv) {
-            errorDiv.style.display = 'none';
-            errorDiv.textContent = '';
+            errorDiv.style.display = "none";
+            errorDiv.textContent = "";
         }
 
         // Validate email
@@ -3245,7 +3777,9 @@ class RedGiraffeDashboard {
         }
 
         // Check if email already exists
-        const existingReferral = this.referralsData.referrals.find(ref => ref.referredEmail === email);
+        const existingReferral = this.referralsData.referrals.find(
+            (ref) => ref.referredEmail === email
+        );
         if (existingReferral) {
             this.showEmailError("This email has already been invited.");
             return;
@@ -3261,7 +3795,7 @@ class RedGiraffeDashboard {
             status: "Pending",
             invitedAt: new Date(),
             completedAt: null,
-            rewardAmount: "500"
+            rewardAmount: "500",
         };
 
         // Add to referrals data
@@ -3269,7 +3803,9 @@ class RedGiraffeDashboard {
 
         // Open email client
         const subject = encodeURIComponent("Join RedGirraffe - Get ₹500 Bonus!");
-        const body = encodeURIComponent(`Hi there!\n\nI'd like to invite you to join RedGirraffe, an amazing payment platform.\n\nUse my referral code: ${this.referralsData.referralCode}\nOr click this link: ${this.referralsData.referralLink}\n\nYou'll get ₹500 bonus when you sign up and make your first payment!\n\nBest regards`);
+        const body = encodeURIComponent(
+            `Hi there!\n\nI'd like to invite you to join RedGirraffe, an amazing payment platform.\n\nUse my referral code: ${this.referralsData.referralCode}\nOr click this link: ${this.referralsData.referralLink}\n\nYou'll get ₹500 bonus when you sign up and make your first payment!\n\nBest regards`
+        );
         window.open(`mailto:${email}?subject=${subject}&body=${body}`);
 
         // Clear input
@@ -3286,19 +3822,30 @@ class RedGiraffeDashboard {
         const errorDiv = document.getElementById("email-error");
         if (errorDiv) {
             errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
+            errorDiv.style.display = "block";
         }
     }
 
     sendReminder(referralId) {
-        const referral = this.referralsData.referrals.find(ref => ref.id === referralId);
+        const referral = this.referralsData.referrals.find(
+            (ref) => ref.id === referralId
+        );
         if (!referral) return;
 
-        const subject = encodeURIComponent("Reminder: Join RedGirraffe - Get ₹500 Bonus!");
-        const body = encodeURIComponent(`Hi there!\n\nThis is a friendly reminder about my invitation to join RedGirraffe.\n\nUse my referral code: ${this.referralsData.referralCode}\nOr click this link: ${this.referralsData.referralLink}\n\nYou'll get ₹500 bonus when you sign up and make your first payment!\n\nBest regards`);
-        window.open(`mailto:${referral.referredEmail}?subject=${subject}&body=${body}`);
+        const subject = encodeURIComponent(
+            "Reminder: Join RedGirraffe - Get ₹500 Bonus!"
+        );
+        const body = encodeURIComponent(
+            `Hi there!\n\nThis is a friendly reminder about my invitation to join RedGirraffe.\n\nUse my referral code: ${this.referralsData.referralCode}\nOr click this link: ${this.referralsData.referralLink}\n\nYou'll get ₹500 bonus when you sign up and make your first payment!\n\nBest regards`
+        );
+        window.open(
+            `mailto:${referral.referredEmail}?subject=${subject}&body=${body}`
+        );
 
-        this.showNotification(`Reminder email opened for ${referral.referredEmail}`, "success");
+        this.showNotification(
+            `Reminder email opened for ${referral.referredEmail}`,
+            "success"
+        );
     }
 
     switchProfileTab(tab) {
@@ -3321,39 +3868,39 @@ class RedGiraffeDashboard {
     // Form validation helpers
     validateDisplayName(value) {
         if (!value || value.trim().length === 0) {
-            return 'Display name is required';
+            return "Display name is required";
         }
         if (value.trim().length < 2) {
-            return 'Display name must be at least 2 characters';
+            return "Display name must be at least 2 characters";
         }
         if (value.trim().length > 50) {
-            return 'Display name must be less than 50 characters';
+            return "Display name must be less than 50 characters";
         }
         return null;
     }
 
     validatePassword(password) {
         if (!password || password.length === 0) {
-            return 'Password is required';
+            return "Password is required";
         }
         if (password.length < 8) {
-            return 'Password must be at least 8 characters long';
+            return "Password must be at least 8 characters long";
         }
         if (!/(?=.*[a-z])/.test(password)) {
-            return 'Password must contain at least one lowercase letter';
+            return "Password must contain at least one lowercase letter";
         }
         if (!/(?=.*[A-Z])/.test(password)) {
-            return 'Password must contain at least one uppercase letter';
+            return "Password must contain at least one uppercase letter";
         }
         if (!/(?=.*\d)/.test(password)) {
-            return 'Password must contain at least one number';
+            return "Password must contain at least one number";
         }
         return null;
     }
 
     // Enhanced save with validation
     saveAccountSettingsWithValidation() {
-        const displayNameInput = document.getElementById('displayName');
+        const displayNameInput = document.getElementById("displayName");
 
         if (!displayNameInput) return;
 
@@ -3361,7 +3908,7 @@ class RedGiraffeDashboard {
         const validationError = this.validateDisplayName(displayName);
 
         if (validationError) {
-            this.showNotification(validationError, 'error');
+            this.showNotification(validationError, "error");
             displayNameInput.focus();
             return;
         }
@@ -3372,11 +3919,12 @@ class RedGiraffeDashboard {
 
     // Enhanced password update with validation
     updatePasswordWithValidation() {
-        const currentPasswordInput = document.getElementById('currentPassword');
-        const newPasswordInput = document.getElementById('newPassword');
-        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const currentPasswordInput = document.getElementById("currentPassword");
+        const newPasswordInput = document.getElementById("newPassword");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
 
-        if (!currentPasswordInput || !newPasswordInput || !confirmPasswordInput) return;
+        if (!currentPasswordInput || !newPasswordInput || !confirmPasswordInput)
+            return;
 
         const currentPassword = currentPasswordInput.value.trim();
         const newPassword = newPasswordInput.value.trim();
@@ -3384,7 +3932,7 @@ class RedGiraffeDashboard {
 
         // Validate current password
         if (!currentPassword) {
-            this.showNotification('Please enter your current password', 'error');
+            this.showNotification("Please enter your current password", "error");
             currentPasswordInput.focus();
             return;
         }
@@ -3392,14 +3940,14 @@ class RedGiraffeDashboard {
         // Validate new password
         const passwordError = this.validatePassword(newPassword);
         if (passwordError) {
-            this.showNotification(passwordError, 'error');
+            this.showNotification(passwordError, "error");
             newPasswordInput.focus();
             return;
         }
 
         // Validate password confirmation
         if (newPassword !== confirmPassword) {
-            this.showNotification('New passwords do not match', 'error');
+            this.showNotification("New passwords do not match", "error");
             confirmPasswordInput.focus();
             return;
         }
@@ -3411,37 +3959,37 @@ class RedGiraffeDashboard {
     // Initialize form event listeners
     initializeSettingsEventListeners() {
         // Add real-time validation for display name
-        const displayNameInput = document.getElementById('displayName');
+        const displayNameInput = document.getElementById("displayName");
         if (displayNameInput) {
-            displayNameInput.addEventListener('input', (e) => {
+            displayNameInput.addEventListener("input", (e) => {
                 const value = e.target.value.trim();
                 const error = this.validateDisplayName(value);
 
                 if (error) {
-                    e.target.classList.add('error');
-                    e.target.classList.remove('success');
+                    e.target.classList.add("error");
+                    e.target.classList.remove("success");
                 } else {
-                    e.target.classList.remove('error');
-                    e.target.classList.add('success');
+                    e.target.classList.remove("error");
+                    e.target.classList.add("success");
                 }
             });
         }
 
         // Add real-time validation for password fields
-        const newPasswordInput = document.getElementById('newPassword');
-        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const newPasswordInput = document.getElementById("newPassword");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
 
         if (newPasswordInput) {
-            newPasswordInput.addEventListener('input', (e) => {
+            newPasswordInput.addEventListener("input", (e) => {
                 const value = e.target.value;
                 const error = this.validatePassword(value);
 
                 if (error && value.length > 0) {
-                    e.target.classList.add('error');
-                    e.target.classList.remove('success');
+                    e.target.classList.add("error");
+                    e.target.classList.remove("success");
                 } else if (value.length > 0) {
-                    e.target.classList.remove('error');
-                    e.target.classList.add('success');
+                    e.target.classList.remove("error");
+                    e.target.classList.add("success");
                 }
 
                 // Also validate confirm password if it has a value
@@ -3452,23 +4000,23 @@ class RedGiraffeDashboard {
         }
 
         if (confirmPasswordInput) {
-            confirmPasswordInput.addEventListener('input', () => {
+            confirmPasswordInput.addEventListener("input", () => {
                 this.validateConfirmPassword();
             });
         }
 
         // Add form submission handlers
-        const accountForm = document.getElementById('account-settings-form');
+        const accountForm = document.getElementById("account-settings-form");
         if (accountForm) {
-            accountForm.addEventListener('submit', (e) => {
+            accountForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 this.saveAccountSettingsWithValidation();
             });
         }
 
-        const passwordForm = document.getElementById('password-settings-form');
+        const passwordForm = document.getElementById("password-settings-form");
         if (passwordForm) {
-            passwordForm.addEventListener('submit', (e) => {
+            passwordForm.addEventListener("submit", (e) => {
                 e.preventDefault();
                 this.updatePasswordWithValidation();
             });
@@ -3476,8 +4024,8 @@ class RedGiraffeDashboard {
     }
 
     validateConfirmPassword() {
-        const newPasswordInput = document.getElementById('newPassword');
-        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const newPasswordInput = document.getElementById("newPassword");
+        const confirmPasswordInput = document.getElementById("confirmPassword");
 
         if (!newPasswordInput || !confirmPasswordInput) return;
 
@@ -3486,11 +4034,11 @@ class RedGiraffeDashboard {
 
         if (confirmPassword.length > 0) {
             if (newPassword === confirmPassword) {
-                confirmPasswordInput.classList.remove('error');
-                confirmPasswordInput.classList.add('success');
+                confirmPasswordInput.classList.remove("error");
+                confirmPasswordInput.classList.add("success");
             } else {
-                confirmPasswordInput.classList.add('error');
-                confirmPasswordInput.classList.remove('success');
+                confirmPasswordInput.classList.add("error");
+                confirmPasswordInput.classList.remove("success");
             }
         }
     }
@@ -3516,33 +4064,103 @@ class RedGiraffeDashboard {
         const container = document.getElementById("rewards-content");
         if (!container) return;
 
+        // Initialize expanded state if not exists
+        if (!this.expandedPurchase) {
+            this.expandedPurchase = null;
+        }
+
         let html = `
-            <div class="chart-card">
-                <div class="chart-header">
-                    <div class="chart-title">Purchase History</div>
-                </div>
-                <div style="padding: 20px;">
+            <div class="chart-card" style="overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="padding: 0;">
                     <div style="overflow-x: auto;">
-                        <table style="width: 100%; border-collapse: collapse;">
-                            <thead style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                            <thead style="background: #f9fafb; color: #374151;">
                                 <tr>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 500; color: #6b7280; font-size: 12px;">Name</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 500; color: #6b7280; font-size: 12px;">Order ID</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 500; color: #6b7280; font-size: 12px;">Amount</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 500; color: #6b7280; font-size: 12px;">Date</th>
-                                    <th style="padding: 12px 16px; text-align: left; font-weight: 500; color: #6b7280; font-size: 12px;">Status</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 500; border-bottom: 1px solid #e5e7eb;">Name</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 500; border-bottom: 1px solid #e5e7eb;">Order ID</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 500; border-bottom: 1px solid #e5e7eb;">Total Amount</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 500; border-bottom: 1px solid #e5e7eb;">Placed On</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 500; border-bottom: 1px solid #e5e7eb;">Quantity</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 500; border-bottom: 1px solid #e5e7eb;">Status</th>
+                                    <th style="padding: 16px; text-align: left; font-weight: 500; border-bottom: 1px solid #e5e7eb;">View Details</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr style="border-bottom: 1px solid #f3f4f6;">
-                                    <td style="padding: 16px; font-weight: 500; color: #111827;">Amazon Gift Card</td>
-                                    <td style="padding: 16px; color: #6b7280;">ORD-001</td>
-                                    <td style="padding: 16px; font-weight: 600; color: #111827;">₹500</td>
-                                    <td style="padding: 16px; color: #6b7280;">Nov 10, 2024</td>
-                                    <td style="padding: 16px;">
-                                        <span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">Active</span>
-                                    </td>
-                                </tr>
+                            <tbody style="background: white;">
+                                ${this.mockPurchases
+                .map(
+                    (purchase) => `
+                                    <tr style="transition: background-color 0.15s ease; ${this.expandedPurchase === purchase.id
+                            ? "background: #f9fafb;"
+                            : ""
+                        }"
+                                        onmouseover="this.style.background='#f9fafb'"
+                                        onmouseout="this.style.background='${this.expandedPurchase === purchase.id
+                            ? "#f9fafb"
+                            : "white"
+                        }'">
+                                        <td style="padding: 16px; border-bottom: 1px solid #f3f4f6; color: #111827;">${purchase.name
+                        }</td>
+                                        <td style="padding: 16px; border-bottom: 1px solid #f3f4f6; color: #111827;">${purchase.orderId
+                        }</td>
+                                        <td style="padding: 16px; border-bottom: 1px solid #f3f4f6; color: #111827;">₹ ${purchase.amount
+                        }</td>
+                                        <td style="padding: 16px; border-bottom: 1px solid #f3f4f6; color: #111827;">${purchase.placedOn
+                        }</td>
+                                        <td style="padding: 16px; border-bottom: 1px solid #f3f4f6; color: #111827;">${purchase.quantity
+                        }</td>
+                                        <td style="padding: 16px; border-bottom: 1px solid #f3f4f6;">
+                                            <span style="padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: uppercase; ${this.getStatusStyles(
+                            purchase.status
+                        )}">
+                                                ${purchase.status}
+                                            </span>
+                                        </td>
+                                        <td style="padding: 16px; border-bottom: 1px solid #f3f4f6;">
+                                            <button
+                                                onclick="dashboard.togglePurchaseDetails('${purchase.id
+                        }')"
+                                                style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; border-radius: 4px; transition: background 0.15s ease;"
+                                                onmouseover="this.style.background='#fef2f2'"
+                                                onmouseout="this.style.background='none'"
+                                            >
+                                                <i class="fas fa-chevron-${this.expandedPurchase ===
+                            purchase.id
+                            ? "up"
+                            : "down"
+                        }" style="font-size: 16px;"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    ${this.expandedPurchase === purchase.id &&
+                            purchase.paymentDetails
+                            ? `
+                                        <tr style="background: #f9fafb;">
+                                            <td colspan="7" style="padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                                                <div style="border-top: 1px solid #e5e7eb; padding-top: 16px;">
+                                                    <h4 style="font-weight: 600; color: #111827; margin: 0 0 12px 0; font-size: 16px;">Payment Details</h4>
+                                                    <div style="background: white; border-radius: 8px; padding: 16px; border: 1px solid #e5e7eb;">
+                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                            <span style="color: #6b7280; font-size: 14px;">Total value of CHECKOUT e-Gift Card being purchased:</span>
+                                                            <span style="font-weight: 500; color: #111827;">₹ ${purchase.paymentDetails.totalValue}</span>
+                                                        </div>
+                                                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                                            <span style="color: #6b7280; font-size: 14px;">Your SAVINGS by redeeming RedGirraffe Cash Points:</span>
+                                                            <span style="font-weight: 500; color: #16a34a;">[-] ₹ ${purchase.paymentDetails.savings}</span>
+                                                        </div>
+                                                        <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid #f3f4f6;">
+                                                            <span style="font-weight: 600; color: #111827;">Net Amount Payable to RedGirraffe:</span>
+                                                            <span style="font-weight: 600; color: #111827;">₹ ${purchase.paymentDetails.netAmount}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `
+                            : ""
+                        }
+                                `
+                )
+                .join("")}
                             </tbody>
                         </table>
                     </div>
@@ -3552,66 +4170,2170 @@ class RedGiraffeDashboard {
         container.innerHTML = html;
     }
 
+    getStatusStyles(status) {
+        switch (status.toLowerCase()) {
+            case "expired":
+                return "background: #f3f4f6; color: #6b7280;";
+            case "cancelled":
+                return "background: #fee2e2; color: #dc2626;";
+            case "active":
+                return "background: #dcfce7; color: #16a34a;";
+            default:
+                return "background: #f3f4f6; color: #6b7280;";
+        }
+    }
+
+    togglePurchaseDetails(purchaseId) {
+        if (this.expandedPurchase === purchaseId) {
+            this.expandedPurchase = null;
+        } else {
+            this.expandedPurchase = purchaseId;
+        }
+        this.renderRewardsPurchaseHistory();
+    }
+
+    renderPurchaseGuideModal() {
+        return `
+            <div style="max-width: 500px; width: 90vw; background: white; border-radius: 12px; padding: 32px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 20px; font-weight: 700; color: #111827; margin: 0;">Steps to Purchase Gift Card</h2>
+                    <button onclick="dashboard.closeModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
+                </div>
+
+                <div style="space-y: 20px;">
+                    <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 20px;">
+                        <div style="background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">1</div>
+                        <div>
+                            <h3 style="font-weight: 600; color: #111827; margin: 0 0 4px 0; font-size: 16px;">Browse Gift Cards</h3>
+                            <p style="color: #6b7280; margin: 0; font-size: 14px; line-height: 1.5;">Explore our wide selection of gift cards from popular brands. Use filters to find cards by category or search for specific brands.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 20px;">
+                        <div style="background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">2</div>
+                        <div>
+                            <h3 style="font-weight: 600; color: #111827; margin: 0 0 4px 0; font-size: 16px;">Select & Configure</h3>
+                            <p style="color: #6b7280; margin: 0; font-size: 14px; line-height: 1.5;">Choose your desired gift card, set the denomination (₹2000-₹100000), quantity (1-10), and delivery options. Add GST details if required.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 20px;">
+                        <div style="background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">3</div>
+                        <div>
+                            <h3 style="font-weight: 600; color: #111827; margin: 0 0 4px 0; font-size: 16px;">Review & Pay</h3>
+                            <p style="color: #6b7280; margin: 0; font-size: 14px; line-height: 1.5;">Review your order summary, see your savings with RedGirraffe Cash Points, and complete payment through our secure gateway.</p>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; align-items: start; gap: 16px; margin-bottom: 24px;">
+                        <div style="background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; flex-shrink: 0;">4</div>
+                        <div>
+                            <h3 style="font-weight: 600; color: #111827; margin: 0 0 4px 0; font-size: 16px;">Receive Gift Card</h3>
+                            <p style="color: #6b7280; margin: 0; font-size: 14px; line-height: 1.5;">Your e-Gift Card will be sent to your registered email within minutes. Check your purchase history for order details.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin-top: 24px;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                        <i class="fas fa-info-circle" style="color: #ef4444; font-size: 16px;"></i>
+                        <h4 style="font-weight: 600; color: #111827; margin: 0; font-size: 14px;">Important Notes</h4>
+                    </div>
+                    <ul style="color: #6b7280; font-size: 13px; margin: 0; padding-left: 16px; line-height: 1.5;">
+                        <li>Gift cards are delivered via email only</li>
+                        <li>Ensure your email address is correct and active</li>
+                        <li>For orders above 4 quantity, processing may take 1+ minutes</li>
+                        <li>All purchases are final and non-refundable</li>
+                    </ul>
+                </div>
+
+                <button
+                    onclick="dashboard.closeModal()"
+                    style="width: 100%; background: #ef4444; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 16px; margin-top: 24px;"
+                >
+                    Got it!
+                </button>
+            </div>
+        `;
+    }
+
     renderGiftCards() {
         const container = document.getElementById("rewards-content");
         if (!container) return;
 
+        // Initialize gift cards state if not exists
+        if (!this.giftCardsState) {
+            this.giftCardsState = {
+                currentPage: 1,
+                cardsPerPage: 9,
+                selectedCategory: "All Products",
+                searchTerm: "",
+                sortBy: "default",
+                filteredCards: this.getFilteredGiftCards(),
+            };
+        }
+
+        const {
+            currentPage,
+            cardsPerPage,
+            selectedCategory,
+            searchTerm,
+            sortBy,
+            filteredCards,
+        } = this.giftCardsState;
+        const totalPages = Math.ceil(filteredCards.length / cardsPerPage);
+        const startIndex = (currentPage - 1) * cardsPerPage;
+        const endIndex = startIndex + cardsPerPage;
+        const currentCards = filteredCards.slice(startIndex, endIndex);
+
         let html = `
-            <div style="margin-bottom: 20px;">
-                <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 20px;">
-                    <input type="text" placeholder="Search gift cards..." style="flex: 1; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
-                    <select style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
-                        <option>All Categories</option>
-                        <option>Shopping</option>
-                        <option>Food & Dining</option>
-                        <option>Entertainment</option>
-                    </select>
-                    <select style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px;">
-                        <option>Sort by Discount</option>
-                        <option>High to Low</option>
-                        <option>Low to High</option>
-                        <option>Popularity</option>
-                    </select>
+            <div class="gift-cards-container">
+                <!-- Header Section -->
+                <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 16px;">
+                        <div>
+                            <h3 style="font-size: 20px; font-weight: 700; color: #ef4444; margin: 0 0 4px 0;">Shop Gift Cards</h3>
+                            <p style="color: #6b7280; font-size: 14px; margin: 0;">Browse from over ${this.mockGiftCards.length
+            } brands with exclusive RedGirraffe discounts</p>
+                        </div>
+                        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                            <div style="position: relative;">
+                                <input
+                                    type="search"
+                                    placeholder="Search gift cards..."
+                                    value="${searchTerm}"
+                                    onchange="dashboard.updateGiftCardSearch(this.value)"
+                                    style="padding: 8px 12px 8px 36px; border: 1px solid #d1d5db; border-radius: 6px; width: 250px; font-size: 14px;"
+                                />
+                                <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #9ca3af; font-size: 14px;"></i>
+                            </div>
+                            <select onchange="dashboard.updateGiftCardSort(this.value)" style="padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; min-width: 180px;">
+                                <option value="default" ${sortBy === "default" ? "selected" : ""
+            }>Default</option>
+                                <option value="discount-high" ${sortBy === "discount-high" ? "selected" : ""
+            }>Discount: High to Low</option>
+                                <option value="discount-low" ${sortBy === "discount-low" ? "selected" : ""
+            }>Discount: Low to High</option>
+                                <option value="popularity" ${sortBy === "popularity" ? "selected" : ""
+            }>Most Popular</option>
+                                <option value="recent" ${sortBy === "recent" ? "selected" : ""
+            }>Recently Added</option>
+                            </select>
+                            <button onclick="dashboard.showPurchaseGuide()" style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: 500; cursor: pointer; font-size: 14px;">
+                                Purchase Guide
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div style="display: grid; grid-template-columns: 250px 1fr; gap: 24px;">
+                    <!-- Categories Sidebar -->
+                    <div class="chart-card" style="height: fit-content;">
+                        <div style="padding: 20px;">
+                            <h4 style="font-weight: 600; color: #ef4444; margin: 0 0 16px 0; font-size: 16px;">Categories</h4>
+                            <div style="space-y: 4px;">
+                                ${this.categories
+                .map((category) => {
+                    const count =
+                        this.getCategoryCount(category);
+                    return `
+                                        <button
+                                            onclick="dashboard.updateGiftCardCategory('${category}')"
+                                            style="width: 100%; text-align: left; padding: 10px 12px; border: none; background: ${selectedCategory === category
+                            ? "#fef2f2"
+                            : "transparent"
+                        }; color: ${selectedCategory === category
+                            ? "#ef4444"
+                            : "#374151"
+                        }; border-radius: 6px; cursor: pointer; font-size: 14px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s;"
+                                            onmouseover="if('${selectedCategory}' !== '${category}') { this.style.background='#f9fafb'; }"
+                                            onmouseout="if('${selectedCategory}' !== '${category}') { this.style.background='transparent'; }"
+                                        >
+                                            <span>${category}</span>
+                                            <span style="background: #f3f4f6; color: #6b7280; padding: 2px 8px; border-radius: 12px; font-size: 12px;">${count}</span>
+                                        </button>
+                                    `;
+                })
+                .join("")}
+                            </div>
+
+                            <!-- Cash Points Balance -->
+                            <div style="margin-top: 24px; padding: 16px; background: #fef2f2; border-radius: 8px; border: 1px solid #fecaca;">
+                                <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px 0;">Your available cash points:</p>
+                                <div style="background: white; border-radius: 6px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span style="color: #6b7280; font-size: 14px;">Balance</span>
+                                        <span style="font-weight: 700; font-size: 18px; color: #111827;">5,000</span>
+                                    </div>
+                                    <div style="margin-top: 4px; font-size: 12px; color: #6b7280;">
+                                        Equal to ₹5,000 in redemption value
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gift Cards Grid -->
+                    <div>
+                        ${filteredCards.length === 0
+                ? `
+                            <div class="chart-card" style="padding: 48px; text-align: center;">
+                                <div style="width: 64px; height: 64px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                                    <i class="fas fa-search" style="color: #9ca3af; font-size: 24px;"></i>
+                                </div>
+                                <h3 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0 0 8px 0;">No gift cards found</h3>
+                                <p style="color: #6b7280; margin: 0 0 24px 0;">We couldn't find any gift cards matching your search criteria. Try adjusting your filters or search term.</p>
+                                <button onclick="dashboard.clearGiftCardFilters()" style="background: white; border: 1px solid #d1d5db; color: #374151; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px;">
+                                    Clear Filters
+                                </button>
+                            </div>
+                        `
+                : `
+                            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                                ${currentCards
+                    .map((card) => this.renderGiftCardItem(card))
+                    .join("")}
+                            </div>
+
+                            <!-- Pagination -->
+                            ${totalPages > 1
+                    ? `
+                                <div style="display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 32px;">
+                                    <button
+                                        onclick="dashboard.changeGiftCardPage(${currentPage - 1
+                    })"
+                                        ${currentPage === 1 ? "disabled" : ""}
+                                        style="padding: 8px 16px; border: 1px solid #d1d5db; background: white; color: #374151; border-radius: 6px; cursor: ${currentPage === 1
+                        ? "not-allowed"
+                        : "pointer"
+                    }; font-size: 14px; opacity: ${currentPage === 1 ? "0.5" : "1"
+                    };"
+                                    >
+                                        Previous
+                                    </button>
+
+                                    ${Array.from(
+                        { length: totalPages },
+                        (_, i) => i + 1
+                    )
+                        .map(
+                            (page) => `
+                                        <button
+                                            onclick="dashboard.changeGiftCardPage(${page})"
+                                            style="padding: 8px 12px; border: 1px solid ${currentPage === page
+                                    ? "#ef4444"
+                                    : "#d1d5db"
+                                }; background: ${currentPage === page
+                                    ? "#ef4444"
+                                    : "white"
+                                }; color: ${currentPage === page
+                                    ? "white"
+                                    : "#374151"
+                                }; border-radius: 6px; cursor: pointer; font-size: 14px; min-width: 40px;"
+                                        >
+                                            ${page}
+                                        </button>
+                                    `
+                        )
+                        .join("")}
+
+                                    <button
+                                        onclick="dashboard.changeGiftCardPage(${currentPage + 1
+                    })"
+                                        ${currentPage === totalPages
+                        ? "disabled"
+                        : ""
+                    }
+                                        style="padding: 8px 16px; border: 1px solid #d1d5db; background: white; color: #374151; border-radius: 6px; cursor: ${currentPage === totalPages
+                        ? "not-allowed"
+                        : "pointer"
+                    }; font-size: 14px; opacity: ${currentPage === totalPages ? "0.5" : "1"
+                    };"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
+
+                                <div style="text-align: center; margin-top: 16px; color: #6b7280; font-size: 14px;">
+                                    Showing ${startIndex + 1}-${Math.min(
+                        endIndex,
+                        filteredCards.length
+                    )} of ${filteredCards.length} gift cards
+                                </div>
+                            `
+                    : ""
+                }
+                        `
+            }
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+    }
+
+    renderMyWallet() {
+        const container = document.getElementById("rewards-content");
+        if (!container) return;
+
+        // Initialize expanded transactions state
+        if (!this.expandedTransactions) {
+            this.expandedTransactions = false;
+        }
+
+        const currentBalance = 5000;
+        const earnedThisMonth = 175;
+        const redeemedThisMonth = 250;
+        const lifetimeEarned = 7500;
+
+        // Show only first 5 transactions initially
+        const visibleTransactions = this.expandedTransactions
+            ? this.mockCashPointsTransactions
+            : this.mockCashPointsTransactions.slice(0, 5);
+
+        let html = `
+            <!-- Points Expiration Notice -->
+            <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin-bottom: 24px; display: flex; align-items: start; gap: 12px;">
+                <div style="background: #f59e0b; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 12px;"></i>
+                </div>
+                <div style="flex: 1;">
+                    <h4 style="font-weight: 600; color: #92400e; margin: 0 0 8px 0; font-size: 14px;">Points Expiration Notice</h4>
+                    <p style="color: #92400e; margin: 0 0 8px 0; font-size: 13px; line-height: 1.4;">
+                        You have <strong>1 month without transaction</strong> for each inactive month <strong>₹ 100 points</strong> are deducted as penalty.
+                    </p>
+                    <p style="color: #92400e; margin: 0 0 8px 0; font-size: 13px; line-height: 1.4;">
+                        <strong>Monthly inactive fee: ₹ 100</strong>
+                    </p>
+                    <p style="color: #92400e; margin: 0 0 8px 0; font-size: 13px; line-height: 1.4;">
+                        <strong>Your points due: ₹ 0.00</strong>
+                    </p>
+                    <p style="color: #92400e; margin: 0; font-size: 13px; line-height: 1.4;">
+                        To prevent points deduction, generate at least one transaction monthly. Keep your RedGirraffe wallet active!
+                    </p>
+                </div>
+                <button
+                    onclick="dashboard.closeNotice(this)"
+                    style="background: none; border: none; color: #92400e; cursor: pointer; padding: 4px; font-size: 16px; line-height: 1;"
+                >×</button>
+            </div>
+
+            <!-- My RedGirraffe Wallet Card -->
+            <div style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border-radius: 12px; padding: 24px; margin-bottom: 24px; color: white; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+                <div style="position: absolute; bottom: -30px; left: -30px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
+
+                <div style="position: relative; z-index: 2;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-wallet" style="font-size: 18px;"></i>
+                            </div>
+                            <h2 style="font-size: 20px; font-weight: 700; margin: 0;">My RedGirraffe Wallet</h2>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button
+                                onclick="dashboard.showTransferPoints()"
+                                style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                                onmouseout="this.style.background='rgba(255,255,255,0.2)'"
+                            >
+                                Transfer Points
+                            </button>
+                            <button
+                                onclick="dashboard.showPointsHistory()"
+                                style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s;"
+                                onmouseover="this.style.background='rgba(255,255,255,0.3)'"
+                                onmouseout="this.style.background='rgba(255,255,255,0.2)'"
+                            >
+                                View Points History
+                            </button>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 20px;">
+                        <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 0 0 8px 0;">Available Balance</p>
+                        <div style="font-size: 36px; font-weight: 700; margin: 0;">
+                            ${currentBalance.toLocaleString()} <span style="font-size: 16px; font-weight: 500; color: rgba(255,255,255,0.8);">Cash Points</span>
+                        </div>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 14px; margin: 8px 0 0 0;">Equivalent to ₹ ${currentBalance.toLocaleString()}</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                        <div style="text-align: center;">
+                            <div style="color: rgba(255,255,255,0.8); font-size: 12px; margin-bottom: 4px;">Earned this Month</div>
+                            <div style="font-size: 18px; font-weight: 600;">${earnedThisMonth} pts</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: rgba(255,255,255,0.8); font-size: 12px; margin-bottom: 4px;">Redeemed</div>
+                            <div style="font-size: 18px; font-weight: 600;">${redeemedThisMonth} pts</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: rgba(255,255,255,0.8); font-size: 12px; margin-bottom: 4px;">Lifetime Earned</div>
+                            <div style="font-size: 18px; font-weight: 600;">${lifetimeEarned} pts</div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-                <div class="chart-card">
-                    <div style="padding: 20px;">
-                        <div style="text-align: center; margin-bottom: 16px;">
-                            <div style="width: 60px; height: 60px; background: #ff9500; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-                                <i class="fab fa-amazon" style="color: white; font-size: 24px;"></i>
-                            </div>
-                            <h3 style="font-weight: 600; margin-bottom: 4px;">Amazon Gift Card</h3>
-                            <p style="color: #6b7280; font-size: 14px;">Shopping</p>
-                        </div>
-                        <div style="text-align: center; margin-bottom: 16px;">
-                            <div style="font-size: 24px; font-weight: 700; color: #111827;">₹500</div>
-                            <div style="color: #10b981; font-size: 14px;">10% off</div>
-                        </div>
-                        <button style="width: 100%; background: #ef4444; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Redeem Now</button>
+            <!-- Cash Points Transaction History -->
+            <div class="chart-card" style="overflow: hidden;">
+                <div style="padding: 20px 24px; border-bottom: 1px solid #e5e7eb; display: flex; align-items: center; gap: 12px;">
+                    <div style="background: #fef2f2; color: #ef4444; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-history" style="font-size: 14px;"></i>
                     </div>
+                    <h3 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0;">Cash Points Transaction History</h3>
                 </div>
 
-                <div class="chart-card">
-                    <div style="padding: 20px;">
-                        <div style="text-align: center; margin-bottom: 16px;">
-                            <div style="width: 60px; height: 60px; background: #047bd6; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
-                                <i class="fas fa-shopping-cart" style="color: white; font-size: 24px;"></i>
+                <div style="padding: 0;">
+                    ${visibleTransactions
+                .map(
+                    (transaction) => `
+                        <div style="padding: 16px 24px; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: 16px; transition: background-color 0.15s ease;"
+                             onmouseover="this.style.background='#f9fafb'"
+                             onmouseout="this.style.background='white'">
+                            <div style="background: ${this.getTransactionIconBg(
+                        transaction.type
+                    )}; color: ${this.getTransactionIconColor(
+                        transaction.type
+                    )}; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                <i class="fas fa-${this.getTransactionIcon(
+                        transaction.type
+                    )}" style="font-size: 16px;"></i>
                             </div>
-                            <h3 style="font-weight: 600; margin-bottom: 4px;">Flipkart Gift Card</h3>
-                            <p style="color: #6b7280; font-size: 14px;">Shopping</p>
+
+                            <div style="flex: 1; min-width: 0;">
+                                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 4px;">
+                                    <h4 style="font-weight: 600; color: #111827; margin: 0; font-size: 16px;">${transaction.type
+                        }</h4>
+                                    <div style="text-align: right;">
+                                        <div style="font-weight: 600; color: ${transaction.amount > 0
+                            ? "#16a34a"
+                            : "#ef4444"
+                        }; font-size: 16px;">
+                                            ${transaction.amount > 0 ? "+" : ""
+                        }${transaction.amount} pts
+                                        </div>
+                                        <div style="color: #6b7280; font-size: 12px; margin-top: 2px;">
+                                            ${transaction.date}
+                                        </div>
+                                    </div>
+                                </div>
+                                <p style="color: #6b7280; margin: 0; font-size: 14px; line-height: 1.4;">${transaction.description
+                        }</p>
+                            </div>
                         </div>
-                        <div style="text-align: center; margin-bottom: 16px;">
-                            <div style="font-size: 24px; font-weight: 700; color: #111827;">₹1000</div>
-                            <div style="color: #10b981; font-size: 14px;">15% off</div>
+                    `
+                )
+                .join("")}
+
+                    ${this.mockCashPointsTransactions.length > 5
+                ? `
+                        <div style="padding: 16px 24px; text-align: center; border-top: 1px solid #e5e7eb; background: #f9fafb;">
+                            <button
+                                onclick="dashboard.toggleTransactionHistory()"
+                                style="background: none; border: 1px solid #d1d5db; color: #374151; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s;"
+                                onmouseover="this.style.background='#f3f4f6'; this.style.borderColor='#9ca3af'"
+                                onmouseout="this.style.background='none'; this.style.borderColor='#d1d5db'"
+                            >
+                                ${this.expandedTransactions
+                    ? "View Less"
+                    : "View All Transactions"
+                }
+                            </button>
                         </div>
-                        <button style="width: 100%; background: #ef4444; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;">Redeem Now</button>
-                    </div>
+                    `
+                : ""
+            }
                 </div>
-            </div>`;
+            </div>
+        `;
 
         container.innerHTML = html;
+    }
+
+    // Helper methods for My Wallet
+    getTransactionIconBg(type) {
+        switch (type.toLowerCase()) {
+            case "earned":
+                return "#dcfce7";
+            case "redeemed":
+                return "#fee2e2";
+            case "transferred":
+                return "#dbeafe";
+            case "received":
+                return "#f3e8ff";
+            default:
+                return "#f3f4f6";
+        }
+    }
+
+    getTransactionIconColor(type) {
+        switch (type.toLowerCase()) {
+            case "earned":
+                return "#16a34a";
+            case "redeemed":
+                return "#dc2626";
+            case "transferred":
+                return "#2563eb";
+            case "received":
+                return "#7c3aed";
+            default:
+                return "#6b7280";
+        }
+    }
+
+    getTransactionIcon(type) {
+        switch (type.toLowerCase()) {
+            case "earned":
+                return "plus";
+            case "redeemed":
+                return "minus";
+            case "transferred":
+                return "arrow-right";
+            case "received":
+                return "gift";
+            default:
+                return "circle";
+        }
+    }
+
+    toggleTransactionHistory() {
+        this.expandedTransactions = !this.expandedTransactions;
+        this.renderMyWallet();
+    }
+
+    showTransferPoints() {
+        // Reset transfer state
+        this.transferPointsState = {
+            step: "form",
+            recipientType: "email",
+            recipientValue: "",
+            amount: "",
+            message: "",
+            transferFee: 0,
+            isLoading: false,
+        };
+
+        const modalContent = this.renderTransferPointsModal();
+        this.showModal("transfer-points-modal", modalContent);
+    }
+
+    renderTransferPointsModal() {
+        const {
+            step,
+            recipientType,
+            recipientValue,
+            amount,
+            message,
+            transferFee,
+            isLoading,
+        } = this.transferPointsState;
+        const currentBalance = 5000;
+        const minTransfer = 100;
+        const maxTransfer = 2000;
+
+        if (step === "success") {
+            return `
+                <div style="background: white; border-radius: 12px; max-width: 500px; width: 90vw; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+                    <div style="text-align: center; padding: 40px 20px; background: white; border-radius: 12px;">
+                        <div style="background: #dcfce7; color: #16a34a; width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                            <i class="fas fa-check" style="font-size: 32px;"></i>
+                        </div>
+                    <h2 style="font-size: 24px; font-weight: 700; color: #111827; margin: 0 0 12px 0;">Transfer Successful!</h2>
+                    <p style="color: #6b7280; font-size: 16px; margin: 0 0 24px 0;">
+                        ${amount} points have been successfully transferred to ${recipientValue}
+                    </p>
+                    <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 24px; text-align: left;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #6b7280;">Transfer Amount:</span>
+                            <span style="font-weight: 600; color: #111827;">${amount} points</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #6b7280;">Transfer Fee:</span>
+                            <span style="font-weight: 600; color: #111827;">${transferFee} points</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+                            <span style="color: #111827; font-weight: 600;">Total Deducted:</span>
+                            <span style="font-weight: 700; color: #ef4444;">${parseInt(amount) + transferFee
+                } points</span>
+                        </div>
+                    </div>
+                    <button
+                        onclick="dashboard.closeModal()"
+                        style="background: #ef4444; color: white; border: none; padding: 12px 32px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 16px;"
+                    >
+                        Done
+                    </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        if (step === "confirmation") {
+            const totalDeduction = parseInt(amount) + transferFee;
+            return `
+                <div style="background: white; border-radius: 12px; max-width: 600px; width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+                    <div style="padding: 24px; background: white; border-radius: 12px;">
+                        <h2 style="font-size: 20px; font-weight: 700; color: #111827; margin: 0 0 24px 0;">Confirm Transfer</h2>
+
+                    <div style="background: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
+                        <h3 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0 0 16px 0;">Transfer Details</h3>
+
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span style="color: #6b7280;">Recipient:</span>
+                            <span style="font-weight: 600; color: #111827;">${recipientValue}</span>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span style="color: #6b7280;">Transfer Amount:</span>
+                            <span style="font-weight: 600; color: #111827;">${amount} points</span>
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <span style="color: #6b7280;">Transfer Fee:</span>
+                            <span style="font-weight: 600; color: #111827;">${transferFee} points</span>
+                        </div>
+
+                        ${message
+                    ? `
+                            <div style="margin-bottom: 12px;">
+                                <span style="color: #6b7280; display: block; margin-bottom: 4px;">Message:</span>
+                                <span style="font-weight: 500; color: #111827; font-style: italic;">"${message}"</span>
+                            </div>
+                        `
+                    : ""
+                }
+
+                        <div style="border-top: 1px solid #e5e7eb; padding-top: 12px; margin-top: 16px;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: #111827; font-weight: 600;">Total Deducted:</span>
+                                <span style="font-weight: 700; color: #ef4444; font-size: 18px;">${totalDeduction} points</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 12px; margin-bottom: 24px;">
+                        <p style="color: #92400e; margin: 0; font-size: 14px;">
+                            <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                            The recipient will receive an email and SMS notification about this transfer.
+                        </p>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button
+                            onclick="dashboard.updateTransferPointsState({step: 'form'})"
+                            style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500;"
+                        >
+                            Back
+                        </button>
+                        <button
+                            onclick="dashboard.processTransfer()"
+                            style="background: #ef4444; color: white; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;"
+                            ${isLoading ? "disabled" : ""}
+                        >
+                            ${isLoading ? "Processing..." : "Confirm Transfer"}
+                        </button>
+                    </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Form step
+        return `
+            <div style="background: white; border-radius: 12px; max-width: 600px; width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+                <div style="padding: 24px; background: white; border-radius: 12px;">
+                    <h2 style="font-size: 20px; font-weight: 700; color: #111827; margin: 0 0 24px 0;">Transfer Cash Points</h2>
+
+                <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 12px; margin-bottom: 24px;">
+                    <p style="color: #92400e; margin: 0; font-size: 14px;">
+                        <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                        The recipient will receive an email and SMS notification about this transfer.
+                    </p>
+                </div>
+
+                <form onsubmit="dashboard.handleTransferForm(event)">
+                    <!-- Recipient Type -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px;">Recipient Type</label>
+                        <div style="display: flex; gap: 12px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input
+                                    type="radio"
+                                    name="recipientType"
+                                    value="email"
+                                    ${recipientType === "email" ? "checked" : ""
+            }
+                                    onchange="dashboard.updateTransferPointsState({recipientType: this.value})"
+                                    style="margin: 0;"
+                                >
+                                <span style="color: #374151;">Email</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input
+                                    type="radio"
+                                    name="recipientType"
+                                    value="phone"
+                                    ${recipientType === "phone" ? "checked" : ""
+            }
+                                    onchange="dashboard.updateTransferPointsState({recipientType: this.value})"
+                                    style="margin: 0;"
+                                >
+                                <span style="color: #374151;">Phone</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input
+                                    type="radio"
+                                    name="recipientType"
+                                    value="redgirraffe_id"
+                                    ${recipientType === "redgirraffe_id"
+                ? "checked"
+                : ""
+            }
+                                    onchange="dashboard.updateTransferPointsState({recipientType: this.value})"
+                                    style="margin: 0;"
+                                >
+                                <span style="color: #374151;">RedGirraffe ID</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Recipient Value -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px;">
+                            ${recipientType === "email"
+                ? "Email Address"
+                : recipientType === "phone"
+                    ? "Phone Number"
+                    : "RedGirraffe ID"
+            }
+                        </label>
+                        <input
+                            type="${recipientType === "email"
+                ? "email"
+                : recipientType === "phone"
+                    ? "tel"
+                    : "text"
+            }"
+                            value="${recipientValue}"
+                            onchange="dashboard.updateTransferPointsState({recipientValue: this.value})"
+                            placeholder="${recipientType === "email"
+                ? "Enter email address"
+                : recipientType === "phone"
+                    ? "Enter phone number"
+                    : "Enter RedGirraffe ID"
+            }"
+                            style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                            required
+                        >
+                    </div>
+
+                    <!-- Transfer Amount -->
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px;">Transfer Amount</label>
+                        <input
+                            type="number"
+                            value="${amount}"
+                            onchange="dashboard.updateTransferPointsState({amount: this.value})"
+                            placeholder="Enter number of points to transfer"
+                            min="${minTransfer}"
+                            max="${maxTransfer}"
+                            style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                            required
+                        >
+                        <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: #6b7280;">
+                            <span>Available balance: ${currentBalance.toLocaleString()} Points</span>
+                            <span>Minimum transfer: ${minTransfer} Points</span>
+                        </div>
+                        <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">
+                            Maximum transfer: ${maxTransfer.toLocaleString()} Points
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <div style="margin-bottom: 24px;">
+                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px;">Message (Optional)</label>
+                        <textarea
+                            value="${message}"
+                            onchange="dashboard.updateTransferPointsState({message: this.value})"
+                            placeholder="Add a personal message to the recipient"
+                            rows="3"
+                            style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: vertical;"
+                        ></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button
+                            type="button"
+                            onclick="dashboard.closeModal()"
+                            style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500;"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            style="background: #ef4444; color: white; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;"
+                        >
+                            Continue
+                        </button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        `;
+    }
+
+    updateTransferPointsState(updates) {
+        this.transferPointsState = { ...this.transferPointsState, ...updates };
+
+        // Calculate transfer fee based on amount
+        if (updates.amount) {
+            const amount = parseInt(updates.amount);
+            const transferFee = amount > 500 ? 10 : 5; // Higher fee for larger transfers
+            this.transferPointsState.transferFee = transferFee;
+        }
+
+        // Re-render modal with updated state
+        const modalContent = this.renderTransferPointsModal();
+        const modalBody = document.querySelector("#dynamic-modal .modal-body");
+        if (modalBody) {
+            modalBody.innerHTML = modalContent;
+        }
+    }
+
+    handleTransferForm(event) {
+        event.preventDefault();
+
+        const { recipientValue, amount } = this.transferPointsState;
+        const currentBalance = 5000;
+        const minTransfer = 100;
+        const maxTransfer = 2000;
+
+        // Validation
+        if (!recipientValue.trim()) {
+            this.showNotification("Please enter recipient details", "error");
+            return;
+        }
+
+        if (!amount || parseInt(amount) < minTransfer) {
+            this.showNotification(
+                `Minimum transfer amount is ${minTransfer} points`,
+                "error"
+            );
+            return;
+        }
+
+        if (parseInt(amount) > maxTransfer) {
+            this.showNotification(
+                `Maximum transfer amount is ${maxTransfer} points`,
+                "error"
+            );
+            return;
+        }
+
+        if (
+            parseInt(amount) + this.transferPointsState.transferFee >
+            currentBalance
+        ) {
+            this.showNotification("Insufficient balance for this transfer", "error");
+            return;
+        }
+
+        // Move to confirmation step
+        this.updateTransferPointsState({ step: "confirmation" });
+    }
+
+    async processTransfer() {
+        this.updateTransferPointsState({ isLoading: true });
+
+        // Simulate API call
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        const { recipientValue, amount, transferFee } = this.transferPointsState;
+
+        // Add new transaction to history
+        const newTransaction = {
+            id: `TXN-${Date.now()}`,
+            type: "Transferred",
+            description: `Points transferred to ${recipientValue}`,
+            amount: -(parseInt(amount) + transferFee),
+            date: new Date().toLocaleDateString("en-GB"),
+            balance: 5000 - (parseInt(amount) + transferFee),
+            category: "Transfer",
+            transactionId: `TXN-${Date.now()}`,
+        };
+
+        this.mockCashPointsTransactions.unshift(newTransaction);
+
+        // Show success
+        this.updateTransferPointsState({
+            step: "success",
+            isLoading: false,
+        });
+
+        // Refresh wallet if currently viewing
+        setTimeout(() => {
+            this.closeModal();
+            this.renderMyWallet();
+            this.showNotification("Points transferred successfully!", "success");
+        }, 3000);
+    }
+
+    showPointsHistory() {
+        // Initialize points history state
+        if (!this.pointsHistoryState) {
+            this.pointsHistoryState = {
+                dateRange: "3months",
+                transactionType: "all",
+                searchQuery: "",
+                currentPage: 1,
+                itemsPerPage: 10,
+                customDateFrom: "",
+                customDateTo: "",
+            };
+        }
+
+        const modalContent = this.renderPointsHistoryModal();
+        this.showModal("points-history-modal", modalContent);
+    }
+
+    renderPointsHistoryModal() {
+        const {
+            dateRange,
+            transactionType,
+            searchQuery,
+            currentPage,
+            itemsPerPage,
+        } = this.pointsHistoryState;
+
+        // Filter transactions based on current filters
+        const filteredTransactions = this.getFilteredTransactions();
+        const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const paginatedTransactions = filteredTransactions.slice(
+            startIndex,
+            startIndex + itemsPerPage
+        );
+
+        return `
+            <div style="background: white; border-radius: 12px; width: 90vw; max-width: 1000px; max-height: 90vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+                <!-- Header -->
+                <div style="padding: 24px 24px 0 24px; border-bottom: 1px solid #e5e7eb; flex-shrink: 0; background: white; border-radius: 12px 12px 0 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="font-size: 24px; font-weight: 700; color: #111827; margin: 0;">Monthly Points History</h2>
+                        <button
+                            onclick="dashboard.closeModal()"
+                            style="background: none; border: none; color: #6b7280; cursor: pointer; padding: 8px; font-size: 20px; line-height: 1;"
+                        >×</button>
+                    </div>
+
+                    <!-- Filters -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 16px; margin-bottom: 20px;">
+                        <!-- Date Range Filter -->
+                        <div>
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 14px;">Date Range</label>
+                            <select
+                                onchange="dashboard.updatePointsHistoryFilter('dateRange', this.value)"
+                                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                            >
+                                <option value="30days" ${dateRange === "30days" ? "selected" : ""
+            }>Last 30 Days</option>
+                                <option value="3months" ${dateRange === "3months" ? "selected" : ""
+            }>Last 3 Months</option>
+                                <option value="6months" ${dateRange === "6months" ? "selected" : ""
+            }>Last 6 Months</option>
+                                <option value="1year" ${dateRange === "1year" ? "selected" : ""
+            }>Last 1 Year</option>
+                                <option value="custom" ${dateRange === "custom" ? "selected" : ""
+            }>Custom Range</option>
+                            </select>
+                        </div>
+
+                        <!-- Transaction Type Filter -->
+                        <div>
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 14px;">Transaction Type</label>
+                            <select
+                                onchange="dashboard.updatePointsHistoryFilter('transactionType', this.value)"
+                                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                            >
+                                <option value="all" ${transactionType === "all" ? "selected" : ""
+            }>All Types</option>
+                                <option value="earned" ${transactionType === "earned" ? "selected" : ""
+            }>Earned</option>
+                                <option value="redeemed" ${transactionType === "redeemed"
+                ? "selected"
+                : ""
+            }>Redeemed</option>
+                                <option value="transferred" ${transactionType === "transferred"
+                ? "selected"
+                : ""
+            }>Transferred</option>
+                                <option value="received" ${transactionType === "received"
+                ? "selected"
+                : ""
+            }>Received</option>
+                            </select>
+                        </div>
+
+                        <!-- Search -->
+                        <div>
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 14px;">Search</label>
+                            <input
+                                type="text"
+                                value="${searchQuery}"
+                                onchange="dashboard.updatePointsHistoryFilter('searchQuery', this.value)"
+                                placeholder="Search descriptions..."
+                                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                            >
+                        </div>
+
+                        <!-- Export Button -->
+                        <div style="display: flex; align-items: end;">
+                            <button
+                                onclick="dashboard.exportPointsHistory()"
+                                style="background: #ef4444; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px; white-space: nowrap;"
+                            >
+                                <i class="fas fa-download" style="margin-right: 6px;"></i>Export CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    ${dateRange === "custom"
+                ? `
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                            <div>
+                                <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 14px;">From Date</label>
+                                <input
+                                    type="date"
+                                    value="${this.pointsHistoryState.customDateFrom}"
+                                    onchange="dashboard.updatePointsHistoryFilter('customDateFrom', this.value)"
+                                    style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                >
+                            </div>
+                            <div>
+                                <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 14px;">To Date</label>
+                                <input
+                                    type="date"
+                                    value="${this.pointsHistoryState.customDateTo}"
+                                    onchange="dashboard.updatePointsHistoryFilter('customDateTo', this.value)"
+                                    style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                >
+                            </div>
+                        </div>
+                    `
+                : ""
+            }
+
+                    <!-- Results Summary -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0;">
+                        <span style="color: #6b7280; font-size: 14px;">
+                            Showing ${startIndex + 1}-${Math.min(
+                startIndex + itemsPerPage,
+                filteredTransactions.length
+            )} of ${filteredTransactions.length} transactions
+                        </span>
+                        <span style="color: #6b7280; font-size: 14px;">
+                            Page ${currentPage} of ${totalPages}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Transaction Table -->
+                <div style="flex: 1; overflow-y: auto; padding: 0 24px; background: white;">
+                    <table style="width: 100%; border-collapse: collapse; background: white;">
+                        <thead style="background: #f8fafc; position: sticky; top: 0; z-index: 1;">
+                            <tr>
+                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 2px solid #e5e7eb;">Date</th>
+                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 2px solid #e5e7eb;">Type</th>
+                                <th style="padding: 12px 16px; text-align: left; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 2px solid #e5e7eb;">Description</th>
+                                <th style="padding: 12px 16px; text-align: right; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 2px solid #e5e7eb;">Amount</th>
+                                <th style="padding: 12px 16px; text-align: right; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 2px solid #e5e7eb;">Balance</th>
+                                <th style="padding: 12px 16px; text-align: center; font-weight: 600; color: #374151; font-size: 14px; border-bottom: 2px solid #e5e7eb;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${paginatedTransactions
+                .map(
+                    (transaction) => `
+                                <tr style="border-bottom: 1px solid #f3f4f6;" onmouseover="this.style.background='#f9fafb'" onmouseout="this.style.background='white'">
+                                    <td style="padding: 16px; color: #6b7280; font-size: 14px;">${transaction.date
+                        }</td>
+                                    <td style="padding: 16px;">
+                                        <div style="display: flex; align-items: center; gap: 8px;">
+                                            <div style="background: ${this.getTransactionIconBg(
+                            transaction.type
+                        )}; color: ${this.getTransactionIconColor(
+                            transaction.type
+                        )}; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-${this.getTransactionIcon(
+                            transaction.type
+                        )}" style="font-size: 10px;"></i>
+                                            </div>
+                                            <span style="font-weight: 500; color: #111827; font-size: 14px;">${transaction.type
+                        }</span>
+                                        </div>
+                                    </td>
+                                    <td style="padding: 16px; color: #111827; font-size: 14px; max-width: 300px; word-wrap: break-word;">${transaction.description
+                        }</td>
+                                    <td style="padding: 16px; text-align: right; font-weight: 600; color: ${transaction.amount > 0
+                            ? "#16a34a"
+                            : "#ef4444"
+                        }; font-size: 14px;">
+                                        ${transaction.amount > 0 ? "+" : ""}${transaction.amount
+                        } pts
+                                    </td>
+                                    <td style="padding: 16px; text-align: right; font-weight: 600; color: #111827; font-size: 14px;">${transaction.balance.toLocaleString()} pts</td>
+                                    <td style="padding: 16px; text-align: center;">
+                                        <span style="background: #dcfce7; color: #16a34a; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 500;">
+                                            Active
+                                        </span>
+                                    </td>
+                                </tr>
+                            `
+                )
+                .join("")}
+                        </tbody>
+                    </table>
+
+                    ${filteredTransactions.length === 0
+                ? `
+                        <div style="text-align: center; padding: 40px 20px; color: #6b7280;">
+                            <i class="fas fa-search" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;"></i>
+                            <p style="font-size: 16px; margin: 0;">No transactions found matching your criteria</p>
+                        </div>
+                    `
+                : ""
+            }
+                </div>
+
+                <!-- Pagination -->
+                ${totalPages > 1
+                ? `
+                    <div style="padding: 20px 24px; border-top: 1px solid #e5e7eb; flex-shrink: 0; background: white; border-radius: 0 0 12px 12px;">
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                            <button
+                                onclick="dashboard.updatePointsHistoryFilter('currentPage', ${currentPage - 1
+                })"
+                                ${currentPage === 1 ? "disabled" : ""}
+                                style="background: ${currentPage === 1 ? "#f3f4f6" : "#ef4444"
+                }; color: ${currentPage === 1 ? "#9ca3af" : "white"
+                }; border: none; padding: 8px 12px; border-radius: 6px; cursor: ${currentPage === 1 ? "not-allowed" : "pointer"
+                }; font-weight: 500;"
+                            >
+                                Previous
+                            </button>
+
+                            ${Array.from(
+                    { length: Math.min(5, totalPages) },
+                    (_, i) => {
+                        const pageNum =
+                            Math.max(
+                                1,
+                                Math.min(totalPages - 4, currentPage - 2)
+                            ) + i;
+                        return `
+                                    <button
+                                        onclick="dashboard.updatePointsHistoryFilter('currentPage', ${pageNum})"
+                                        style="background: ${pageNum === currentPage
+                                ? "#ef4444"
+                                : "white"
+                            }; color: ${pageNum === currentPage ? "white" : "#374151"
+                            }; border: 1px solid ${pageNum === currentPage
+                                ? "#ef4444"
+                                : "#d1d5db"
+                            }; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-weight: 500; min-width: 40px;"
+                                    >
+                                        ${pageNum}
+                                    </button>
+                                `;
+                    }
+                ).join("")}
+
+                            <button
+                                onclick="dashboard.updatePointsHistoryFilter('currentPage', ${currentPage + 1
+                })"
+                                ${currentPage === totalPages ? "disabled" : ""}
+                                style="background: ${currentPage === totalPages
+                    ? "#f3f4f6"
+                    : "#ef4444"
+                }; color: ${currentPage === totalPages ? "#9ca3af" : "white"
+                }; border: none; padding: 8px 12px; border-radius: 6px; cursor: ${currentPage === totalPages ? "not-allowed" : "pointer"
+                }; font-weight: 500;"
+                            >
+                                Next
+                            </button>
+                        </div>
+                    </div>
+                `
+                : ""
+            }
+            </div>
+        `;
+    }
+
+    updatePointsHistoryFilter(key, value) {
+        this.pointsHistoryState[key] = value;
+
+        // Reset to first page when filters change (except when changing page)
+        if (key !== "currentPage") {
+            this.pointsHistoryState.currentPage = 1;
+        }
+
+        // Re-render modal with updated filters
+        const modalContent = this.renderPointsHistoryModal();
+        const modalBody = document.querySelector("#dynamic-modal .modal-body");
+        if (modalBody) {
+            modalBody.innerHTML = modalContent;
+        }
+    }
+
+    getFilteredTransactions() {
+        let filtered = [...this.mockCashPointsTransactions];
+        const {
+            dateRange,
+            transactionType,
+            searchQuery,
+            customDateFrom,
+            customDateTo,
+        } = this.pointsHistoryState;
+
+        // Filter by date range
+        if (dateRange !== "all") {
+            const now = new Date();
+            let cutoffDate;
+
+            switch (dateRange) {
+                case "30days":
+                    cutoffDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+                case "3months":
+                    cutoffDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+                    break;
+                case "6months":
+                    cutoffDate = new Date(now.getTime() - 180 * 24 * 60 * 60 * 1000);
+                    break;
+                case "1year":
+                    cutoffDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    break;
+                case "custom":
+                    if (customDateFrom && customDateTo) {
+                        const fromDate = new Date(customDateFrom);
+                        const toDate = new Date(customDateTo);
+                        filtered = filtered.filter((transaction) => {
+                            const transactionDate = this.parseDate(transaction.date);
+                            return transactionDate >= fromDate && transactionDate <= toDate;
+                        });
+                    }
+                    break;
+            }
+
+            if (dateRange !== "custom" && cutoffDate) {
+                filtered = filtered.filter((transaction) => {
+                    const transactionDate = this.parseDate(transaction.date);
+                    return transactionDate >= cutoffDate;
+                });
+            }
+        }
+
+        // Filter by transaction type
+        if (transactionType !== "all") {
+            filtered = filtered.filter(
+                (transaction) =>
+                    transaction.type.toLowerCase() === transactionType.toLowerCase()
+            );
+        }
+
+        // Filter by search query
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(
+                (transaction) =>
+                    transaction.description.toLowerCase().includes(query) ||
+                    transaction.type.toLowerCase().includes(query) ||
+                    transaction.transactionId.toLowerCase().includes(query)
+            );
+        }
+
+        return filtered;
+    }
+
+    parseDate(dateString) {
+        // Parse DD-MM-YYYY format
+        const [day, month, year] = dateString.split("-");
+        return new Date(year, month - 1, day);
+    }
+
+    exportPointsHistory() {
+        const filteredTransactions = this.getFilteredTransactions();
+
+        if (filteredTransactions.length === 0) {
+            this.showNotification("No transactions to export", "error");
+            return;
+        }
+
+        // Create CSV content
+        const headers = [
+            "Date",
+            "Transaction ID",
+            "Type",
+            "Description",
+            "Amount (Points)",
+            "Balance (Points)",
+            "Category",
+        ];
+        const csvContent = [
+            headers.join(","),
+            ...filteredTransactions.map((transaction) =>
+                [
+                    transaction.date,
+                    transaction.transactionId,
+                    transaction.type,
+                    `"${transaction.description}"`, // Wrap in quotes to handle commas
+                    transaction.amount,
+                    transaction.balance,
+                    transaction.category,
+                ].join(",")
+            ),
+        ].join("\n");
+
+        // Create and download file
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute(
+            "download",
+            `points-history-${new Date().toISOString().split("T")[0]}.csv`
+        );
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        this.showNotification(
+            `Exported ${filteredTransactions.length} transactions to CSV`,
+            "success"
+        );
+    }
+
+    closeNotice(button) {
+        const notice = button.closest('div[style*="background: #fef3c7"]');
+        if (notice) {
+            notice.style.display = "none";
+        }
+    }
+
+    // Gift Cards Helper Methods
+    getFilteredGiftCards() {
+        if (!this.giftCardsState) return this.mockGiftCards;
+
+        const { selectedCategory, searchTerm, sortBy } = this.giftCardsState;
+        let filtered = [...this.mockGiftCards];
+
+        // Filter by category
+        if (selectedCategory !== "All Products") {
+            filtered = filtered.filter((card) => card.category === selectedCategory);
+        }
+
+        // Filter by search term
+        if (searchTerm.trim()) {
+            const term = searchTerm.toLowerCase();
+            filtered = filtered.filter(
+                (card) =>
+                    card.name.toLowerCase().includes(term) ||
+                    card.brand.toLowerCase().includes(term) ||
+                    card.description.toLowerCase().includes(term)
+            );
+        }
+
+        // Sort cards
+        switch (sortBy) {
+            case "discount-high":
+                filtered.sort((a, b) => b.discount - a.discount);
+                break;
+            case "discount-low":
+                filtered.sort((a, b) => a.discount - b.discount);
+                break;
+            case "popularity":
+                filtered.sort((a, b) => b.popularity - a.popularity);
+                break;
+            case "recent":
+                filtered.sort((a, b) => new Date(b.addedDate) - new Date(a.addedDate));
+                break;
+            default:
+                // Default sorting by popularity
+                filtered.sort((a, b) => b.popularity - a.popularity);
+        }
+
+        return filtered;
+    }
+
+    getCategoryCount(category) {
+        if (category === "All Products") {
+            return this.mockGiftCards.length;
+        }
+        return this.mockGiftCards.filter((card) => card.category === category)
+            .length;
+    }
+
+    renderGiftCardItem(card) {
+        return `
+            <div class="chart-card gift-card-item" style="overflow: hidden; transition: all 0.3s ease; cursor: pointer;"
+                 onclick="dashboard.openGiftCardDetail('${card.id}')"
+                 onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)';"
+                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)';">
+
+                <div style="position: relative; height: 160px; overflow: hidden; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);">
+                    <div style="position: absolute; top: 8px; right: 8px; z-index: 10;">
+                        <span style="background: #ef4444; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                            ${card.discount}% OFF
+                        </span>
+                    </div>
+                    ${card.isPopular
+                ? `
+                        <div style="position: absolute; top: 8px; left: 8px; z-index: 10;">
+                            <span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                                Popular
+                            </span>
+                        </div>
+                    `
+                : ""
+            }
+                    <img
+                        src="${card.image}"
+                        alt="${card.name}"
+                        style="width: 100%; height: 100%; object-fit: contain; padding: 20px; transition: transform 0.3s ease;"
+                        onmouseover="this.style.transform='scale(1.05)'"
+                        onmouseout="this.style.transform='scale(1)'"
+                    />
+                </div>
+
+                <div style="padding: 16px;">
+                    <h3 style="font-weight: 600; color: #111827; margin: 0 0 4px 0; font-size: 16px; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        ${card.name}
+                    </h3>
+                    <p style="color: #6b7280; font-size: 13px; margin: 0 0 12px 0; line-height: 1.4; height: 32px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                        ${card.description}
+                    </p>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="background: #f3f4f6; color: #6b7280; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
+                            ${card.category}
+                        </span>
+                        <div style="text-align: right;">
+                            <div style="font-size: 14px; font-weight: 600; color: #111827;">₹${card.denomination.toLocaleString()}</div>
+                            <div style="font-size: 12px; color: #10b981;">Save ₹${(
+                card.denomination - card.finalPrice
+            ).toLocaleString()}</div>
+                        </div>
+                    </div>
+
+                    <button
+                        onclick="event.stopPropagation(); dashboard.openGiftCardDetail('${card.id
+            }')"
+                        style="width: 100%; background: #ef4444; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 14px; transition: background 0.2s ease;"
+                        onmouseover="this.style.background='#dc2626'"
+                        onmouseout="this.style.background='#ef4444'"
+                    >
+                        Purchase
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Gift Cards Event Handlers
+    updateGiftCardSearch(searchTerm) {
+        if (!this.giftCardsState) return;
+        this.giftCardsState.searchTerm = searchTerm;
+        this.giftCardsState.currentPage = 1;
+        this.giftCardsState.filteredCards = this.getFilteredGiftCards();
+        this.renderGiftCards();
+    }
+
+    updateGiftCardCategory(category) {
+        if (!this.giftCardsState) return;
+        this.giftCardsState.selectedCategory = category;
+        this.giftCardsState.currentPage = 1;
+        this.giftCardsState.filteredCards = this.getFilteredGiftCards();
+        this.renderGiftCards();
+    }
+
+    updateGiftCardSort(sortBy) {
+        if (!this.giftCardsState) return;
+        this.giftCardsState.sortBy = sortBy;
+        this.giftCardsState.currentPage = 1;
+        this.giftCardsState.filteredCards = this.getFilteredGiftCards();
+        this.renderGiftCards();
+    }
+
+    changeGiftCardPage(page) {
+        if (!this.giftCardsState) return;
+        this.giftCardsState.currentPage = page;
+        this.renderGiftCards();
+        // Scroll to top of gift cards section
+        document
+            .querySelector(".gift-cards-container")
+            ?.scrollIntoView({ behavior: "smooth" });
+    }
+
+    clearGiftCardFilters() {
+        if (!this.giftCardsState) return;
+        this.giftCardsState.selectedCategory = "All Products";
+        this.giftCardsState.searchTerm = "";
+        this.giftCardsState.sortBy = "default";
+        this.giftCardsState.currentPage = 1;
+        this.giftCardsState.filteredCards = this.getFilteredGiftCards();
+        this.renderGiftCards();
+    }
+
+    openGiftCardDetail(cardId) {
+        const card = this.mockGiftCards.find((c) => c.id === cardId);
+        if (!card) return;
+
+        this.showGiftCardDetailModal(card);
+    }
+
+    showPurchaseGuide() {
+        this.showModal("purchase-guide-modal", this.renderPurchaseGuideModal());
+    }
+
+    showGiftCardDetailModal(card) {
+        // Initialize form state
+        this.giftCardFormState = {
+            card: card,
+            denomination: "2000",
+            quantity: "1",
+            gstNumber: false,
+            gstDetails: "",
+            deliveryOption: "self",
+            receiverName: "",
+            receiverMobile: "",
+            receiverEmail: "",
+            receiverMessage: "",
+        };
+
+        this.showModal(
+            "gift-card-detail-modal",
+            this.renderGiftCardDetailModal(card)
+        );
+    }
+
+    renderGiftCardDetailModal(card) {
+        const { denomination, quantity, gstNumber, gstDetails, deliveryOption } =
+            this.giftCardFormState;
+
+        // Calculate values
+        const totalValue =
+            parseInt(denomination || "0") * parseInt(quantity || "0");
+        const redemptionPercentage = parseFloat(
+            card.redemptionValue.replace("%", "")
+        );
+        const savings = Math.round(
+            (totalValue * (100 - redemptionPercentage)) / 100
+        );
+        const netPayable = totalValue - savings;
+
+        return `
+            <div style="max-width: 900px; width: 90vw; max-height: 90vh; overflow-y: auto; background: white; border-radius: 12px;">
+                <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                    <h2 style="font-size: 20px; font-weight: 700; color: #ef4444; margin: 0;">${card.name
+            }</h2>
+                    <button onclick="dashboard.closeModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 24px;">
+                    <!-- Left Column - Card Image and Info -->
+                    <div>
+                        <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; padding: 16px;">
+                            <img src="${card.image}" alt="${card.name
+            }" style="width: 100%; height: auto; object-fit: contain;" />
+                        </div>
+
+                        <div style="background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb;">
+                            <div style="display: flex; align-items: start; gap: 12px; margin-bottom: 12px;">
+                                <div style="background: #fef2f2; color: #ef4444; padding: 8px; border-radius: 50%; flex-shrink: 0;">
+                                    <i class="fas fa-check" style="font-size: 14px;"></i>
+                                </div>
+                                <p style="margin: 0; font-size: 14px; color: #374151;">
+                                    <strong>Pay ${(100 - card.discount).toFixed(
+                1
+            )}%</strong> value of the Gift Card with your RedGirraffe Cash Points.
+                                </p>
+                            </div>
+
+                            <div style="display: flex; align-items: start; gap: 12px; margin-bottom: 12px;">
+                                <div style="background: #fef2f2; color: #ef4444; padding: 8px; border-radius: 50%; flex-shrink: 0;">
+                                    <i class="fas fa-check" style="font-size: 14px;"></i>
+                                </div>
+                                <p style="margin: 0; font-size: 14px; color: #374151;">
+                                    <strong>Delivery Mode:</strong> Email Only
+                                </p>
+                            </div>
+
+                            <div style="display: flex; align-items: start; gap: 12px; margin-bottom: 12px;">
+                                <div style="background: #fef2f2; color: #ef4444; padding: 8px; border-radius: 50%; flex-shrink: 0;">
+                                    <i class="fas fa-check" style="font-size: 14px;"></i>
+                                </div>
+                                <p style="margin: 0; font-size: 14px; color: #374151;">
+                                    <strong>Validity:</strong> ${card.terms}
+                                </p>
+                            </div>
+
+                            <div style="display: flex; align-items: start; gap: 12px; margin-bottom: 12px;">
+                                <div style="background: #fef2f2; color: #ef4444; padding: 8px; border-radius: 50%; flex-shrink: 0;">
+                                    <i class="fas fa-check" style="font-size: 14px;"></i>
+                                </div>
+                                <p style="margin: 0; font-size: 14px; color: #374151;">
+                                    For quantity above 4 it may take 1 minute or more to fulfill the order; please wait while the order is being processed.
+                                </p>
+                            </div>
+
+                            <div style="display: flex; align-items: start; gap: 12px;">
+                                <div style="background: #fef2f2; color: #ef4444; padding: 8px; border-radius: 50%; flex-shrink: 0;">
+                                    <i class="fas fa-check" style="font-size: 14px;"></i>
+                                </div>
+                                <p style="margin: 0; font-size: 14px; color: #374151;">
+                                    Please ensure email ID is correct and active. All e-Gift Cards will be emailed to your registered email ID.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Purchase Form -->
+                    <div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 8px;">
+                                Enter Denomination <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                value="${denomination}"
+                                onchange="dashboard.updateGiftCardForm('denomination', this.value)"
+                                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                placeholder="Enter denomination"
+                            />
+                            <p style="color: #6b7280; font-size: 12px; margin: 4px 0 0 0;">Min: ₹2000 Max: ₹100000</p>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 8px;">
+                                Enter Quantity <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input
+                                type="number"
+                                value="${quantity}"
+                                onchange="dashboard.updateGiftCardForm('quantity', this.value)"
+                                style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                min="1" max="10"
+                            />
+                            <p style="color: #6b7280; font-size: 12px; margin: 4px 0 0 0;">Min: 1 Max: 10</p>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input
+                                    type="checkbox"
+                                    ${gstNumber ? "checked" : ""}
+                                    onchange="dashboard.updateGiftCardForm('gstNumber', this.checked)"
+                                    style="width: 16px; height: 16px;"
+                                />
+                                <span style="font-size: 14px; color: #374151;">I have a GST Number</span>
+                            </label>
+                        </div>
+
+                        ${gstNumber
+                ? `
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 8px;">
+                                    GST Details <span style="color: #ef4444;">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value="${gstDetails}"
+                                    onchange="dashboard.updateGiftCardForm('gstDetails', this.value)"
+                                    style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                    placeholder="Enter your GST number"
+                                />
+                            </div>
+                        `
+                : ""
+            }
+
+                        <!-- Price Summary -->
+                        <div style="background: #f9fafb; padding: 16px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="color: #374151; font-size: 14px;">Total value of CHECKOUT e-Gift Card:</span>
+                                <span style="font-weight: 600; color: #111827;">₹ ${totalValue.toLocaleString()}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <span style="color: #374151; font-size: 14px;">Your <strong>SAVINGS</strong> by redeeming RedGirraffe Cash Points:</span>
+                                <span style="font-weight: 600; color: #10b981;">[-] ₹ ${savings.toLocaleString()}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid #e5e7eb;">
+                                <span style="font-weight: 600; color: #111827;">Net Amount Payable today:</span>
+                                <span style="font-weight: 700; color: #111827; font-size: 16px;">₹ ${netPayable.toLocaleString()}</span>
+                            </div>
+                        </div>
+
+                        ${this.renderDeliveryOptions()}
+
+                        <div style="display: flex; gap: 12px; margin-top: 24px;">
+                            <button
+                                onclick="dashboard.closeModal()"
+                                style="flex: 1; background: white; border: 1px solid #d1d5db; color: #374151; padding: 12px; border-radius: 6px; font-weight: 500; cursor: pointer;"
+                            >
+                                Back
+                            </button>
+                            <button
+                                onclick="dashboard.proceedToPurchase()"
+                                style="flex: 2; background: #ef4444; color: white; border: none; padding: 12px; border-radius: 6px; font-weight: 600; cursor: pointer;"
+                            >
+                                Buy Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    renderDeliveryOptions() {
+        const {
+            deliveryOption,
+            receiverName,
+            receiverMobile,
+            receiverEmail,
+            receiverMessage,
+        } = this.giftCardFormState;
+
+        return `
+            <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 20px;">
+                <div style="background: #f9fafb; padding: 12px 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-weight: 600; color: #111827; margin: 0; font-size: 16px;">GIFT CARD - 1</h3>
+                </div>
+                <div style="padding: 16px;">
+                    <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 16px;">
+                        <h4 style="font-weight: 500; color: #374151; margin: 0;">Delivery Options</h4>
+                        <div style="display: flex; gap: 16px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input
+                                    type="radio"
+                                    name="deliveryOption"
+                                    value="gift"
+                                    ${deliveryOption === "gift" ? "checked" : ""
+            }
+                                    onchange="dashboard.updateGiftCardForm('deliveryOption', 'gift')"
+                                    style="width: 16px; height: 16px;"
+                                />
+                                <span style="font-size: 14px; color: #374151;">Send as Gift</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input
+                                    type="radio"
+                                    name="deliveryOption"
+                                    value="self"
+                                    ${deliveryOption === "self" ? "checked" : ""
+            }
+                                    onchange="dashboard.updateGiftCardForm('deliveryOption', 'self')"
+                                    style="width: 16px; height: 16px;"
+                                />
+                                <span style="font-size: 14px; color: #374151;">Buy for Self</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    ${deliveryOption === "gift"
+                ? `
+                        <div style="border-top: 1px solid #e5e7eb; padding-top: 16px;">
+                            <h5 style="font-weight: 500; color: #ef4444; margin: 0 0 16px 0; font-size: 14px;">Gift Recipient Details</h5>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                                <div>
+                                    <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
+                                        Receiver's Name <span style="color: #ef4444;">*</span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value="${receiverName}"
+                                        onchange="dashboard.updateGiftCardForm('receiverName', this.value)"
+                                        style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                        placeholder="Enter receiver's full name"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
+                                        Mobile Number <span style="color: #ef4444;">*</span>
+                                    </label>
+                                    <input
+                                        type="tel"
+                                        value="${receiverMobile}"
+                                        onchange="dashboard.updateGiftCardForm('receiverMobile', this.value)"
+                                        style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                        placeholder="Enter receiver's mobile number"
+                                    />
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 16px;">
+                                <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
+                                    Email ID <span style="color: #ef4444;">*</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    value="${receiverEmail}"
+                                    onchange="dashboard.updateGiftCardForm('receiverEmail', this.value)"
+                                    style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                    placeholder="Enter receiver's email address"
+                                />
+                            </div>
+
+                            <div>
+                                <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
+                                    Message for Receiver <span style="color: #ef4444;">*</span>
+                                </label>
+                                <textarea
+                                    value="${receiverMessage}"
+                                    onchange="dashboard.updateGiftCardForm('receiverMessage', this.value)"
+                                    style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: none; height: 80px;"
+                                    placeholder="Enter a personal message for the receiver"
+                                >${receiverMessage}</textarea>
+                            </div>
+                        </div>
+                    `
+                : ""
+            }
+                </div>
+            </div>
+        `;
+    }
+
+    updateGiftCardForm(field, value) {
+        if (!this.giftCardFormState) return;
+        this.giftCardFormState[field] = value;
+
+        // Re-render the modal with updated values
+        const card = this.giftCardFormState.card;
+        this.showModal(
+            "gift-card-detail-modal",
+            this.renderGiftCardDetailModal(card)
+        );
+    }
+
+    proceedToPurchase() {
+        const {
+            card,
+            denomination,
+            quantity,
+            gstNumber,
+            gstDetails,
+            deliveryOption,
+            receiverName,
+            receiverMobile,
+            receiverEmail,
+            receiverMessage,
+        } = this.giftCardFormState;
+
+        // Validation
+        if (!denomination || !quantity) {
+            this.showNotification(
+                "Please fill in denomination and quantity",
+                "error"
+            );
+            return;
+        }
+
+        if (gstNumber && !gstDetails.trim()) {
+            this.showNotification("Please enter your GST details", "error");
+            return;
+        }
+
+        if (deliveryOption === "gift") {
+            if (
+                !receiverName.trim() ||
+                !receiverMobile.trim() ||
+                !receiverEmail.trim() ||
+                !receiverMessage.trim()
+            ) {
+                this.showNotification(
+                    "Please fill in all required gift recipient details",
+                    "error"
+                );
+                return;
+            }
+
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(receiverEmail)) {
+                this.showNotification("Please enter a valid email address", "error");
+                return;
+            }
+
+            // Basic mobile validation (10 digits)
+            const mobileRegex = /^\d{10}$/;
+            if (!mobileRegex.test(receiverMobile.replace(/\D/g, ""))) {
+                this.showNotification(
+                    "Please enter a valid 10-digit mobile number",
+                    "error"
+                );
+                return;
+            }
+        }
+
+        // Calculate final amount
+        const totalValue = parseInt(denomination) * parseInt(quantity);
+        const redemptionPercentage = parseFloat(
+            card.redemptionValue.replace("%", "")
+        );
+        const savings = Math.round(
+            (totalValue * (100 - redemptionPercentage)) / 100
+        );
+        const netPayable = totalValue - savings;
+
+        // Generate order ID
+        const orderId = `REDG-${Date.now()}`;
+
+        // Show payment gateway
+        this.showPaymentGateway(netPayable, orderId, card.name);
+    }
+
+    showPaymentGateway(amount, orderId, productName) {
+        this.paymentState = {
+            amount: amount,
+            orderId: orderId,
+            productName: productName,
+            step: "options",
+            selectedOption: "UPI - FREE",
+            isLoading: false,
+        };
+
+        this.showModal("payment-gateway-modal", this.renderPaymentGatewayModal());
+    }
+
+    renderPaymentGatewayModal() {
+        const { amount, orderId, productName, step, selectedOption, isLoading } =
+            this.paymentState;
+
+        if (step === "success") {
+            return `
+                <div style="max-width: 500px; width: 90vw; background: white; border-radius: 12px; padding: 48px; text-align: center;">
+                    <div style="width: 64px; height: 64px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px;">
+                        <i class="fas fa-check" style="color: #16a34a; font-size: 24px;"></i>
+                    </div>
+
+                    <h3 style="font-size: 24px; font-weight: 700; color: #111827; margin: 0 0 12px 0;">Payment Successful!</h3>
+                    <p style="color: #6b7280; margin: 0 0 8px 0; line-height: 1.5;">
+                        Your payment of ₹${amount.toLocaleString()} has been processed successfully. Your gift card will be sent to your registered email shortly.
+                    </p>
+                    <p style="color: #ef4444; font-weight: 500; font-size: 14px; margin: 0 0 32px 0;">Order ID: ${orderId}</p>
+
+                    <button
+                        onclick="dashboard.completePayment()"
+                        style="background: #ef4444; color: white; border: none; padding: 12px 32px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 16px; width: 100%;"
+                    >
+                        Done
+                    </button>
+                </div>
+            `;
+        }
+
+        return `
+            <div style="max-width: 800px; width: 90vw; background: white; border-radius: 12px; overflow: hidden;">
+                <!-- Header -->
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; background: white; border-bottom: 1px solid #e5e7eb;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="background: #ef4444; color: white; width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-credit-card" style="font-size: 14px;"></i>
+                        </div>
+                        <div>
+                            <p style="font-weight: 600; color: #111827; margin: 0; font-size: 16px;">Gift Card Purchase Payment</p>
+                            <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
+                                <span style="background: #dcfce7; color: #16a34a; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                    <i class="fas fa-check" style="font-size: 10px;"></i> Razorpay Trusted Business
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <button
+                        onclick="dashboard.closeModal()"
+                        style="background: none; border: none; font-size: 20px; color: #6b7280; cursor: pointer; padding: 4px; border-radius: 4px;"
+                    >×</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 2fr 3fr;">
+                    <!-- Left Panel - Price Summary -->
+                    <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 24px;">
+                        <div style="margin-bottom: 24px;">
+                            <p style="color: rgba(255,255,255,0.8); font-size: 14px; margin: 0 0 4px 0;">Price Summary</p>
+                            <p style="font-size: 28px; font-weight: 700; margin: 0;">₹${amount.toLocaleString()}</p>
+                        </div>
+
+                        <div style="background: rgba(185,28,28,0.5); border-radius: 8px; padding: 12px; display: flex; align-items: center; gap: 12px; cursor: pointer; margin-bottom: 24px;">
+                            <div style="background: #b91c1c; border-radius: 50%; padding: 6px;">
+                                <i class="fas fa-user" style="font-size: 12px;"></i>
+                            </div>
+                            <span style="font-size: 14px;">Using as +91 80101 91019</span>
+                            <i class="fas fa-chevron-right" style="font-size: 12px; margin-left: auto;"></i>
+                        </div>
+
+                        <div style="margin-top: auto;">
+                            <img src="https://cdn.iconscout.com/icon/free/png-256/free-razorpay-1649771-1399875.png" alt="Razorpay" style="height: 24px; opacity: 0.9;" />
+                            <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 8px 0 0 0;">Secured by</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Panel - Payment Options -->
+                    <div style="padding: 24px;">
+                        ${isLoading
+                ? `
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; gap: 16px;">
+                                <div style="width: 48px; height: 48px; border: 4px solid #ef4444; border-top: 4px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                <p style="color: #6b7280; margin: 0;">Processing your payment...</p>
+                            </div>
+                        `
+                : `
+                            <div style="margin-bottom: 24px;">
+                                <p style="font-weight: 600; color: #111827; margin: 0 0 16px 0;">Payment Options</p>
+                                <div style="background: #f3f4f6; padding: 12px; border-radius: 6px;">
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <p style="font-weight: 500; color: #111827; margin: 0;">${selectedOption}</p>
+                                        <i class="fas fa-check" style="color: #ef4444; font-size: 16px;"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="margin-bottom: 24px;">
+                                <p style="font-weight: 600; color: #111827; margin: 0 0 16px 0;">Recommended</p>
+                                <div
+                                    onclick="dashboard.processPayment()"
+                                    style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: all 0.2s;"
+                                    onmouseover="this.style.borderColor='#ef4444'; this.style.background='#fef2f2';"
+                                    onmouseout="this.style.borderColor='#e5e7eb'; this.style.background='white';"
+                                >
+                                    <div style="display: flex; align-items: center; gap: 16px;">
+                                        <div style="color: #ef4444;">
+                                            <i class="fas fa-credit-card" style="font-size: 24px;"></i>
+                                        </div>
+                                        <p style="font-weight: 500; color: #111827; margin: 0;">UPI</p>
+                                    </div>
+                                    <i class="fas fa-chevron-right" style="color: #9ca3af; font-size: 16px;"></i>
+                                </div>
+                            </div>
+
+                            <p style="color: #6b7280; font-size: 12px; text-align: center; margin: 24px 0 0 0;">
+                                By proceeding, I agree to Razorpay's Privacy Notice
+                            </p>
+                        `
+            }
+                    </div>
+                </div>
+            </div>
+
+            <style>
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            </style>
+        `;
+    }
+
+    processPayment() {
+        this.paymentState.isLoading = true;
+        this.showModal("payment-gateway-modal", this.renderPaymentGatewayModal());
+
+        // Simulate payment processing
+        setTimeout(() => {
+            this.paymentState.step = "success";
+            this.paymentState.isLoading = false;
+            this.showModal("payment-gateway-modal", this.renderPaymentGatewayModal());
+        }, 2000);
+    }
+
+    completePayment() {
+        // Add to purchase history
+        const newPurchase = {
+            id: Date.now().toString(),
+            name: this.giftCardFormState.card.name,
+            orderId: this.paymentState.orderId,
+            amount: this.paymentState.amount,
+            placedOn: new Date().toLocaleDateString("en-GB"),
+            quantity: parseInt(this.giftCardFormState.quantity),
+            status: "Active",
+            paymentDetails: {
+                totalValue: this.paymentState.amount + 6,
+                savings: 6,
+                netAmount: this.paymentState.amount,
+            },
+        };
+
+        this.mockPurchases.unshift(newPurchase);
+
+        this.closeModal();
+        this.showNotification(
+            "Purchase successful! Your e-Gift Card has been sent to your registered email.",
+            "success"
+        );
+
+        // Reset form state
+        this.giftCardFormState = null;
+        this.paymentState = null;
+    }
+
+    // Modal System
+    showModal(modalId, content) {
+        // Remove existing modal
+        const existingModal = document.getElementById("dynamic-modal");
+        if (existingModal) {
+            existingModal.remove();
+        }
+
+        // Create modal
+        const modal = document.createElement("div");
+        modal.id = "dynamic-modal";
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        `;
+
+        modal.innerHTML = content;
+        document.body.appendChild(modal);
+
+        // Animate in
+        setTimeout(() => {
+            modal.style.opacity = "1";
+        }, 10);
+
+        // Close on backdrop click
+        modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+                this.closeModal();
+            }
+        });
+    }
+
+    closeModal() {
+        const modal = document.getElementById("dynamic-modal");
+        if (modal) {
+            modal.style.opacity = "0";
+            setTimeout(() => {
+                modal.remove();
+            }, 300);
+        }
     }
 
     renderPasswordChange() {
@@ -3685,6 +6407,7 @@ class RedGiraffeDashboard {
                                 <li>Use the live chat feature in the Contact Us section</li>
                             </ul>
                         </div>
+                        
                     </div>
 
                     <div style="margin-top: 30px; padding: 16px; background: #fef2f2; border-radius: 8px; border-left: 4px solid #ef4444;">
@@ -3749,7 +6472,7 @@ class RedGiraffeDashboard {
             "dashboard-transaction-history"
         );
         const warningBanner = document.getElementById("warning-banner");
-        const dashboardReports = document.getElementById('dashboard-reports');
+        const dashboardReports = document.getElementById("dashboard-reports");
 
         if (analyticsSection) analyticsSection.style.display = "grid";
         if (analyticsChartsSection) analyticsChartsSection.style.display = "grid";
@@ -3771,7 +6494,7 @@ class RedGiraffeDashboard {
             "payment-methods-section"
         );
         const warningBanner = document.getElementById("warning-banner");
-        const dashboardReports = document.getElementById('dashboard-reports');
+        const dashboardReports = document.getElementById("dashboard-reports");
 
         if (analyticsSection) analyticsSection.style.display = "none";
         if (analyticsChartsSection) analyticsChartsSection.style.display = "none";
@@ -3938,7 +6661,7 @@ class RedGiraffeDashboard {
     </div>
             `;
 
-        transactionList.appendChild(transactionElement);
+            transactionList.appendChild(transactionElement);
         });
 
         // Add refresh button event listener
@@ -3961,20 +6684,27 @@ class RedGiraffeDashboard {
 
     renderDashboardReports() {
         // Hide analytics cards, analytics charts, and Payment Methods section
-        const analyticsSection = document.querySelector('.analytics-grid');
-        const analyticsChartsSection = document.querySelector('.analytics-charts-grid');
-        const paymentMethodsSection = document.getElementById('payment-methods-section');
-        const dashboardTransactionHistory = document.getElementById('dashboard-transaction-history');
+        const analyticsSection = document.querySelector(".analytics-grid");
+        const analyticsChartsSection = document.querySelector(
+            ".analytics-charts-grid"
+        );
+        const paymentMethodsSection = document.getElementById(
+            "payment-methods-section"
+        );
+        const dashboardTransactionHistory = document.getElementById(
+            "dashboard-transaction-history"
+        );
 
-        if (analyticsSection) analyticsSection.style.display = 'none';
-        if (analyticsChartsSection) analyticsChartsSection.style.display = 'none';
-        if (paymentMethodsSection) paymentMethodsSection.style.display = 'none';
-        if (dashboardTransactionHistory) dashboardTransactionHistory.style.display = 'none';
+        if (analyticsSection) analyticsSection.style.display = "none";
+        if (analyticsChartsSection) analyticsChartsSection.style.display = "none";
+        if (paymentMethodsSection) paymentMethodsSection.style.display = "none";
+        if (dashboardTransactionHistory)
+            dashboardTransactionHistory.style.display = "none";
 
         // Show dashboard reports content
-        const dashboardReports = document.getElementById('dashboard-reports');
+        const dashboardReports = document.getElementById("dashboard-reports");
         if (dashboardReports) {
-            dashboardReports.style.display = 'block';
+            dashboardReports.style.display = "block";
             // Initialize reports functionality
             this.initializeReportsForm();
         }
@@ -3984,116 +6714,166 @@ class RedGiraffeDashboard {
         // Set default dates
         const today = new Date();
         const startOfYear = new Date(today.getFullYear(), 3, 1); // April 1st (Indian Financial Year)
-        const endDate = document.getElementById('end-date');
-        const startDate = document.getElementById('start-date');
+        const endDate = document.getElementById("end-date");
+        const startDate = document.getElementById("start-date");
 
         if (endDate) {
-            endDate.value = today.toISOString().split('T')[0];
+            endDate.value = today.toISOString().split("T")[0];
         }
         if (startDate) {
-            startDate.value = startOfYear.toISOString().split('T')[0];
+            startDate.value = startOfYear.toISOString().split("T")[0];
         }
 
         // Add event listeners for radio buttons
         const radioButtons = document.querySelectorAll('input[name="reportType"]');
-        radioButtons.forEach(radio => {
-            radio.addEventListener('change', (e) => {
+        radioButtons.forEach((radio) => {
+            radio.addEventListener("change", (e) => {
                 this.handleReportTypeChange(e.target.value);
             });
         });
     }
 
     handleReportTypeChange(reportType) {
-        const startDate = document.getElementById('start-date');
-        const endDate = document.getElementById('end-date');
+        const startDate = document.getElementById("start-date");
+        const endDate = document.getElementById("end-date");
         const today = new Date();
 
-        switch(reportType) {
-            case 'current':
+        switch (reportType) {
+            case "current":
                 // Current Financial Year (April 1st to March 31st)
                 const currentYearStart = new Date(today.getFullYear(), 3, 1); // April 1st
-                if (startDate) startDate.value = currentYearStart.toISOString().split('T')[0];
-                if (endDate) endDate.value = today.toISOString().split('T')[0];
+                if (startDate)
+                    startDate.value = currentYearStart.toISOString().split("T")[0];
+                if (endDate) endDate.value = today.toISOString().split("T")[0];
                 break;
 
-            case 'previous':
+            case "previous":
                 // Previous Financial Year
                 const prevYearStart = new Date(today.getFullYear() - 1, 3, 1); // April 1st previous year
                 const prevYearEnd = new Date(today.getFullYear(), 2, 31); // March 31st current year
-                if (startDate) startDate.value = prevYearStart.toISOString().split('T')[0];
-                if (endDate) endDate.value = prevYearEnd.toISOString().split('T')[0];
+                if (startDate)
+                    startDate.value = prevYearStart.toISOString().split("T")[0];
+                if (endDate) endDate.value = prevYearEnd.toISOString().split("T")[0];
                 break;
 
-            case 'custom':
+            case "custom":
                 // Clear dates for custom selection
-                if (startDate) startDate.value = '';
-                if (endDate) endDate.value = '';
+                if (startDate) startDate.value = "";
+                if (endDate) endDate.value = "";
                 break;
         }
     }
 
     downloadReport() {
-        const reportType = document.querySelector('input[name="reportType"]:checked')?.value;
-        const startDate = document.getElementById('start-date')?.value;
-        const endDate = document.getElementById('end-date')?.value;
+        const reportType = document.querySelector(
+            'input[name="reportType"]:checked'
+        )?.value;
+        const startDate = document.getElementById("start-date")?.value;
+        const endDate = document.getElementById("end-date")?.value;
 
         if (!startDate || !endDate) {
-            this.showNotification('Please select both start and end dates', 'error');
+            this.showNotification("Please select both start and end dates", "error");
             return;
         }
 
         if (new Date(startDate) > new Date(endDate)) {
-            this.showNotification('Start date cannot be later than end date', 'error');
+            this.showNotification(
+                "Start date cannot be later than end date",
+                "error"
+            );
             return;
         }
 
         // Show loading state
-        const downloadBtn = document.getElementById('download-report-btn');
+        const downloadBtn = document.getElementById("download-report-btn");
         const originalText = downloadBtn.innerHTML;
-        downloadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating Report...';
+        downloadBtn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Generating Report...';
         downloadBtn.disabled = true;
 
         // Simulate report generation
         setTimeout(() => {
             // Generate mock CSV data
-            const csvData = this.generateMockReportData(startDate, endDate, reportType);
-            this.downloadCSV(csvData, `RedGirraffe_Report_${reportType}_${startDate}_to_${endDate}.csv`);
+            const csvData = this.generateMockReportData(
+                startDate,
+                endDate,
+                reportType
+            );
+            this.downloadCSV(
+                csvData,
+                `RedGirraffe_Report_${reportType}_${startDate}_to_${endDate}.csv`
+            );
 
             // Reset button
             downloadBtn.innerHTML = originalText;
             downloadBtn.disabled = false;
 
-            this.showNotification('Report downloaded successfully!', 'success');
+            this.showNotification("Report downloaded successfully!", "success");
         }, 2000);
     }
 
     generateMockReportData(startDate, endDate, reportType) {
-        const headers = ['Date', 'RG ID', 'Type', 'Amount', 'Status', 'Payment Mode'];
+        const headers = [
+            "Date",
+            "RG ID",
+            "Type",
+            "Amount",
+            "Status",
+            "Payment Mode",
+        ];
         const mockData = [
-            ['2024-11-14', 'RG-0000182568', 'Rent', '₹14,000.00', 'Upcoming', 'Credit Card'],
-            ['2025-03-10', 'RG-6000182595', 'Education Fee', '₹10.00', 'Scheduled', 'UPI'],
-            ['2025-03-12', 'RG-4000180380', 'Maintenance', '₹18,000.00', 'Scheduled', 'Net Banking'],
-            ['2024-10-15', 'RG-6000180475', 'Fees', '₹5,000.00', 'Completed', 'Credit Card'],
-            ['2024-09-20', 'RG-5000180123', 'Rent', '₹12,000.00', 'Completed', 'UPI'],
+            [
+                "2024-11-14",
+                "RG-0000182568",
+                "Rent",
+                "₹14,000.00",
+                "Upcoming",
+                "Credit Card",
+            ],
+            [
+                "2025-03-10",
+                "RG-6000182595",
+                "Education Fee",
+                "₹10.00",
+                "Scheduled",
+                "UPI",
+            ],
+            [
+                "2025-03-12",
+                "RG-4000180380",
+                "Maintenance",
+                "₹18,000.00",
+                "Scheduled",
+                "Net Banking",
+            ],
+            [
+                "2024-10-15",
+                "RG-6000180475",
+                "Fees",
+                "₹5,000.00",
+                "Completed",
+                "Credit Card",
+            ],
+            ["2024-09-20", "RG-5000180123", "Rent", "₹12,000.00", "Completed", "UPI"],
         ];
 
         // Convert to CSV format
         const csvContent = [headers, ...mockData]
-            .map(row => row.join(','))
-            .join('\n');
+            .map((row) => row.join(","))
+            .join("\n");
 
         return csvContent;
     }
 
     downloadCSV(csvContent, filename) {
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement('a');
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
 
         if (link.download !== undefined) {
             const url = URL.createObjectURL(blob);
-            link.setAttribute('href', url);
-            link.setAttribute('download', filename);
-            link.style.visibility = 'hidden';
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = "hidden";
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -4246,33 +7026,33 @@ class RegistrationsManager {
             this.registrations = this.getMockRegistrations();
             this.renderRegistrations();
         } catch (error) {
-            console.error('Failed to load registrations:', error);
+            console.error("Failed to load registrations:", error);
             this.showErrorState();
         }
     }
 
     delay(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     showLoadingState() {
-        const loadingEl = document.getElementById('registrations-loading');
-        const contentEl = document.getElementById('registrations-content');
-        const errorEl = document.getElementById('registrations-error');
+        const loadingEl = document.getElementById("registrations-loading");
+        const contentEl = document.getElementById("registrations-content");
+        const errorEl = document.getElementById("registrations-error");
 
-        if (loadingEl) loadingEl.style.display = 'block';
-        if (contentEl) contentEl.style.display = 'none';
-        if (errorEl) errorEl.style.display = 'none';
+        if (loadingEl) loadingEl.style.display = "block";
+        if (contentEl) contentEl.style.display = "none";
+        if (errorEl) errorEl.style.display = "none";
     }
 
     showErrorState() {
-        const loadingEl = document.getElementById('registrations-loading');
-        const contentEl = document.getElementById('registrations-content');
-        const errorEl = document.getElementById('registrations-error');
+        const loadingEl = document.getElementById("registrations-loading");
+        const contentEl = document.getElementById("registrations-content");
+        const errorEl = document.getElementById("registrations-error");
 
-        if (loadingEl) loadingEl.style.display = 'none';
-        if (contentEl) contentEl.style.display = 'none';
-        if (errorEl) errorEl.style.display = 'block';
+        if (loadingEl) loadingEl.style.display = "none";
+        if (contentEl) contentEl.style.display = "none";
+        if (errorEl) errorEl.style.display = "block";
     }
 
     getMockRegistrations() {
@@ -4289,7 +7069,7 @@ class RegistrationsManager {
                 amount: "25000",
                 dueDate: "15/01/2025",
                 frequency: "Monthly",
-                endDate: "15/12/2025"
+                endDate: "15/12/2025",
             },
             {
                 id: 2,
@@ -4302,7 +7082,7 @@ class RegistrationsManager {
                 amount: "32000",
                 dueDate: "10/01/2025",
                 frequency: "Monthly",
-                endDate: "10/12/2025"
+                endDate: "10/12/2025",
             },
             {
                 id: 3,
@@ -4315,7 +7095,7 @@ class RegistrationsManager {
                 amount: "28000",
                 dueDate: "05/01/2025",
                 frequency: "Monthly",
-                endDate: "05/12/2025"
+                endDate: "05/12/2025",
             },
             {
                 id: 4,
@@ -4328,7 +7108,7 @@ class RegistrationsManager {
                 amount: "22000",
                 dueDate: "25/01/2025",
                 frequency: "Monthly",
-                endDate: "25/12/2025"
+                endDate: "25/12/2025",
             },
             {
                 id: 5,
@@ -4341,7 +7121,7 @@ class RegistrationsManager {
                 amount: "35000",
                 dueDate: "12/01/2025",
                 frequency: "Monthly",
-                endDate: "12/12/2025"
+                endDate: "12/12/2025",
             },
             {
                 id: 6,
@@ -4354,7 +7134,7 @@ class RegistrationsManager {
                 amount: "30000",
                 dueDate: "20/01/2025",
                 frequency: "Monthly",
-                endDate: "20/12/2025"
+                endDate: "20/12/2025",
             },
             {
                 id: 7,
@@ -4367,7 +7147,7 @@ class RegistrationsManager {
                 amount: "27000",
                 dueDate: "18/01/2025",
                 frequency: "Monthly",
-                endDate: "18/12/2025"
+                endDate: "18/12/2025",
             },
             {
                 id: 8,
@@ -4380,7 +7160,7 @@ class RegistrationsManager {
                 amount: "33000",
                 dueDate: "22/01/2025",
                 frequency: "Monthly",
-                endDate: "22/12/2025"
+                endDate: "22/12/2025",
             },
             // Education registrations (6 total - to test show more/less)
             {
@@ -4394,7 +7174,7 @@ class RegistrationsManager {
                 amount: "45000",
                 dueDate: "15/02/2025",
                 frequency: "Quarterly",
-                endDate: "15/06/2025"
+                endDate: "15/06/2025",
             },
             {
                 id: 10,
@@ -4407,7 +7187,7 @@ class RegistrationsManager {
                 amount: "50000",
                 dueDate: "20/02/2025",
                 frequency: "Quarterly",
-                endDate: "20/06/2025"
+                endDate: "20/06/2025",
             },
             {
                 id: 11,
@@ -4420,7 +7200,7 @@ class RegistrationsManager {
                 amount: "42000",
                 dueDate: "25/02/2025",
                 frequency: "Quarterly",
-                endDate: "25/06/2025"
+                endDate: "25/06/2025",
             },
             {
                 id: 12,
@@ -4433,7 +7213,7 @@ class RegistrationsManager {
                 amount: "48000",
                 dueDate: "28/02/2025",
                 frequency: "Quarterly",
-                endDate: "28/06/2025"
+                endDate: "28/06/2025",
             },
             {
                 id: 13,
@@ -4446,7 +7226,7 @@ class RegistrationsManager {
                 amount: "46000",
                 dueDate: "05/03/2025",
                 frequency: "Quarterly",
-                endDate: "05/07/2025"
+                endDate: "05/07/2025",
             },
             {
                 id: 14,
@@ -4459,31 +7239,36 @@ class RegistrationsManager {
                 amount: "47000",
                 dueDate: "10/03/2025",
                 frequency: "Quarterly",
-                endDate: "10/07/2025"
-            }
+                endDate: "10/07/2025",
+            },
         ];
     }
 
     renderRegistrations() {
-        const container = document.getElementById('registrations-container');
+        const container = document.getElementById("registrations-container");
 
         // Group registrations by type
-        const registrationsByType = this.registrations.reduce((acc, registration) => {
-            const type = registration.type;
-            if (!acc[type]) {
-                acc[type] = [];
-            }
-            acc[type].push(registration);
-            return acc;
-        }, {});
+        const registrationsByType = this.registrations.reduce(
+            (acc, registration) => {
+                const type = registration.type;
+                if (!acc[type]) {
+                    acc[type] = [];
+                }
+                acc[type].push(registration);
+                return acc;
+            },
+            {}
+        );
 
-        let html = '';
+        let html = "";
         const registrationTypes = Object.keys(registrationsByType);
 
         registrationTypes.forEach((type, index) => {
             const typeRegistrations = registrationsByType[type];
             const isShowingAll = this.showAllByType[type] || false;
-            const visibleRegistrations = isShowingAll ? typeRegistrations : typeRegistrations.slice(0, 5);
+            const visibleRegistrations = isShowingAll
+                ? typeRegistrations
+                : typeRegistrations.slice(0, 5);
             const hasMoreToShow = typeRegistrations.length > 5;
 
             // Category header
@@ -4492,10 +7277,19 @@ class RegistrationsManager {
 
             html += `
                 <div class="registration-category mb-2" data-category="${type}">
-                    <div class="category-header" style="background: #f8fafc; border-left: 4px solid ${this.getTypeColorHex(type)}; padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
+                    <div class="category-header" style="background: #f8fafc; border-left: 4px solid ${this.getTypeColorHex(
+                type
+            )}; padding: 16px 24px; border-bottom: 1px solid #e5e7eb;">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-weight: 600; color: ${this.getTypeColorHex(type)}; font-size: 16px;">${typeLabel}</span>
-                            <span style="background: ${this.getTypeBadgeColor(type)}; color: ${this.getTypeColorHex(type)}; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">${typeRegistrations.length} RG IDs</span>
+                            <span style="font-weight: 600; color: ${this.getTypeColorHex(
+                type
+            )}; font-size: 16px;">${typeLabel}</span>
+                            <span style="background: ${this.getTypeBadgeColor(
+                type
+            )}; color: ${this.getTypeColorHex(
+                type
+            )}; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">${typeRegistrations.length
+                } RG IDs</span>
                         </div>
                     </div>
 
@@ -4514,20 +7308,29 @@ class RegistrationsManager {
                             </thead>
                             <tbody>`;
 
-            visibleRegistrations.forEach(registration => {
+            visibleRegistrations.forEach((registration) => {
                 const statusClass = this.getStatusClass(registration.status);
                 const statusColor = this.getStatusColor(registration.status);
                 html += `
                     <tr style="border-bottom: 1px solid #f3f4f6;">
-                        <td style="padding: 16px 24px; font-weight: 500; color: #111827; font-size: 14px;">${registration.rgId}</td>
-                        <td style="padding: 16px 24px; color: #6b7280; font-size: 14px; text-transform: capitalize;">${registration.subtype || 'Maintenance'}</td>
-                        <td style="padding: 16px 24px; color: #6b7280; font-size: 14px;">${registration.mode}</td>
+                        <td style="padding: 16px 24px; font-weight: 500; color: #111827; font-size: 14px;">${registration.rgId
+                    }</td>
+                        <td style="padding: 16px 24px; color: #6b7280; font-size: 14px; text-transform: capitalize;">${registration.subtype || "Maintenance"
+                    }</td>
+                        <td style="padding: 16px 24px; color: #6b7280; font-size: 14px;">${registration.mode
+                    }</td>
                         <td style="padding: 16px 24px;">
-                            <span style="background: ${statusColor.bg}; color: ${statusColor.text}; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">${registration.status}</span>
+                            <span style="background: ${statusColor.bg
+                    }; color: ${statusColor.text
+                    }; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">${registration.status
+                    }</span>
                         </td>
-                        <td style="padding: 16px 24px; font-weight: 600; color: #111827; font-size: 14px;">₹${parseInt(registration.amount).toLocaleString()}</td>
+                        <td style="padding: 16px 24px; font-weight: 600; color: #111827; font-size: 14px;">₹${parseInt(
+                        registration.amount
+                    ).toLocaleString()}</td>
                         <td style="padding: 16px 24px;">
-                            <button onclick="registrations.handlePayNow('${registration.rgId}')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500;">
+                            <button onclick="registrations.handlePayNow('${registration.rgId
+                    }')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500;">
                                 Pay Now
                             </button>
                         </td>
@@ -4542,20 +7345,28 @@ class RegistrationsManager {
             // Show All / Show Less Button
             if (hasMoreToShow) {
                 const hiddenCount = typeRegistrations.length - 5;
-                const buttonText = isShowingAll ? 'Show Less' : `Show All (${hiddenCount} more)`;
-                const iconClass = isShowingAll ? 'eye-slash' : 'eye';
+                const buttonText = isShowingAll
+                    ? "Show Less"
+                    : `Show All (${hiddenCount} more)`;
+                const iconClass = isShowingAll ? "eye-slash" : "eye";
 
                 html += `
-                    <div style="text-align: center; padding: 16px; border-top: 1px solid #f3f4f6; background: ${isShowingAll ? '#f0f9ff' : '#fafafa'};">
+                    <div style="text-align: center; padding: 16px; border-top: 1px solid #f3f4f6; background: ${isShowingAll ? "#f0f9ff" : "#fafafa"
+                    };">
                         <div style="margin-bottom: 8px;">
                         </div>
                         <button onclick="registrations.toggleShowAll('${type}')"
                             style="font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px; margin: 0 auto; padding: 8px 16px; border-radius: 6px; transition: all 0.15s ease;"
-                            onmouseover="this.style.background='${isShowingAll ? '#bfdbfe' : '#fef2f2'}'; this.style.transform='translateY(-1px)'"
-                            onmouseout="this.style.background='${isShowingAll ? '#dbeafe' : 'none'}'; this.style.transform='translateY(0)'">
+                            onmouseover="this.style.background='${isShowingAll ? "#bfdbfe" : "#fef2f2"
+                    }'; this.style.transform='translateY(-1px)'"
+                            onmouseout="this.style.background='${isShowingAll ? "#dbeafe" : "none"
+                    }'; this.style.transform='translateY(0)'">
                             <i class="fas fa-${iconClass}" style="font-size: 12px;"></i>
                             <span>${buttonText}</span>
-                            ${isShowingAll ? '<i class="fas fa-chevron-up" style="font-size: 10px; margin-left: 4px;"></i>' : '<i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i>'}
+                            ${isShowingAll
+                        ? '<i class="fas fa-chevron-up" style="font-size: 10px; margin-left: 4px;"></i>'
+                        : '<i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i>'
+                    }
                         </button>
                     </div>`;
             }
@@ -4573,70 +7384,70 @@ class RegistrationsManager {
         }
 
         // Show main content and hide loading
-        const loadingEl = document.getElementById('registrations-loading');
-        const contentEl = document.getElementById('registrations-content');
-        const errorEl = document.getElementById('registrations-error');
+        const loadingEl = document.getElementById("registrations-loading");
+        const contentEl = document.getElementById("registrations-content");
+        const errorEl = document.getElementById("registrations-error");
 
-        if (loadingEl) loadingEl.style.display = 'none';
-        if (contentEl) contentEl.style.display = 'block';
-        if (errorEl) errorEl.style.display = 'none';
+        if (loadingEl) loadingEl.style.display = "none";
+        if (contentEl) contentEl.style.display = "block";
+        if (errorEl) errorEl.style.display = "none";
     }
 
     // Utility methods
     getTypeLabel(type) {
         const labels = {
-            'tenant': 'Rent',
-            'education': 'Education Fees',
-            'society': 'Society Maintenance'
+            tenant: "Rent",
+            education: "Education Fees",
+            society: "Society Maintenance",
         };
         return labels[type] || type;
     }
 
     getTypeColor(type) {
         const colors = {
-            'tenant': 'danger',
-            'education': 'primary',
-            'society': 'success'
+            tenant: "danger",
+            education: "primary",
+            society: "success",
         };
-        return colors[type] || 'secondary';
+        return colors[type] || "secondary";
     }
 
     getTypeColorHex(type) {
         const colors = {
-            'tenant': '#ef4444',
-            'education': '#3b82f6',
-            'society': '#10b981'
+            tenant: "#ef4444",
+            education: "#3b82f6",
+            society: "#10b981",
         };
-        return colors[type] || '#6b7280';
+        return colors[type] || "#6b7280";
     }
 
     getTypeBadgeColor(type) {
         const colors = {
-            'tenant': '#fee2e2',
-            'education': '#dbeafe',
-            'society': '#dcfce7'
+            tenant: "#fee2e2",
+            education: "#dbeafe",
+            society: "#dcfce7",
         };
-        return colors[type] || '#f3f4f6';
+        return colors[type] || "#f3f4f6";
     }
 
     getStatusClass(status) {
         const classes = {
-            'Approved': 'success',
-            'Pending': 'warning',
-            'Rejected': 'danger',
-            'Active': 'success'
+            Approved: "success",
+            Pending: "warning",
+            Rejected: "danger",
+            Active: "success",
         };
-        return classes[status] || 'secondary';
+        return classes[status] || "secondary";
     }
 
     getStatusColor(status) {
         const colors = {
-            'Approved': { bg: '#dcfce7', text: '#16a34a' },
-            'Pending': { bg: '#fef3c7', text: '#d97706' },
-            'Rejected': { bg: '#fee2e2', text: '#dc2626' },
-            'Active': { bg: '#dcfce7', text: '#16a34a' }
+            Approved: { bg: "#dcfce7", text: "#16a34a" },
+            Pending: { bg: "#fef3c7", text: "#d97706" },
+            Rejected: { bg: "#fee2e2", text: "#dc2626" },
+            Active: { bg: "#dcfce7", text: "#16a34a" },
         };
-        return colors[status] || { bg: '#f3f4f6', text: '#6b7280' };
+        return colors[status] || { bg: "#f3f4f6", text: "#6b7280" };
     }
 
     toggleShowAll(type) {
@@ -4649,10 +7460,10 @@ class RegistrationsManager {
         const isExpanding = this.showAllByType[type];
 
         // Add a subtle loading effect
-        const container = document.getElementById('registrations-container');
+        const container = document.getElementById("registrations-container");
         if (container) {
-            container.style.opacity = '0.8';
-            container.style.transition = 'opacity 0.2s ease';
+            container.style.opacity = "0.8";
+            container.style.transition = "opacity 0.2s ease";
         }
 
         // Re-render with a slight delay for smooth transition
@@ -4661,45 +7472,52 @@ class RegistrationsManager {
 
             // Restore opacity with animation
             if (container) {
-                container.style.opacity = '1';
+                container.style.opacity = "1";
             }
 
             // Smooth scroll behavior when expanding
             if (isExpanding) {
                 // Find the updated category element and scroll to it
                 setTimeout(() => {
-                    const updatedCategoryElement = document.querySelector(`[data-category="${type}"]`);
+                    const updatedCategoryElement = document.querySelector(
+                        `[data-category="${type}"]`
+                    );
                     if (updatedCategoryElement) {
                         updatedCategoryElement.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'start',
-                            inline: 'nearest'
+                            behavior: "smooth",
+                            block: "start",
+                            inline: "nearest",
                         });
                     }
                 }, 50);
             }
 
             // Show notification for user feedback
-            const action = isExpanding ? 'expanded' : 'collapsed';
+            const action = isExpanding ? "expanded" : "collapsed";
             const typeLabel = this.getTypeLabel(type);
-            const registrationCount = this.registrations.filter(r => r.type === type).length;
+            const registrationCount = this.registrations.filter(
+                (r) => r.type === type
+            ).length;
 
             if (window.dashboard && window.dashboard.showNotification) {
                 const message = isExpanding
                     ? `Showing all ${registrationCount} ${typeLabel} registrations`
                     : `${typeLabel} section collapsed`;
-                window.dashboard.showNotification(message, 'info');
+                window.dashboard.showNotification(message, "info");
             }
         }, 150);
     }
 
     handlePayNow(rgId) {
         // Open payment page in new window
-        window.open('https://redgirraffe.com/in/app/paymentmode', '_blank');
+        window.open("https://redgirraffe.com/in/app/paymentmode", "_blank");
 
         // Show success message
         if (window.dashboard && window.dashboard.showNotification) {
-            window.dashboard.showNotification(`Payment initiated for ${rgId}`, 'success');
+            window.dashboard.showNotification(
+                `Payment initiated for ${rgId}`,
+                "success"
+            );
         } else {
             alert(`Payment initiated for ${rgId}`);
         }
@@ -4708,50 +7526,52 @@ class RegistrationsManager {
     // Modal functionality
     initializeModal() {
         // Handle registration type selection
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.registration-type-option')) {
-                const option = e.target.closest('.registration-type-option');
+        document.addEventListener("click", (e) => {
+            if (e.target.closest(".registration-type-option")) {
+                const option = e.target.closest(".registration-type-option");
 
                 // Remove active state from all options
-                document.querySelectorAll('.registration-type-option').forEach(opt => {
-                    opt.style.borderColor = '#e5e7eb';
-                    opt.style.background = 'white';
-                    const arrow = opt.querySelector('.fa-arrow-right');
-                    if (arrow) arrow.style.display = 'none';
-                });
+                document
+                    .querySelectorAll(".registration-type-option")
+                    .forEach((opt) => {
+                        opt.style.borderColor = "#e5e7eb";
+                        opt.style.background = "white";
+                        const arrow = opt.querySelector(".fa-arrow-right");
+                        if (arrow) arrow.style.display = "none";
+                    });
 
                 // Add active state to selected option
-                option.style.borderColor = '#ef4444';
-                option.style.background = '#fef2f2';
-                const arrow = option.querySelector('.fa-arrow-right');
-                if (arrow) arrow.style.display = 'block';
+                option.style.borderColor = "#ef4444";
+                option.style.background = "#fef2f2";
+                const arrow = option.querySelector(".fa-arrow-right");
+                if (arrow) arrow.style.display = "block";
 
                 // Store selected type
                 this.selectedRegistrationType = option.dataset.type;
 
                 // Enable the button
-                const btn = document.getElementById('openRegistrationBtn');
+                const btn = document.getElementById("openRegistrationBtn");
                 if (btn) {
                     btn.disabled = false;
-                    btn.style.opacity = '1';
+                    btn.style.opacity = "1";
                 }
             }
         });
     }
 
     openNewRegistrationModal() {
-        const modal = document.getElementById('newRegistrationModal');
+        const modal = document.getElementById("newRegistrationModal");
         if (modal) {
-            modal.style.display = 'block';
+            modal.style.display = "block";
             // Reset modal state
             this.resetModal();
         }
     }
 
     closeNewRegistrationModal() {
-        const modal = document.getElementById('newRegistrationModal');
+        const modal = document.getElementById("newRegistrationModal");
         if (modal) {
-            modal.style.display = 'none';
+            modal.style.display = "none";
             this.resetModal();
         }
     }
@@ -4759,16 +7579,22 @@ class RegistrationsManager {
     handleRedirect() {
         if (this.selectedRegistrationType) {
             // Open the correct registration URL
-            window.open('https://redgirraffe.com/in/app/paymentmode', '_blank');
+            window.open("https://redgirraffe.com/in/app/paymentmode", "_blank");
 
             // Optionally open a second window for the registration form
-            window.open(`https://redgirraffe.com/in/app/register/${this.selectedRegistrationType.toLowerCase()}`, '_blank');
+            window.open(
+                `https://redgirraffe.com/in/app/register/${this.selectedRegistrationType.toLowerCase()}`,
+                "_blank"
+            );
 
             // Show success message
             if (window.dashboard && window.dashboard.showNotification) {
-                window.dashboard.showNotification('Registration pages opened in new windows', 'success');
+                window.dashboard.showNotification(
+                    "Registration pages opened in new windows",
+                    "success"
+                );
             } else {
-                alert('Registration pages opened in new windows');
+                alert("Registration pages opened in new windows");
             }
 
             // Close the modal
@@ -4778,16 +7604,16 @@ class RegistrationsManager {
 
     resetModal() {
         this.selectedRegistrationType = null;
-        const btn = document.getElementById('openRegistrationBtn');
+        const btn = document.getElementById("openRegistrationBtn");
         if (btn) {
             btn.disabled = true;
-            btn.style.opacity = '0.5';
+            btn.style.opacity = "0.5";
         }
-        document.querySelectorAll('.registration-type-option').forEach(opt => {
-            opt.style.borderColor = '#e5e7eb';
-            opt.style.background = 'white';
-            const arrow = opt.querySelector('.fa-arrow-right');
-            if (arrow) arrow.style.display = 'none';
+        document.querySelectorAll(".registration-type-option").forEach((opt) => {
+            opt.style.borderColor = "#e5e7eb";
+            opt.style.background = "white";
+            const arrow = opt.querySelector(".fa-arrow-right");
+            if (arrow) arrow.style.display = "none";
         });
     }
 }

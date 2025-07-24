@@ -392,6 +392,83 @@
             }
         }
 
+        /* Gift Cards Styles */
+        .gift-cards-container {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .gift-card-item {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+
+        .gift-card-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #ef4444;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes ripple {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 1;
+            }
+            100% {
+                width: 200px;
+                height: 200px;
+                opacity: 0;
+            }
+        }
+
+        .animate-ripple {
+            animation: ripple 0.6s linear;
+        }
+
+        /* Responsive Design for Gift Cards */
+        @media (max-width: 1024px) {
+            .gift-cards-container > div:first-child > div {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .gift-cards-container .chart-card:first-child {
+                order: 2;
+            }
+
+            .gift-cards-container > div:first-child > div > div:last-child {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .gift-cards-container .header-section {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+
+            .gift-cards-container .header-controls {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .gift-cards-container .search-input {
+                width: 100%;
+            }
+        }
+
         .nav-item {
             margin-bottom: 1px;
         }
@@ -1507,11 +1584,11 @@
 
                 <!-- Header Navigation Tabs -->
                 <div class="header-nav">
-                    <a href="#" class="header-nav-item active" onclick="dashboard.switchRewardsTab('wallet')">My
+                    <a href="#" class="header-nav-item active" onclick="dashboard.switchRewardsTab('giftcards')">Gift Cards</a>
+                    <a href="#" class="header-nav-item" onclick="dashboard.switchRewardsTab('wallet')">My
                         Wallet</a>
                     <a href="#" class="header-nav-item" onclick="dashboard.switchRewardsTab('history')">Purchase
                         History</a>
-                    <a href="#" class="header-nav-item" onclick="dashboard.switchRewardsTab('giftcards')">Gift Cards</a>
                 </div>
             </div>
 
