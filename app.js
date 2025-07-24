@@ -558,6 +558,15 @@ class RedGiraffeDashboard {
                 status: "UPCOMING",
             },
             {
+                id: 9,
+                rgId: "RG-0000182569",
+                type: "Rent",
+                amount: 32000,
+                date: new Date("2025-01-10"),
+                status: "UPCOMING",
+            },
+            // Scheduled payments
+            {
                 id: 2,
                 rgId: "RG-6000182595",
                 type: "Education Fee",
@@ -571,6 +580,22 @@ class RedGiraffeDashboard {
                 type: "Maintenance",
                 amount: 18000,
                 date: new Date("2025-03-12"),
+                status: "SCHEDULED",
+            },
+            {
+                id: 11,
+                rgId: "RG-6000182598",
+                type: "Education Fee",
+                amount: 45000,
+                date: new Date("2025-02-15"),
+                status: "SCHEDULED",
+            },
+            {
+                id: 13,
+                rgId: "RG-4000180381",
+                type: "Maintenance",
+                amount: 22000,
+                date: new Date("2025-03-20"),
                 status: "SCHEDULED",
             },
             // Completed payments
@@ -591,11 +616,27 @@ class RedGiraffeDashboard {
                 status: "PAID",
             },
             {
+                id: 10,
+                rgId: "RG-0000182569",
+                type: "Rent",
+                amount: 32000,
+                date: new Date("2024-12-10"),
+                status: "PAID",
+            },
+            {
                 id: 6,
                 rgId: "RG-6000182595",
                 type: "Education Fee",
                 amount: 10000,
                 date: new Date("2024-11-10"),
+                status: "PAID",
+            },
+            {
+                id: 12,
+                rgId: "RG-6000182598",
+                type: "Education Fee",
+                amount: 45000,
+                date: new Date("2024-11-15"),
                 status: "PAID",
             },
             {
@@ -607,6 +648,15 @@ class RedGiraffeDashboard {
                 status: "PAID",
             },
             {
+                id: 14,
+                rgId: "RG-4000180381",
+                type: "Maintenance",
+                amount: 22000,
+                date: new Date("2024-12-20"),
+                status: "PAID",
+            },
+            // Failed payments
+            {
                 id: 8,
                 rgId: "RG-6000182595",
                 type: "Education Fee",
@@ -614,55 +664,53 @@ class RedGiraffeDashboard {
                 date: new Date("2024-10-10"),
                 status: "FAILED",
             },
-            // Additional rent transactions
+            // Additional transactions to match the React implementation
             {
-                id: 9,
+                id: 15,
+                rgId: "RG-0000182568",
+                type: "Rent",
+                amount: 14000,
+                date: new Date("2024-10-15"),
+                status: "PAID",
+            },
+            {
+                id: 16,
+                rgId: "RG-6000182595",
+                type: "Education Fee",
+                amount: 10000,
+                date: new Date("2024-09-10"),
+                status: "PAID",
+            },
+            {
+                id: 17,
+                rgId: "RG-4000180380",
+                type: "Maintenance",
+                amount: 18000,
+                date: new Date("2024-11-12"),
+                status: "PAID",
+            },
+            {
+                id: 18,
                 rgId: "RG-0000182569",
                 type: "Rent",
                 amount: 32000,
-                date: new Date("2025-01-10"),
-                status: "UPCOMING",
-            },
-            {
-                id: 10,
-                rgId: "RG-0000182569",
-                type: "Rent",
-                amount: 32000,
-                date: new Date("2024-12-10"),
+                date: new Date("2024-11-10"),
                 status: "PAID",
             },
-            // Additional education transactions
             {
-                id: 11,
-                rgId: "RG-6000182596",
+                id: 19,
+                rgId: "RG-6000182598",
                 type: "Education Fee",
                 amount: 45000,
-                date: new Date("2025-02-15"),
-                status: "SCHEDULED",
-            },
-            {
-                id: 12,
-                rgId: "RG-6000182596",
-                type: "Education Fee",
-                amount: 45000,
-                date: new Date("2024-11-15"),
+                date: new Date("2024-10-15"),
                 status: "PAID",
             },
-            // Additional maintenance transactions
             {
-                id: 13,
+                id: 20,
                 rgId: "RG-4000180381",
                 type: "Maintenance",
                 amount: 22000,
-                date: new Date("2025-03-20"),
-                status: "SCHEDULED",
-            },
-            {
-                id: 14,
-                rgId: "RG-4000180381",
-                type: "Maintenance",
-                amount: 22000,
-                date: new Date("2024-12-20"),
+                date: new Date("2024-11-20"),
                 status: "PAID",
             },
         ];
@@ -731,7 +779,7 @@ class RedGiraffeDashboard {
             const closeBtn = editModal.querySelector(".close");
             if (closeBtn) {
                 closeBtn.addEventListener("click", () => {
-                    this.closeEditModal();
+                    this.closeRegistrationModal();
                 });
             }
         }
@@ -970,6 +1018,9 @@ class RedGiraffeDashboard {
                 break;
         }
 
+        // Sort by date (newest first)
+        filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+
         return filtered;
     }
 
@@ -1056,13 +1107,13 @@ class RedGiraffeDashboard {
     getTransactionStatusInfo(status) {
         switch (status) {
             case "PAID":
-                return { class: "paid", label: "Completed" };
+                return { class: "paid", label: "COMPLETED" };
             case "UPCOMING":
-                return { class: "upcoming", label: "Upcoming" };
+                return { class: "upcoming", label: "UPCOMING" };
             case "SCHEDULED":
-                return { class: "scheduled", label: "Scheduled" };
+                return { class: "scheduled", label: "SCHEDULED" };
             case "FAILED":
-                return { class: "failed", label: "Failed" };
+                return { class: "failed", label: "FAILED" };
             default:
                 return { class: "scheduled", label: status };
         }
@@ -2656,7 +2707,7 @@ class RedGiraffeDashboard {
             registrationType,
             registrationData
         );
-        this.showModal(modalHtml);
+        this.showEditModal(modalHtml);
     }
 
     generateEditFormModal(registrationType, registrationData) {
@@ -2671,7 +2722,7 @@ class RedGiraffeDashboard {
                 <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; background: white; z-index: 10;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0; font-family: 'Inter', sans-serif;">${title}</h2>
-                        <button onclick="dashboard.closeModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
+                        <button onclick="dashboard.closeUploadModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
                     </div>
                 </div>
                 <div style="padding: 24px;">
@@ -2681,7 +2732,7 @@ class RedGiraffeDashboard {
                             <button type="submit" style="flex: 1; background: #16a34a; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
                                 Save Changes
                             </button>
-                            <button type="button" onclick="dashboard.closeModal()" style="flex: 1; background: #6b7280; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
+                            <button type="button" onclick="dashboard.closeUploadModal()" style="flex: 1; background: #6b7280; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
                                 Cancel
                             </button>
                         </div>
@@ -2937,7 +2988,7 @@ class RedGiraffeDashboard {
             );
 
             this.showNotification("Registration updated successfully!", "success");
-            this.closeModal();
+            this.closeUploadModal();
             this.activeEditForm = null;
             this.selectedRegistration = null;
 
@@ -2952,7 +3003,7 @@ class RedGiraffeDashboard {
         }
     }
 
-    showModal(content) {
+    showEditModal(content) {
         const modalOverlay =
             document.getElementById("modal-overlay") || this.createModalOverlay();
         modalOverlay.innerHTML = `
@@ -2963,6 +3014,13 @@ class RedGiraffeDashboard {
         modalOverlay.style.display = "flex";
         modalOverlay.style.opacity = "1";
         document.body.style.overflow = "hidden";
+
+        // Add backdrop click handler to close modal
+        modalOverlay.addEventListener("click", (e) => {
+            if (e.target === modalOverlay) {
+                this.closeUploadModal();
+            }
+        });
     }
 
     createModalOverlay() {
@@ -2984,7 +3042,7 @@ class RedGiraffeDashboard {
         return overlay;
     }
 
-    closeModal() {
+    closeUploadModal() {
         const modalOverlay = document.getElementById("modal-overlay");
         if (modalOverlay) {
             modalOverlay.style.opacity = "0";
@@ -3004,7 +3062,7 @@ class RedGiraffeDashboard {
                 <div style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0; font-family: 'Inter', sans-serif;">Upload Documents</h2>
-                        <button onclick="dashboard.closeModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
+                        <button onclick="dashboard.closeUploadModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
                     </div>
                 </div>
                 <div style="padding: 24px;">
@@ -3030,7 +3088,7 @@ class RedGiraffeDashboard {
                             <button type="submit" style="flex: 1; background: #dc2626; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
                                 Upload Documents
                             </button>
-                            <button type="button" onclick="dashboard.closeModal()" style="flex: 1; background: #6b7280; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
+                            <button type="button" onclick="dashboard.closeUploadModal()" style="flex: 1; background: #6b7280; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
                                 Cancel
                             </button>
                         </div>
@@ -3038,7 +3096,7 @@ class RedGiraffeDashboard {
                 </div>
             </div>
         `;
-        this.showModal(modalHtml);
+        this.showEditModal(modalHtml);
     }
 
     handleUploadDocuments(event) {
@@ -3051,7 +3109,7 @@ class RedGiraffeDashboard {
             `Successfully uploaded ${files.length} document(s).`,
             "success"
         );
-        this.closeModal();
+        this.closeUploadModal();
     }
 
     showAuditLog() {
@@ -3061,7 +3119,7 @@ class RedGiraffeDashboard {
                 <div style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0; font-family: 'Inter', sans-serif;">Audit Log</h2>
-                        <button onclick="dashboard.closeModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
+                        <button onclick="dashboard.closeUploadModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
                     </div>
                 </div>
                 <div style="padding: 24px;">
@@ -3089,7 +3147,7 @@ class RedGiraffeDashboard {
                 </div>
             </div>
         `;
-        this.showModal(modalHtml);
+        this.showEditModal(modalHtml);
     }
 
     renderAuditLogEntries(entries) {
@@ -3168,7 +3226,7 @@ class RedGiraffeDashboard {
         }
     }
 
-    closeEditModal() {
+    closeRegistrationModal() {
         const modal = document.getElementById("edit-registration-modal");
         if (modal) {
             modal.style.opacity = "0";
@@ -5110,7 +5168,7 @@ class RedGiraffeDashboard {
         } = this.pointsHistoryState;
 
         // Filter transactions based on current filters
-        const filteredTransactions = this.getFilteredTransactions();
+        const filteredTransactions = this.getFilteredPointsTransactions();
         const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
         const startIndex = (currentPage - 1) * itemsPerPage;
         const paginatedTransactions = filteredTransactions.slice(
@@ -5390,7 +5448,7 @@ class RedGiraffeDashboard {
         }
     }
 
-    getFilteredTransactions() {
+    getFilteredPointsTransactions() {
         let filtered = [...this.mockCashPointsTransactions];
         const {
             dateRange,
@@ -5467,7 +5525,7 @@ class RedGiraffeDashboard {
     }
 
     exportPointsHistory() {
-        const filteredTransactions = this.getFilteredTransactions();
+        const filteredTransactions = this.getFilteredPointsTransactions();
 
         if (filteredTransactions.length === 0) {
             this.showNotification("No transactions to export", "error");
@@ -6988,7 +7046,7 @@ async function saveRegistration() {
                 "Registration updated successfully!",
                 "success"
             );
-            dashboard.closeEditModal();
+            dashboard.closeUploadModal();
             dashboard.loadRegistrationsData();
         } else {
             dashboard.showNotification("Failed to update registration", "error");
