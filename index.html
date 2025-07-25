@@ -340,6 +340,24 @@
             color: #111827;
         }
 
+        /* Dashboard Transaction Expansion Styles */
+        .transaction-expanded {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                max-height: 500px;
+                transform: translateY(0);
+            }
+        }
+
         /* Responsive Design for Transaction History */
         @media (max-width: 768px) {
             .transaction-tabs {
@@ -389,6 +407,21 @@
 
             .transaction-count-badge {
                 align-self: flex-start;
+            }
+
+            /* Mobile responsive for expanded transaction sections */
+            .transaction-expanded {
+                padding: 16px !important;
+            }
+
+            .transaction-expanded > div[style*="grid-template-columns"] {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
+            }
+
+            .transaction-expanded button {
+                width: 100% !important;
+                margin-bottom: 8px;
             }
         }
 
@@ -925,6 +958,9 @@
                 <h3 class="logo-text text-2xl font-bold">RedGirraffe</h3>
                 <div class="logo-subtitle">Payment Platform</div>
             </div>
+            <!-- <button class="sidebar-toggle" id="sidebar-toggle" onclick="if(window.dashboard) window.dashboard.toggleSidebar(); else console.log('Dashboard not ready');">
+                <i class="fas fa-bars"></i>
+            </button> -->
         </div>
 
         <!-- Premium User Profile -->
@@ -941,55 +977,55 @@
         <!-- World-Class Navigation -->
         <div class="nav-menu">
             <div class="nav-item">
-                <a class="nav-link active" data-section="dashboard">
+                <a class="nav-link active" data-section="dashboard" data-tooltip="Dashboard">
                     <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
                     <span class="nav-text">Dashboard</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a class="nav-link" data-section="registrations">
+                <a class="nav-link" data-section="registrations" data-tooltip="Registrations">
                     <div class="nav-icon"><i class="fas fa-file-alt"></i></div>
                     <span class="nav-text">Registrations</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a class="nav-link" data-section="edit-records">
+                <a class="nav-link" data-section="edit-records" data-tooltip="Edit Records">
                     <div class="nav-icon"><i class="fas fa-edit"></i></div>
                     <span class="nav-text">Edit Records</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a class="nav-link" data-section="rewards">
+                <a class="nav-link" data-section="rewards" data-tooltip="Rewards">
                     <div class="nav-icon"><i class="fas fa-gift"></i></div>
                     <span class="nav-text">Rewards</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a class="nav-link" data-section="transactions">
+                <a class="nav-link" data-section="transactions" data-tooltip="Transaction History">
                     <div class="nav-icon"><i class="fas fa-clock"></i></div>
                     <span class="nav-text">Transaction History</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a class="nav-link" data-section="referrals">
+                <a class="nav-link" data-section="referrals" data-tooltip="Referrals">
                     <div class="nav-icon"><i class="fas fa-users"></i></div>
                     <span class="nav-text">Referrals</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a class="nav-link" data-section="reports">
+                <a class="nav-link" data-section="reports" data-tooltip="Reports">
                     <div class="nav-icon"><i class="fas fa-chart-bar"></i></div>
                     <span class="nav-text">Reports</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a class="nav-link" data-section="profile">
+                <a class="nav-link" data-section="profile" data-tooltip="Profile and Settings">
                     <div class="nav-icon"><i class="fas fa-user"></i></div>
                     <span class="nav-text">Profile and Settings</span>
                 </a>
             </div>
             <div class="nav-item">
-                <a class="nav-link" data-section="contact">
+                <a class="nav-link" data-section="contact" data-tooltip="Contact Support">
                     <div class="nav-icon"><i class="fas fa-headset"></i></div>
                     <span class="nav-text">Contact Support</span>
                 </a>
@@ -998,10 +1034,10 @@
 
         <!-- Elite Footer -->
         <div class="sidebar-footer">
-            <button class="theme-toggle" onclick="toggleTheme()">
+            <!-- <button class="theme-toggle" onclick="toggleTheme()">
                 <i class="fas fa-moon"></i>
                 <span>Dark Mode</span>
-            </button>
+            </button> -->
             <button class="logout-btn" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Log Out</span>

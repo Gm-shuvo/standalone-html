@@ -65,6 +65,24 @@ class EditRecordsMockService {
                     tenancyEndDate: "2024-12-20",
                     cardIssuingBank: "Axis Bank",
                 },
+                landlordDetails: {
+                    name: "Mrs. Efer Himanshu",
+                    email: "df@dfgd.vpm",
+                    phone: "9876543210",
+                    address: "Property Address",
+                    panNo: "BSEPD9456C",
+                },
+                accountDetails: [
+                    {
+                        id: 1,
+                        accountHolderName: "Mrs. Efer Himanshu",
+                        accountNumber: "123456789",
+                        accountType: "Current",
+                        ifscCode: "HDFC0012356",
+                        bankName: "HDFC Bank",
+                        panNumber: "BSEPD9456C"
+                    }
+                ],
             },
             "RG-4000182596": {
                 registration: this.mockRegistrations[1],
@@ -81,6 +99,18 @@ class EditRecordsMockService {
                     frequency: "Half Yearly",
                     dueDate: "2024-11-14",
                     cardIssuingBank: "HDFC Bank",
+                },
+                instituteDetails: {
+                    instituteName: "CSDG",
+                    website: null,
+                    gstin: "07AAHCR5014K1ZB",
+                    panNo: "AHCRD5014K",
+                    phoneNumber: null,
+                    addressLine1: "dsfe",
+                    addressLine2: null,
+                    city: "deed",
+                    state: "Delhi",
+                    pincode: "110053"
                 },
             },
             "RG-6000182595": {
@@ -116,6 +146,17 @@ class EditRecordsMockService {
                 changeType: "Field Update",
             },
         ];
+        this.nextAuditId = 3;
+    }
+
+    addAuditEntry(entry) {
+        const auditEntry = {
+            id: this.nextAuditId++,
+            ...entry,
+            timestamp: new Date().toLocaleString(),
+            ipAddress: "192.168.1.15" // Mock IP address
+        };
+        this.auditLog.push(auditEntry);
     }
 
     async getRegistrations(userId) {
@@ -191,6 +232,7 @@ class RedGiraffeDashboard {
         this.editRecordsService = new EditRecordsMockService();
         this.activeEditForm = null;
         this.selectedRegistration = null;
+        this.ownerAccounts = [];
 
         // Initialize Gift Cards data
         this.initializeGiftCardsData();
@@ -540,6 +582,7 @@ class RedGiraffeDashboard {
         this.loadDashboardData();
         this.initializeCharts();
         this.initializeTheme();
+        this.initializeSidebar();
         this.startLuxuryAnimations();
         this.initializeFirstSection();
         this.initializeTransactionHistoryData();
@@ -762,6 +805,17 @@ class RedGiraffeDashboard {
         if (overlay) {
             overlay.addEventListener("click", () => {
                 this.closeMobileSidebar();
+            });
+        }
+
+        // Sidebar toggle
+        const sidebarToggle = document.getElementById("sidebar-toggle");
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Sidebar toggle clicked");
+                this.toggleSidebar();
             });
         }
 
@@ -2712,28 +2766,54 @@ class RedGiraffeDashboard {
 
     generateEditFormModal(registrationType, registrationData) {
         const title = this.getEditFormTitle(registrationType);
-        const formFields = this.getEditFormFields(
-            registrationType,
-            registrationData
-        );
+        const rgId = registrationData.registration?.rgId || 'N/A';
 
         return `
-            <div style="background: white; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
+            <div style="background: white; border-radius: 12px; max-width: 1200px; width: 95%; max-height: 90vh; overflow-y: auto; position: relative; font-family: 'Inter', sans-serif;">
+                <!-- Header -->
                 <div style="padding: 24px; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; background: white; z-index: 10;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0; font-family: 'Inter', sans-serif;">${title}</h2>
-                        <button onclick="dashboard.closeUploadModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
+                        <h2 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0;">${title} - ${rgId}</h2>
+                        <button onclick="dashboard.closeUploadModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 8px; border-radius: 4px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'">×</button>
                     </div>
                 </div>
-                <div style="padding: 24px;">
+
+                <!-- Info Alert -->
+                <div style="margin: 24px; padding: 16px; background: #dbeafe; border: 1px solid #bfdbfe; border-radius: 8px; display: flex; align-items: start; gap: 12px;">
+                    <i class="fas fa-info-circle" style="color: #2563eb; margin-top: 2px;"></i>
+                    <div style="color: #1e40af; font-size: 14px; line-height: 1.5;">
+                        Only certain fields are editable (marked with <i class="fas fa-edit" style="color: #2563eb; font-size: 12px;"></i> icon).
+                        All changes are tracked in the audit log.
+                    </div>
+                </div>
+
+                <!-- Form Content -->
+                <div style="padding: 0 24px 24px;">
                     <form id="edit-form" onsubmit="dashboard.handleSaveEdit(event, '${registrationType}')">
-                        ${formFields}
-                        <div style="display: flex; gap: 12px; margin-top: 24px;">
-                            <button type="submit" style="flex: 1; background: #16a34a; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
-                                Save Changes
-                            </button>
-                            <button type="button" onclick="dashboard.closeUploadModal()" style="flex: 1; background: #6b7280; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
+                        ${this.getDetailedFormFields(registrationType, registrationData)}
+
+                        <!-- Indemnity Section -->
+                        <div style="margin-top: 32px; padding: 24px; background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;">
+                            <h3 style="font-size: 18px; font-weight: 600; color: #111827; margin: 0 0 16px 0;">Indemnity Undertaking Letter</h3>
+                            <div style="background: white; padding: 16px; border-radius: 6px; border: 1px solid #e5e7eb; max-height: 160px; overflow-y: auto; margin-bottom: 16px;">
+                                <div style="font-size: 14px; color: #374151; line-height: 1.6; white-space: pre-line;">${this.getIndemnityText()}</div>
+                            </div>
+                            <div style="display: flex; align-items: start; gap: 12px;">
+                                <input type="checkbox" id="indemnity-checkbox" required style="margin-top: 4px; width: 16px; height: 16px;">
+                                <label for="indemnity-checkbox" style="font-size: 14px; color: #374151; line-height: 1.5; cursor: pointer;">
+                                    I have read and agree to the Indemnity Undertaking Letter above. I confirm that all information provided is true and correct.
+                                    <span style="color: #dc2626; margin-left: 4px;">*</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div style="display: flex; justify-content: end; gap: 12px; margin-top: 24px;">
+                            <button type="button" onclick="dashboard.closeUploadModal()" style="padding: 12px 24px; border: 1px solid #d1d5db; background: white; color: #374151; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.backgroundColor='#f9fafb'" onmouseout="this.style.backgroundColor='white'">
                                 Cancel
+                            </button>
+                            <button type="submit" id="save-button" disabled style="padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 0.2s; opacity: 0.5;">
+                                Save Changes
                             </button>
                         </div>
                     </form>
@@ -2753,13 +2833,36 @@ class RedGiraffeDashboard {
     getEditFormTitle(registrationType) {
         switch (registrationType) {
             case "tenant":
-                return "Edit Rent Registration";
+                return "Edit Rent Details";
             case "education":
-                return "Edit Education Registration";
+                return "Edit Education Details";
             case "society":
-                return "Edit Society Registration";
+                return "Edit Society Details";
             default:
                 return "Edit Registration";
+        }
+    }
+
+    getIndemnityText() {
+        return `I/We confirm that I/we stay (use as residence) or function (use as office) in the same property and the landlord particulars as mentioned by me/us in the RentPay form is TRUE.
+
+I/We are well aware that the rental payment platform RentPay offered by RedGiraffe.com enables the tenants to submit TRUE and CORRECT tenancy data. The transaction facilitating Bank/Card issuing Company & RedGiraffe.com may conduct various verifications to cross check the details submitted by me/us in the RentPay form. In case we are using School Fees or Society Maintenance Charges payment interface of RedGiraffe, I/We hereby confirm that all documents submitted by me/us are TRUE and CORRECT.
+
+I/We am/are fully aware that any incorrect mention of details/facts could make me culpable to fraud and the participating Bank/Card issuing Company and/or RedGiraffe.com could initiate action against me/us.
+
+I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims, demands, actions, suits, losses, costs, charges, expenses, damages and liabilities whatsoever which the Bank/Card issuing Company or RedGiraffe.com may pay, sustain, suffer or incur by reason of or in connection with my/our filling up of FALSE/INCORRECT information, including, without limiting the generality of the foregoing, all costs and expenses (including legal expenses) incurred in defending any action or proceedings brought against the Bank/Card issuing Company or RedGiraffe.com.`;
+    }
+
+    getDetailedFormFields(registrationType, registrationData) {
+        switch (registrationType) {
+            case "tenant":
+                return this.getDetailedTenantFormFields(registrationData);
+            case "education":
+                return this.getDetailedEducationFormFields(registrationData);
+            case "society":
+                return this.getDetailedSocietyFormFields(registrationData);
+            default:
+                return "";
         }
     }
 
@@ -2776,70 +2879,411 @@ class RedGiraffeDashboard {
         }
     }
 
-    getTenantFormFields(registrationData) {
+    getDetailedTenantFormFields(registrationData) {
+        const registration = registrationData.registration || {};
+        const tenantDetails = registrationData.tenantDetails || {};
         const tenancyDetails = registrationData.tenancyDetails || {};
+        const landlordDetails = registrationData.landlordDetails || {};
+        const accountDetails = registrationData.accountDetails || [];
+
         return `
-            <div style="display: grid; gap: 16px;">
-                <div>
-                    <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Rent Amount</label>
-                    <input type="text" name="rentAmount" value="${tenancyDetails.rentAmount || ""
-            }"
-                           style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
+            <!-- Registration Details (Read-only) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Registration Details</h3>
                 </div>
-                <div>
-                    <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Frequency</label>
-                    <select name="frequency" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
-                        <option value="Monthly" ${tenancyDetails.frequency === "Monthly"
-                ? "selected"
-                : ""
-            }>Monthly</option>
-                        <option value="Quarterly" ${tenancyDetails.frequency === "Quarterly"
-                ? "selected"
-                : ""
-            }>Quarterly</option>
-                        <option value="Half Yearly" ${tenancyDetails.frequency === "Half Yearly"
-                ? "selected"
-                : ""
-            }>Half Yearly</option>
-                        <option value="Yearly" ${tenancyDetails.frequency === "Yearly"
-                ? "selected"
-                : ""
-            }>Yearly</option>
-                    </select>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Registration ID</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.rgId || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Status</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.status || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Payment Mode</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.mode || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Type</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.subtype || 'N/A'}</div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Due Date</label>
-                    <input type="date" name="dueDate" value="${tenancyDetails.dueDate || ""
-            }"
-                           style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
+            </div>
+
+            <!-- Tenant Details (Read-only) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Tenant Details</h3>
                 </div>
-                <div>
-                    <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Tenancy End Date</label>
-                    <input type="date" name="tenancyEndDate" value="${tenancyDetails.tenancyEndDate || ""
-            }"
-                           style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Name</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${tenantDetails.name || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Email</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${tenantDetails.email || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Mobile</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${tenantDetails.mobile || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">PAN Number</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${tenantDetails.panNo || 'N/A'}</div>
+                        </div>
+
+                        <!-- Editable: Date of Birth -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Date of Birth/Incorporation: *
+                            </label>
+                            <input type="date" name="dateOfBirth" value="${tenantDetails.dob || '2005-12-06'}"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                        </div>
+
+                        <div style="grid-column: 1 / -1;">
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Address</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${tenantDetails.address || 'N/A'}, ${tenantDetails.city || ''} ${tenantDetails.pincode || ''}</div>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 6px; font-family: 'Inter', sans-serif;">Card Issuing Bank</label>
-                    <select name="cardIssuingBank" style="width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;" required>
-                        <option value="">Select Bank</option>
-                        <option value="HDFC Bank" ${tenancyDetails.cardIssuingBank === "HDFC Bank"
-                ? "selected"
-                : ""
-            }>HDFC Bank</option>
-                        <option value="Axis Bank" ${tenancyDetails.cardIssuingBank === "Axis Bank"
-                ? "selected"
-                : ""
-            }>Axis Bank</option>
-                        <option value="ICICI Bank" ${tenancyDetails.cardIssuingBank === "ICICI Bank"
-                ? "selected"
-                : ""
-            }>ICICI Bank</option>
-                        <option value="SBI" ${tenancyDetails.cardIssuingBank === "SBI"
-                ? "selected"
-                : ""
-            }>SBI</option>
-                    </select>
+            </div>
+
+            <!-- Tenancy Details (Editable Fields) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #b91c1c; margin: 0;">Tenancy Details</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <!-- Editable: Rent Amount -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Rent Amount (INR): *
+                            </label>
+                            <input type="text" name="rentAmount" value="${tenancyDetails.rentAmount || ''}"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe; focus:border-color: #2563eb; focus:outline: none;"
+                                   placeholder="Enter rent amount" required>
+                        </div>
+
+                        <!-- Editable: Frequency -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Frequency: *
+                            </label>
+                            <select name="frequency" style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                                <option value="Monthly" ${tenancyDetails.frequency === "Monthly" ? "selected" : ""}>Monthly</option>
+                                <option value="Quarterly" ${tenancyDetails.frequency === "Quarterly" ? "selected" : ""}>Quarterly</option>
+                                <option value="Half Yearly" ${tenancyDetails.frequency === "Half Yearly" ? "selected" : ""}>Half Yearly</option>
+                                <option value="Yearly" ${tenancyDetails.frequency === "Yearly" ? "selected" : ""}>Yearly</option>
+                            </select>
+                        </div>
+
+                        <!-- Editable: Due Date -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Due Date: *
+                            </label>
+                            <input type="date" name="dueDate" value="${tenancyDetails.dueDate || ''}"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                        </div>
+
+                        <!-- Editable: Tenancy End Date -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Tenancy End Date: *
+                            </label>
+                            <input type="date" name="tenancyEndDate" value="${tenancyDetails.tenancyEndDate || ''}"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                        </div>
+
+                        <!-- Editable: Card Issuing Bank -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Card Issuing Bank:
+                            </label>
+                            <select name="cardIssuingBank" style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;">
+                                <option value="">Select Bank</option>
+                                <option value="HDFC Bank" ${tenancyDetails.cardIssuingBank === "HDFC Bank" ? "selected" : ""}>HDFC Bank</option>
+                                <option value="Axis Bank" ${tenancyDetails.cardIssuingBank === "Axis Bank" ? "selected" : ""}>Axis Bank</option>
+                                <option value="ICICI Bank" ${tenancyDetails.cardIssuingBank === "ICICI Bank" ? "selected" : ""}>ICICI Bank</option>
+                                <option value="SBI" ${tenancyDetails.cardIssuingBank === "SBI" ? "selected" : ""}>SBI</option>
+                                <option value="CITIBank" ${tenancyDetails.cardIssuingBank === "CITIBank" ? "selected" : ""}>CITIBank</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Owner Details (Read-only) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #b91c1c; margin: 0;">Owner Details</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Owner Name</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500; background: #f3f4f6; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb;">${landlordDetails.name || 'Mrs. Efer Himanshu'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Email</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500; background: #f3f4f6; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb;">${landlordDetails.email || 'df@dfgd.vpm'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Phone</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500; background: #f3f4f6; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb;">${landlordDetails.phone || '9876543210'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Address</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500; background: #f3f4f6; padding: 12px; border-radius: 6px; border: 1px solid #e5e7eb;">${landlordDetails.address || 'Property Address'}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Owner Account Details (Editable Fields) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #b91c1c; margin: 0;">Owner Account Details</h3>
+                    <button type="button" onclick="dashboard.addOwnerAccount()"
+                            style="background: #16a34a; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-plus" style="font-size: 12px;"></i>
+                        Add Account
+                    </button>
+                </div>
+                <div style="padding: 20px;">
+                    <div id="owner-accounts-container">
+                        ${this.renderOwnerAccounts(accountDetails)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    getDetailedEducationFormFields(registrationData) {
+        const registration = registrationData.registration || {};
+        const studentDetails = registrationData.studentDetails || {};
+        const educationDetails = registrationData.educationDetails || {};
+
+        return `
+            <!-- Registration Details (Read-only) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Registration Details</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Registration ID</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.rgId || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Status</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.status || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Payment Mode</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.mode || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Type</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.subtype || 'N/A'}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Student Details (Read-only) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Student Details</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Name</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${studentDetails.name || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Email</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${studentDetails.email || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Mobile</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${studentDetails.mobile || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">PAN Number</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${studentDetails.panNo || 'N/A'}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Education Details (Editable Fields) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #b91c1c; margin: 0;">Education Fee Details</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <!-- Editable: Fee Amount -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Fee Amount (INR): *
+                            </label>
+                            <input type="text" name="feeAmount" value="${educationDetails.feeAmount || ''}"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
+                                   placeholder="Enter fee amount" required>
+                        </div>
+
+                        <!-- Editable: Frequency -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Frequency: *
+                            </label>
+                            <select name="frequency" style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                                <option value="Monthly" ${educationDetails.frequency === "Monthly" ? "selected" : ""}>Monthly</option>
+                                <option value="Quarterly" ${educationDetails.frequency === "Quarterly" ? "selected" : ""}>Quarterly</option>
+                                <option value="Half Yearly" ${educationDetails.frequency === "Half Yearly" ? "selected" : ""}>Half Yearly</option>
+                                <option value="Yearly" ${educationDetails.frequency === "Yearly" ? "selected" : ""}>Yearly</option>
+                            </select>
+                        </div>
+
+                        <!-- Editable: Due Date -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Due Date: *
+                            </label>
+                            <input type="date" name="dueDate" value="${educationDetails.dueDate || ''}"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                        </div>
+
+                        <!-- Editable: Card Issuing Bank -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Card Issuing Bank:
+                            </label>
+                            <select name="cardIssuingBank" style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;">
+                                <option value="">Select Bank</option>
+                                <option value="HDFC Bank" ${educationDetails.cardIssuingBank === "HDFC Bank" ? "selected" : ""}>HDFC Bank</option>
+                                <option value="Axis Bank" ${educationDetails.cardIssuingBank === "Axis Bank" ? "selected" : ""}>Axis Bank</option>
+                                <option value="ICICI Bank" ${educationDetails.cardIssuingBank === "ICICI Bank" ? "selected" : ""}>ICICI Bank</option>
+                                <option value="SBI" ${educationDetails.cardIssuingBank === "SBI" ? "selected" : ""}>SBI</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    getDetailedSocietyFormFields(registrationData) {
+        const registration = registrationData.registration || {};
+        const societyDetails = registrationData.societyDetails || {};
+
+        return `
+            <!-- Registration Details (Read-only) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Registration Details</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Registration ID</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.rgId || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Status</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.status || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Payment Mode</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.mode || 'N/A'}</div>
+                        </div>
+                        <div>
+                            <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Type</label>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">${registration.subtype || 'N/A'}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Society Details (Editable Fields) -->
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 16px; font-weight: 600; color: #b91c1c; margin: 0;">Society Maintenance Details</h3>
+                </div>
+                <div style="padding: 20px;">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <!-- Editable: Amount -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Amount (INR): *
+                            </label>
+                            <input type="text" name="amount" value="${societyDetails.amount || ''}"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
+                                   placeholder="Enter amount" required>
+                        </div>
+
+                        <!-- Editable: Frequency -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Frequency: *
+                            </label>
+                            <select name="frequency" style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                                <option value="Monthly" ${societyDetails.frequency === "Monthly" ? "selected" : ""}>Monthly</option>
+                                <option value="Quarterly" ${societyDetails.frequency === "Quarterly" ? "selected" : ""}>Quarterly</option>
+                                <option value="Half Yearly" ${societyDetails.frequency === "Half Yearly" ? "selected" : ""}>Half Yearly</option>
+                                <option value="Yearly" ${societyDetails.frequency === "Yearly" ? "selected" : ""}>Yearly</option>
+                            </select>
+                        </div>
+
+                        <!-- Editable: Due Date -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Due Date: *
+                            </label>
+                            <input type="date" name="dueDate" value="${societyDetails.dueDate || ''}"
+                                   style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                        </div>
+
+                        <!-- Editable: Card Issuing Bank -->
+                        <div>
+                            <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                                <i class="fas fa-edit" style="font-size: 12px;"></i>
+                                Card Issuing Bank:
+                            </label>
+                            <select name="cardIssuingBank" style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;">
+                                <option value="">Select Bank</option>
+                                <option value="HDFC Bank" ${societyDetails.cardIssuingBank === "HDFC Bank" ? "selected" : ""}>HDFC Bank</option>
+                                <option value="Axis Bank" ${societyDetails.cardIssuingBank === "Axis Bank" ? "selected" : ""}>Axis Bank</option>
+                                <option value="ICICI Bank" ${societyDetails.cardIssuingBank === "ICICI Bank" ? "selected" : ""}>ICICI Bank</option>
+                                <option value="SBI" ${societyDetails.cardIssuingBank === "SBI" ? "selected" : ""}>SBI</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -2976,11 +3420,46 @@ class RedGiraffeDashboard {
 
         if (!this.selectedRegistration) return;
 
+        // Check indemnity checkbox
+        const indemnityCheckbox = document.getElementById('indemnity-checkbox');
+        if (!indemnityCheckbox || !indemnityCheckbox.checked) {
+            this.showNotification(
+                "Please accept the indemnity undertaking to proceed with the update.",
+                "error"
+            );
+            return;
+        }
+
         try {
             const formData = new FormData(event.target);
             const data = Object.fromEntries(formData.entries());
 
+            // Remove the indemnity checkbox from the data
+            delete data['indemnity-checkbox'];
+
+            // Process owner account details
+            const ownerAccountsData = this.processOwnerAccountsFromForm(formData);
+
+            // Validate owner accounts
+            const invalidAccounts = ownerAccountsData.filter(account =>
+                !account.accountHolderName || !account.accountNumber || !account.ifscCode
+            );
+
+            if (invalidAccounts.length > 0) {
+                this.showNotification(
+                    "Please fill in all required fields for owner account details.",
+                    "error"
+                );
+                return;
+            }
+
             this.showNotification("Saving registration data...", "info");
+
+            // Include owner accounts in the data
+            data.ownerAccounts = ownerAccountsData;
+
+            // Track changes in audit log
+            this.trackFormChanges(registrationType, data);
 
             await this.editRecordsService.saveRegistration(
                 this.selectedRegistration.registration.rgId,
@@ -3003,6 +3482,202 @@ class RedGiraffeDashboard {
         }
     }
 
+    trackFormChanges(registrationType, newData) {
+        const rgId = this.selectedRegistration.registration?.rgId || 'Unknown';
+        const currentData = this.getCurrentFormData(registrationType);
+
+        Object.keys(newData).forEach(field => {
+            const oldValue = currentData[field] || '';
+            const newValue = newData[field] || '';
+
+            if (oldValue !== newValue) {
+                this.editRecordsService.addAuditEntry({
+                    field: `${registrationType} ${field}`,
+                    oldValue,
+                    newValue,
+                    registrationId: rgId,
+                    registrationType: registrationType.charAt(0).toUpperCase() + registrationType.slice(1),
+                    changeType: 'Field Update',
+                    userId: this.userId
+                });
+            }
+        });
+    }
+
+    getCurrentFormData(registrationType) {
+        switch (registrationType) {
+            case 'tenant':
+                return this.selectedRegistration.tenancyDetails || {};
+            case 'education':
+                return this.selectedRegistration.educationDetails || {};
+            case 'society':
+                return this.selectedRegistration.societyDetails || {};
+            default:
+                return {};
+        }
+    }
+
+    // Owner Account Management Functions
+    renderOwnerAccounts(accountDetails) {
+        if (!accountDetails || accountDetails.length === 0) {
+            accountDetails = [{
+                id: 1,
+                accountHolderName: "Mrs. Efer Himanshu",
+                accountNumber: "123456789",
+                accountType: "Current",
+                ifscCode: "HDFC0012356",
+                bankName: "HDFC Bank",
+                panNumber: "BSEPD9456C"
+            }];
+        }
+
+        this.ownerAccounts = accountDetails;
+
+        return accountDetails.map((account, index) => `
+            <div class="owner-account-item" data-account-id="${account.id}" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px; background: #f9fafb;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h4 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Account #${index + 1}</h4>
+                    ${accountDetails.length > 1 ? `
+                        <button type="button" onclick="dashboard.removeOwnerAccount(${account.id})"
+                                style="background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                            <i class="fas fa-trash" style="margin-right: 4px;"></i>Remove
+                        </button>
+                    ` : ''}
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                    <!-- Account Holder Name -->
+                    <div>
+                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-edit" style="font-size: 12px;"></i>
+                            Account Holder Name: *
+                        </label>
+                        <input type="text" name="accountHolderName_${account.id}" value="${account.accountHolderName || ''}"
+                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
+                               placeholder="Enter account holder name" required>
+                    </div>
+
+                    <!-- Account Number -->
+                    <div>
+                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-edit" style="font-size: 12px;"></i>
+                            Account Number: *
+                        </label>
+                        <input type="text" name="accountNumber_${account.id}" value="${account.accountNumber || ''}"
+                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
+                               placeholder="Enter account number" required>
+                    </div>
+
+                    <!-- Account Type -->
+                    <div>
+                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-edit" style="font-size: 12px;"></i>
+                            Account Type: *
+                        </label>
+                        <select name="accountType_${account.id}" style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                            <option value="Savings" ${account.accountType === "Savings" ? "selected" : ""}>Savings</option>
+                            <option value="Current" ${account.accountType === "Current" ? "selected" : ""}>Current</option>
+                        </select>
+                    </div>
+
+                    <!-- IFSC Code -->
+                    <div>
+                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-edit" style="font-size: 12px;"></i>
+                            IFSC Code: *
+                        </label>
+                        <input type="text" name="ifscCode_${account.id}" value="${account.ifscCode || ''}"
+                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
+                               placeholder="Enter IFSC code" required>
+                    </div>
+
+                    <!-- Bank Name -->
+                    <div>
+                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-edit" style="font-size: 12px;"></i>
+                            Bank Name:
+                        </label>
+                        <input type="text" name="bankName_${account.id}" value="${account.bankName || ''}"
+                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
+                               placeholder="Enter bank name">
+                    </div>
+
+                    <!-- PAN Number -->
+                    <div>
+                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                            <i class="fas fa-edit" style="font-size: 12px;"></i>
+                            PAN Number:
+                        </label>
+                        <input type="text" name="panNumber_${account.id}" value="${account.panNumber || ''}"
+                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
+                               placeholder="Enter PAN number">
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    addOwnerAccount() {
+        const newAccount = {
+            id: Date.now(),
+            accountHolderName: '',
+            accountNumber: '',
+            accountType: 'Savings',
+            ifscCode: '',
+            bankName: '',
+            panNumber: ''
+        };
+
+        this.ownerAccounts.push(newAccount);
+
+        // Re-render the accounts section
+        const container = document.getElementById('owner-accounts-container');
+        if (container) {
+            container.innerHTML = this.renderOwnerAccounts(this.ownerAccounts);
+        }
+    }
+
+    removeOwnerAccount(accountId) {
+        if (this.ownerAccounts.length > 1) {
+            this.ownerAccounts = this.ownerAccounts.filter(account => account.id !== accountId);
+
+            // Re-render the accounts section
+            const container = document.getElementById('owner-accounts-container');
+            if (container) {
+                container.innerHTML = this.renderOwnerAccounts(this.ownerAccounts);
+            }
+        }
+    }
+
+    processOwnerAccountsFromForm(formData) {
+        const accounts = [];
+        const processedIds = new Set();
+
+        // Extract account data from form
+        for (const [key, value] of formData.entries()) {
+            const match = key.match(/^(\w+)_(\d+)$/);
+            if (match) {
+                const [, fieldName, accountId] = match;
+                const id = parseInt(accountId);
+
+                if (!processedIds.has(id)) {
+                    processedIds.add(id);
+                    accounts.push({
+                        id: id,
+                        accountHolderName: formData.get(`accountHolderName_${id}`) || '',
+                        accountNumber: formData.get(`accountNumber_${id}`) || '',
+                        accountType: formData.get(`accountType_${id}`) || 'Savings',
+                        ifscCode: formData.get(`ifscCode_${id}`) || '',
+                        bankName: formData.get(`bankName_${id}`) || '',
+                        panNumber: formData.get(`panNumber_${id}`) || ''
+                    });
+                }
+            }
+        }
+
+        return accounts;
+    }
+
     showEditModal(content) {
         const modalOverlay =
             document.getElementById("modal-overlay") || this.createModalOverlay();
@@ -3021,6 +3696,36 @@ class RedGiraffeDashboard {
                 this.closeUploadModal();
             }
         });
+
+        // Setup indemnity checkbox functionality
+        this.setupIndemnityCheckbox();
+    }
+
+    setupIndemnityCheckbox() {
+        const checkbox = document.getElementById('indemnity-checkbox');
+        const saveButton = document.getElementById('save-button');
+
+        if (checkbox && saveButton) {
+            const updateSaveButton = () => {
+                if (checkbox.checked) {
+                    saveButton.disabled = false;
+                    saveButton.style.opacity = '1';
+                    saveButton.style.backgroundColor = '#2563eb';
+                    saveButton.style.cursor = 'pointer';
+                } else {
+                    saveButton.disabled = true;
+                    saveButton.style.opacity = '0.5';
+                    saveButton.style.backgroundColor = '#9ca3af';
+                    saveButton.style.cursor = 'not-allowed';
+                }
+            };
+
+            // Initial state
+            updateSaveButton();
+
+            // Listen for changes
+            checkbox.addEventListener('change', updateSaveButton);
+        }
     }
 
     createModalOverlay() {
@@ -3237,6 +3942,46 @@ class RedGiraffeDashboard {
             setTimeout(function () {
                 modal.style.display = "none";
             }, 300);
+        }
+    }
+
+    // Sidebar Functions
+    toggleSidebar() {
+        console.log("toggleSidebar method called");
+        const sidebar = document.getElementById("sidebar");
+        const main = document.querySelector("main");
+
+        console.log("Sidebar element:", sidebar);
+        console.log("Main element:", main);
+
+        if (sidebar && main) {
+            const isMinimized = sidebar.classList.contains("minimized");
+            console.log("Is minimized:", isMinimized);
+
+            if (isMinimized) {
+                sidebar.classList.remove("minimized");
+                main.classList.remove("sidebar-minimized");
+                localStorage.setItem("sidebarMinimized", "false");
+                console.log("Sidebar expanded");
+            } else {
+                sidebar.classList.add("minimized");
+                main.classList.add("sidebar-minimized");
+                localStorage.setItem("sidebarMinimized", "true");
+                console.log("Sidebar minimized");
+            }
+        } else {
+            console.log("Sidebar or main element not found");
+        }
+    }
+
+    initializeSidebar() {
+        const sidebarMinimized = localStorage.getItem("sidebarMinimized") === "true";
+        const sidebar = document.getElementById("sidebar");
+        const main = document.querySelector("main");
+
+        if (sidebarMinimized && sidebar && main) {
+            sidebar.classList.add("minimized");
+            main.classList.add("sidebar-minimized");
         }
     }
 
@@ -5768,6 +6513,7 @@ class RedGiraffeDashboard {
             gstNumber: false,
             gstDetails: "",
             deliveryOption: "self",
+            activeTab: "description",
             receiverName: "",
             receiverMobile: "",
             receiverEmail: "",
@@ -5955,8 +6701,133 @@ class RedGiraffeDashboard {
                         </div>
                     </div>
                 </div>
+
+                <!-- Tabs Section -->
+                ${this.renderGiftCardTabs()}
             </div>
         `;
+    }
+
+    renderGiftCardTabs() {
+        const { activeTab } = this.giftCardFormState;
+
+        return `
+            <div style="margin-top: 32px; border-top: 1px solid #e5e7eb; padding: 24px;">
+                <div style="display: flex; background: #f3f4f6; padding: 4px; border-radius: 8px; margin-bottom: 24px;">
+                    <button
+                        onclick="dashboard.updateGiftCardForm('activeTab', 'description')"
+                        style="flex: 1; padding: 8px 16px; font-size: 14px; font-weight: 500; border-radius: 6px; border: none; cursor: pointer; transition: all 0.2s; ${
+                            activeTab === 'description'
+                                ? 'background: white; color: #ef4444; box-shadow: 0 1px 3px rgba(0,0,0,0.1);'
+                                : 'background: transparent; color: #6b7280;'
+                        }"
+                    >
+                        Description
+                    </button>
+                    <button
+                        onclick="dashboard.updateGiftCardForm('activeTab', 'terms')"
+                        style="flex: 1; padding: 8px 16px; font-size: 14px; font-weight: 500; border-radius: 6px; border: none; cursor: pointer; transition: all 0.2s; ${
+                            activeTab === 'terms'
+                                ? 'background: white; color: #ef4444; box-shadow: 0 1px 3px rgba(0,0,0,0.1);'
+                                : 'background: transparent; color: #6b7280;'
+                        }"
+                    >
+                        Terms & Condition
+                    </button>
+                    <button
+                        onclick="dashboard.updateGiftCardForm('activeTab', 'redeem')"
+                        style="flex: 1; padding: 8px 16px; font-size: 14px; font-weight: 500; border-radius: 6px; border: none; cursor: pointer; transition: all 0.2s; ${
+                            activeTab === 'redeem'
+                                ? 'background: white; color: #ef4444; box-shadow: 0 1px 3px rgba(0,0,0,0.1);'
+                                : 'background: transparent; color: #6b7280;'
+                        }"
+                    >
+                        How to Redeem
+                    </button>
+                </div>
+
+                <!-- Tab Content -->
+                <div style="min-height: 200px; padding: 0 24px;">
+                    ${this.renderTabContent(activeTab)}
+                </div>
+            </div>
+        `;
+    }
+
+    renderTabContent(activeTab) {
+        switch (activeTab) {
+            case 'description':
+                return `
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #111827;">Description</h3>
+                        <div style="color: #374151; line-height: 1.6;">
+                            <p>
+                                BigBasket.com (Innovative Retail Concepts Private Limited) is India's largest online food and grocery store. With over 18,000 products and over a 1000 brands in our catalogue you will find everything you are looking for. Right from fresh Fruits and Vegetables, Rice and Dals, Spices and Seasonings to Packaged products, Beverages, Personal care products, Meats – we have it all. Choose from a wide range of options in every category, exclusively handpicked to help you find the best quality available at the lowest prices. Select a time slot for delivery and your order will be delivered right to your doorstep, anywhere in Bangalore, Hyderabad, Mumbai, Pune, Chennai, Delhi, Noida, Mysore, Coimbatore, Vijayawada, Madurai, Nashik, Lucknow, Kolkata, Ahmedabad, Ghaziabad, Chandigarh, Surat, Nagpur, Patna, Indore and Chandigarh Tricity You can pay online using your debit / credit card or by cash / sodexo on delivery. We guarantee on time delivery, and the best quality!
+                            </p>
+                        </div>
+                    </div>
+                `;
+            case 'terms':
+                return `
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #111827;">Terms & Conditions</h3>
+                        <div style="color: #374151;">
+                            <ul style="list-style: none; padding: 0; margin: 0; line-height: 1.8;">
+                                <li style="margin-bottom: 8px;">• This e-Gift Card is valid for 12 months from the date of issue.</li>
+                                <li style="margin-bottom: 8px;">• This e-Gift Card can be used only once and cannot be used partially.</li>
+                                <li style="margin-bottom: 8px;">• This e-Gift Card cannot be exchanged for cash or returned.</li>
+                                <li style="margin-bottom: 8px;">• This e-Gift Card is valid only on BigBasket.com and BigBasket mobile app.</li>
+                                <li style="margin-bottom: 8px;">• Multiple e-Gift Cards can be used in a single transaction.</li>
+                                <li style="margin-bottom: 8px;">• This e-Gift Card cannot be clubbed with any other offer or promotion.</li>
+                                <li style="margin-bottom: 8px;">• BigBasket reserves the right to modify or cancel this offer at any time.</li>
+                                <li style="margin-bottom: 8px;">• In case of any dispute, BigBasket's decision will be final.</li>
+                                <li style="margin-bottom: 8px;">• For any queries related to this e-Gift Card, please contact BigBasket customer support.</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            case 'redeem':
+                return `
+                    <div>
+                        <h3 style="font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #111827;">How to Redeem</h3>
+                        <div style="color: #374151;">
+                            <ol style="list-style: none; padding: 0; margin: 0; line-height: 1.8;">
+                                <li style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                                    <span style="background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 12px; margin-top: 2px; flex-shrink: 0;">1</span>
+                                    <span>Visit BigBasket.com or download the BigBasket mobile app.</span>
+                                </li>
+                                <li style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                                    <span style="background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 12px; margin-top: 2px; flex-shrink: 0;">2</span>
+                                    <span>Browse and add your desired products to the cart.</span>
+                                </li>
+                                <li style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                                    <span style="background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 12px; margin-top: 2px; flex-shrink: 0;">3</span>
+                                    <span>Proceed to checkout and select your delivery slot.</span>
+                                </li>
+                                <li style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                                    <span style="background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 12px; margin-top: 2px; flex-shrink: 0;">4</span>
+                                    <span>On the payment page, select "Gift Card" as your payment method.</span>
+                                </li>
+                                <li style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                                    <span style="background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 12px; margin-top: 2px; flex-shrink: 0;">5</span>
+                                    <span>Enter your e-Gift Card number and PIN received via email.</span>
+                                </li>
+                                <li style="display: flex; align-items: flex-start; margin-bottom: 12px;">
+                                    <span style="background: #ef4444; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; margin-right: 12px; margin-top: 2px; flex-shrink: 0;">6</span>
+                                    <span>Complete your order and enjoy your shopping!</span>
+                                </li>
+                            </ol>
+                            <div style="margin-top: 24px; padding: 16px; background: #eff6ff; border-radius: 8px; border: 1px solid #bfdbfe;">
+                                <p style="margin: 0; font-size: 14px; color: #1e40af;">
+                                    <strong>Note:</strong> If your order value exceeds the e-Gift Card amount, you can pay the remaining balance using other payment methods.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            default:
+                return '';
+        }
     }
 
     renderDeliveryOptions() {
@@ -6222,7 +7093,7 @@ class RedGiraffeDashboard {
                     >×</button>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 2fr 3fr;">
+                <div style="display: grid; grid-template-columns: 2fr 3fr; padding: 24px;">
                     <!-- Left Panel - Price Summary -->
                     <div style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; padding: 24px;">
                         <div style="margin-bottom: 24px;">
@@ -6668,10 +7539,12 @@ class RedGiraffeDashboard {
         transactionList.innerHTML = "";
 
         // Add each transaction
-        transactions.forEach((transaction) => {
+        transactions.forEach((transaction, index) => {
             const transactionElement = document.createElement("div");
+            const transactionId = `transaction-${index}`;
+            transactionElement.id = transactionId;
             transactionElement.style.cssText =
-                "background: white; border-radius: 12px; padding: 20px; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: space-between; transition: box-shadow 0.2s;";
+                "background: white; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; transition: box-shadow 0.2s;";
 
             transactionElement.addEventListener("mouseenter", function () {
                 this.style.boxShadow = "0 4px 12px rgba(0,0,0,0.1)";
@@ -6681,42 +7554,131 @@ class RedGiraffeDashboard {
                 this.style.boxShadow = "none";
             });
 
+            // Check if transaction is completed for downloads section
+            const isCompleted = transaction.status === 'Completed' || transaction.status === 'Approved';
+
             transactionElement.innerHTML = `
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-grow: 1;">
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="width: 48px; height: 48px; background: ${transaction.iconBg}; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
-            <i
-                class="${transaction.icon}"
-                style="color: ${transaction.iconColor}; font-size: 20px;"
-            ></i>
-            </div>
-            <div>
-            <div style="font-weight: 600; color: #111827; font-size: 16px; margin-bottom: 4px; font-family: 'Inter', sans-serif;">
-                ${transaction.id}
-            </div>
-            <div style="color: #6b7280; font-size: 14px; font-family: 'Inter', sans-serif;">
-                ${transaction.date}
-            </div>
-            </div>
-        </div>
-        <div class="flex items-center gap-4">
-            <div style="text-align: right; margin-right: 16px;">
-            <div style="font-weight: 700; color: #111827; font-size: 18px; margin-bottom: 4px; font-family: 'Inter', sans-serif;">
-            ${transaction.amount}
-            </div>
-            <span style="background: ${transaction.statusBg}; color: ${transaction.statusColor}; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; font-family: 'Inter', sans-serif;">
-            ${transaction.status}
-            </span>
-        </div>
-        <button
-            style="background: none; border: none; color: #6b7280; cursor: pointer; padding: 8px; border-radius: 6px; transition: background 0.2s;"
-            onmouseover="this.style.background='#f3f4f6'"
-            onmouseout="this.style.background='none'"
-        >
-            <i class="fas fa-chevron-down"></i>
-        </button>
-        </div>
-    </div>
+                <div style="padding: 20px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; border-bottom: 1px solid #f3f4f6;" onclick="dashboard.toggleTransactionExpansion('${transactionId}')">
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="width: 48px; height: 48px; background: ${transaction.iconBg}; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                            <i class="${transaction.icon}" style="color: ${transaction.iconColor}; font-size: 20px;"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #111827; font-size: 16px; margin-bottom: 4px; font-family: 'Inter', sans-serif;">
+                                ${transaction.id}
+                            </div>
+                            <div style="color: #6b7280; font-size: 14px; font-family: 'Inter', sans-serif;">
+                                ${transaction.date}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <div style="text-align: right;">
+                            <div style="font-weight: 700; color: #111827; font-size: 18px; margin-bottom: 4px; font-family: 'Inter', sans-serif;">
+                                ${transaction.amount}
+                            </div>
+                            <span style="background: ${transaction.statusBg}; color: ${transaction.statusColor}; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; font-family: 'Inter', sans-serif;">
+                                ${transaction.status}
+                            </span>
+                        </div>
+                        <button style="background: none; border: none; color: #6b7280; cursor: pointer; padding: 8px; border-radius: 6px; transition: all 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='none'">
+                            <i class="fas fa-chevron-down" id="chevron-${transactionId}"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Expanded Section -->
+                <div id="expanded-${transactionId}" style="display: none; padding: 20px; background: #f9fafb; border-top: 1px solid #e5e7eb;">
+                    <h4 style="font-weight: 500; font-size: 14px; color: #6b7280; margin-bottom: 16px; font-family: 'Inter', sans-serif;">
+                        Payment Status
+                    </h4>
+
+                    <!-- Payment Status Line -->
+                    <div style="position: relative; margin: 16px 0;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative;">
+                                <div style="height: 32px; width: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #10b981; color: white; transition: all 0.5s;">
+                                    ✓
+                                </div>
+                                <span style="font-size: 12px; text-align: center; max-width: 80px; font-family: 'Inter', sans-serif;">RG ID Registered</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative;">
+                                <div style="height: 32px; width: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #10b981; color: white; transition: all 0.5s;">
+                                    ✓
+                                </div>
+                                <span style="font-size: 12px; text-align: center; max-width: 80px; font-family: 'Inter', sans-serif;">Bill Generated</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative;">
+                                <div style="height: 32px; width: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #10b981; color: white; transition: all 0.5s;">
+                                    ✓
+                                </div>
+                                <span style="font-size: 12px; text-align: center; max-width: 80px; font-family: 'Inter', sans-serif;">Payment Received</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative;">
+                                <div style="height: 32px; width: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: ${isCompleted ? '#10b981' : '#d1d5db'}; color: ${isCompleted ? 'white' : '#6b7280'}; transition: all 0.5s;">
+                                    ${isCompleted ? '✓' : '4'}
+                                </div>
+                                <span style="font-size: 12px; text-align: center; max-width: 80px; font-family: 'Inter', sans-serif;">Settlement Complete</span>
+                            </div>
+                        </div>
+                        <div style="position: absolute; height: 4px; top: 16px; left: 0; right: 0; background: #e5e7eb; z-index: 0;">
+                            <div style="height: 100%; background: #10b981; transition: all 0.5s; width: ${isCompleted ? '100%' : '75%'};"></div>
+                        </div>
+                    </div>
+
+                    ${isCompleted ? `
+                    <!-- Downloads section - only show when settlement is complete -->
+                    <div style="margin-top: 16px; padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
+                        <h5 style="font-weight: 500; font-size: 14px; color: #ef4444; margin-bottom: 12px; font-family: 'Inter', sans-serif;">Downloads</h5>
+                        <div style="display: flex; gap: 12px;">
+                            <button
+                                onclick="dashboard.downloadRentReceipt('${transaction.id}')"
+                                style="background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; transition: background 0.2s;"
+                                onmouseover="this.style.background='#0f766e'"
+                                onmouseout="this.style.background='#0d9488'"
+                            >
+                                <i class="fas fa-download" style="font-size: 14px;"></i>
+                                Rent Receipt #1 📄
+                            </button>
+                            <button
+                                onclick="dashboard.downloadInvoice('${transaction.id}')"
+                                style="background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; transition: background 0.2s;"
+                                onmouseover="this.style.background='#0f766e'"
+                                onmouseout="this.style.background='#0d9488'"
+                            >
+                                <i class="fas fa-download" style="font-size: 14px;"></i>
+                                Invoice #1 📄
+                            </button>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Transaction Details Grid -->
+                    <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 14px;">
+                        <div>
+                            <p style="color: #6b7280; font-family: 'Inter', sans-serif;">Type</p>
+                            <p style="font-weight: 500; font-family: 'Inter', sans-serif;">${transaction.type || 'Unknown'}</p>
+                        </div>
+                        <div>
+                            <p style="color: #6b7280; font-family: 'Inter', sans-serif;">Order ID</p>
+                            <p style="font-weight: 500; font-family: 'Inter', sans-serif;">ORD-${Math.floor(Math.random() * 10000000)}</p>
+                        </div>
+                        <div>
+                            <p style="color: #6b7280; font-family: 'Inter', sans-serif;">Transaction Date</p>
+                            <p style="font-weight: 500; font-family: 'Inter', sans-serif;">${transaction.date}</p>
+                        </div>
+                        <div>
+                            <p style="color: #6b7280; font-family: 'Inter', sans-serif;">Cash Points Earned</p>
+                            <p style="font-weight: 500; font-family: 'Inter', sans-serif;">${Math.floor(parseFloat(transaction.amount.replace(/[₹,]/g, '')) * 0.01)}</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
+                        <button style="background: white; border: 1px solid #d1d5db; color: #374151; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">
+                            View Details
+                        </button>
+                    </div>
+                </div>
             `;
 
             transactionList.appendChild(transactionElement);
@@ -6729,6 +7691,44 @@ class RedGiraffeDashboard {
                 this.loadDashboardTransactionHistory();
             };
         }
+    }
+
+    // Toggle transaction expansion
+    toggleTransactionExpansion(transactionId) {
+        const expandedSection = document.getElementById(`expanded-${transactionId}`);
+        const chevron = document.getElementById(`chevron-${transactionId}`);
+
+        if (!expandedSection || !chevron) return;
+
+        const isExpanded = expandedSection.style.display !== 'none';
+
+        if (isExpanded) {
+            // Collapse
+            expandedSection.style.display = 'none';
+            expandedSection.classList.remove('transaction-expanded');
+            chevron.className = 'fas fa-chevron-down';
+        } else {
+            // Expand
+            expandedSection.style.display = 'block';
+            expandedSection.classList.add('transaction-expanded');
+            chevron.className = 'fas fa-chevron-up';
+        }
+    }
+
+    // Download rent receipt
+    downloadRentReceipt(transactionId) {
+        console.log('Downloading rent receipt for transaction:', transactionId);
+        this.showNotification('Rent receipt download started', 'success');
+        // Here you would typically trigger the actual download
+        // For demo purposes, we'll just show a notification
+    }
+
+    // Download invoice
+    downloadInvoice(transactionId) {
+        console.log('Downloading invoice for transaction:', transactionId);
+        this.showNotification('Invoice download started', 'success');
+        // Here you would typically trigger the actual download
+        // For demo purposes, we'll just show a notification
     }
 
     renderTransactionHistoryContent(transactions, statusCounts) {
@@ -7326,8 +8326,8 @@ class RegistrationsManager {
             const isShowingAll = this.showAllByType[type] || false;
             const visibleRegistrations = isShowingAll
                 ? typeRegistrations
-                : typeRegistrations.slice(0, 5);
-            const hasMoreToShow = typeRegistrations.length > 5;
+                : typeRegistrations.slice(0, 1);
+            const hasMoreToShow = typeRegistrations.length > 1;
 
             // Category header
             const typeLabel = this.getTypeLabel(type);
@@ -7402,7 +8402,7 @@ class RegistrationsManager {
 
             // Show All / Show Less Button
             if (hasMoreToShow) {
-                const hiddenCount = typeRegistrations.length - 5;
+                const hiddenCount = typeRegistrations.length - 1;
                 const buttonText = isShowingAll
                     ? "Show Less"
                     : `Show All (${hiddenCount} more)`;
@@ -7689,6 +8689,12 @@ function closeMobileSidebar() {
     }
 }
 
+function toggleSidebar() {
+    if (window.dashboard) {
+        window.dashboard.toggleSidebar();
+    }
+}
+
 function toggleTheme() {
     if (window.dashboard) {
         window.dashboard.toggleTheme();
@@ -7705,6 +8711,24 @@ function logout() {
 document.addEventListener("DOMContentLoaded", function () {
     window.dashboard = new RedGiraffeDashboard();
     window.registrations = new RegistrationsManager();
+
+    // Setup sidebar toggle after dashboard is initialized
+    setTimeout(() => {
+        const sidebarToggle = document.getElementById("sidebar-toggle");
+        if (sidebarToggle) {
+            console.log("Setting up sidebar toggle event listener");
+            sidebarToggle.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                console.log("Sidebar toggle clicked via event listener");
+                if (window.dashboard) {
+                    window.dashboard.toggleSidebar();
+                }
+            });
+        } else {
+            console.log("Sidebar toggle button not found");
+        }
+    }, 100);
 });
 
 // Global function for transaction tab switching (called from HTML)
