@@ -232,10 +232,14 @@ class RedGiraffeDashboard {
         this.editRecordsService = new EditRecordsMockService();
         this.activeEditForm = null;
         this.selectedRegistration = null;
+        this.selectedRegistrationForUpload = null;
         this.ownerAccounts = [];
 
         // Initialize Gift Cards data
         this.initializeGiftCardsData();
+
+        // Initialize chart data for different filters
+        this.initializeChartData();
 
         this.init();
     }
@@ -577,6 +581,64 @@ class RedGiraffeDashboard {
         };
     }
 
+    initializeChartData() {
+        // Mock data for different chart filters
+        this.chartData = {
+            paymentDistribution: {
+                yearly: {
+                    labels: ["Tenant", "Education", "Society", "Others"],
+                    data: [45, 25, 20, 10],
+                    backgroundColor: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24"]
+                },
+                quarterly: {
+                    labels: ["Tenant", "Education", "Society", "Others"],
+                    data: [50, 30, 15, 5],
+                    backgroundColor: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24"]
+                },
+                monthly: {
+                    labels: ["Tenant", "Education", "Society", "Others"],
+                    data: [60, 20, 15, 5],
+                    backgroundColor: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24"]
+                }
+            },
+            paymentHistory: {
+                payments: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    datasets: [{
+                        label: "Payments",
+                        data: [12000, 19000, 15000, 25000, 22000, 30000],
+                        borderColor: "#ff6b6b",
+                        backgroundColor: "rgba(255, 107, 107, 0.1)"
+                    }]
+                },
+                activity: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    datasets: [{
+                        label: "Transactions",
+                        data: [8, 12, 10, 15, 14, 18],
+                        borderColor: "#4ecdc4",
+                        backgroundColor: "rgba(78, 205, 196, 0.1)"
+                    }]
+                },
+                redpoints: {
+                    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+                    datasets: [{
+                        label: "RedPoints Earned",
+                        data: [120, 190, 150, 250, 220, 300],
+                        borderColor: "#45b7d1",
+                        backgroundColor: "rgba(69, 183, 209, 0.1)"
+                    }]
+                }
+            }
+        };
+
+        // Current filter states
+        this.currentFilters = {
+            paymentPeriod: 'yearly',
+            historyType: 'payments'
+        };
+    }
+
     init() {
         this.setupEventListeners();
         this.loadDashboardData();
@@ -792,9 +854,8 @@ class RedGiraffeDashboard {
         });
 
         // Mobile sidebar
-        const hamburger = document.getElementById("hamburger");
-        const mobileSidebar = document.getElementById("mobile-sidebar");
-        const overlay = document.getElementById("mobile-overlay");
+        const hamburger = document.querySelector(".mobile-menu-btn");
+        const overlay = document.querySelector(".mobile-overlay");
 
         if (hamburger) {
             hamburger.addEventListener("click", () => {
@@ -836,6 +897,34 @@ class RedGiraffeDashboard {
                     this.closeRegistrationModal();
                 });
             }
+        }
+    }
+
+    setupChartEventListeners() {
+        // Payment Distribution chart filter
+        const paymentPeriodSelect = document.getElementById("payment-period");
+        if (paymentPeriodSelect) {
+            paymentPeriodSelect.addEventListener("change", (e) => {
+                this.currentFilters.paymentPeriod = e.target.value;
+                this.updatePaymentChart();
+                this.showNotification(`Payment distribution updated to ${e.target.options[e.target.selectedIndex].text}`, "success");
+            });
+        }
+
+        // Payment History chart filter
+        const historyTypeSelect = document.getElementById("history-type");
+        if (historyTypeSelect) {
+            historyTypeSelect.addEventListener("change", (e) => {
+                this.currentFilters.historyType = e.target.value;
+                this.updateHistoryChart();
+                // Update chart title
+                const chartTitle = document.getElementById("history-chart-title");
+                if (chartTitle) {
+                    const selectedOption = e.target.options[e.target.selectedIndex].text;
+                    chartTitle.textContent = selectedOption;
+                }
+                this.showNotification(`Chart updated to ${e.target.options[e.target.selectedIndex].text}`, "success");
+            });
         }
     }
 
@@ -2203,24 +2292,37 @@ class RedGiraffeDashboard {
         this.updatePaymentChart();
         this.updateHistoryChart();
         this.updatePaymentMethodsChart();
+
+        // Set up chart event listeners after charts are created
+        setTimeout(() => {
+            this.setupChartEventListeners();
+        }, 100);
     }
 
     updatePaymentChart() {
         const ctx = document.getElementById("paymentChart")?.getContext("2d");
-        if (!ctx || !this.dashboardData) return;
+        if (!ctx) return;
 
         if (this.charts.payment) {
             this.charts.payment.destroy();
         }
 
+        // Get data based on current filter
+        const currentPeriod = this.currentFilters?.paymentPeriod || 'yearly';
+        const chartData = this.chartData?.paymentDistribution?.[currentPeriod] || {
+            labels: ["Tenant", "Education", "Society", "Others"],
+            data: [45, 25, 20, 10],
+            backgroundColor: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24"]
+        };
+
         this.charts.payment = new Chart(ctx, {
             type: "doughnut",
             data: {
-                labels: ["Tenant", "Education", "Society", "Others"],
+                labels: chartData.labels,
                 datasets: [
                     {
-                        data: [45, 25, 20, 10],
-                        backgroundColor: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24"],
+                        data: chartData.data,
+                        backgroundColor: chartData.backgroundColor,
                         borderWidth: 0,
                         hoverOffset: 10,
                     },
@@ -2250,31 +2352,38 @@ class RedGiraffeDashboard {
 
     updateHistoryChart() {
         const ctx = document.getElementById("historyChart")?.getContext("2d");
-        if (!ctx || !this.dashboardData) return;
+        if (!ctx) return;
 
         if (this.charts.history) {
             this.charts.history.destroy();
         }
 
+        // Get data based on current filter
+        const currentType = this.currentFilters?.historyType || 'payments';
+        const chartData = this.chartData?.paymentHistory?.[currentType] || {
+            labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+            datasets: [{
+                label: "Payments",
+                data: [12000, 19000, 15000, 25000, 22000, 30000],
+                borderColor: "#ff6b6b",
+                backgroundColor: "rgba(255, 107, 107, 0.1)"
+            }]
+        };
+
         this.charts.history = new Chart(ctx, {
             type: "line",
             data: {
-                labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-                datasets: [
-                    {
-                        label: "Payments",
-                        data: [12000, 19000, 15000, 25000, 22000, 30000],
-                        borderColor: "#ff6b6b",
-                        backgroundColor: "rgba(255, 107, 107, 0.1)",
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.4,
-                        pointBackgroundColor: "#ff6b6b",
-                        pointBorderColor: "#fff",
-                        pointBorderWidth: 2,
-                        pointRadius: 6,
-                    },
-                ],
+                labels: chartData.labels,
+                datasets: chartData.datasets.map(dataset => ({
+                    ...dataset,
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: dataset.borderColor,
+                    pointBorderColor: "#fff",
+                    pointBorderWidth: 2,
+                    pointRadius: 6,
+                })),
             },
             options: {
                 responsive: true,
@@ -3759,14 +3868,21 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
         document.body.style.overflow = "auto";
         this.activeEditForm = null;
         this.selectedRegistration = null;
+        this.selectedRegistrationForUpload = null;
+    }
+
+    showUploadModalForRegistration(registrationId) {
+        this.selectedRegistrationForUpload = registrationId;
+        this.showUploadModal();
     }
 
     showUploadModal() {
+        const registrationText = this.selectedRegistrationForUpload ? ` for ${this.selectedRegistrationForUpload}` : '';
         const modalHtml = `
             <div style="background: white; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
                 <div style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h2 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0; font-family: 'Inter', sans-serif;">Upload Documents</h2>
+                        <h2 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0; font-family: 'Inter', sans-serif;">Upload Documents${registrationText}</h2>
                         <button onclick="dashboard.closeUploadModal()" style="background: none; border: none; font-size: 24px; color: #6b7280; cursor: pointer; padding: 4px;">×</button>
                     </div>
                 </div>
@@ -3810,8 +3926,9 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
         const files = event.target.querySelector('input[type="file"]').files;
         const remarks = formData.get("remarks");
 
+        const registrationText = this.selectedRegistrationForUpload ? ` for ${this.selectedRegistrationForUpload}` : '';
         this.showNotification(
-            `Successfully uploaded ${files.length} document(s).`,
+            `Successfully uploaded ${files.length} document(s)${registrationText}.`,
             "success"
         );
         this.closeUploadModal();
@@ -3987,29 +4104,29 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
 
     // Mobile Functions
     toggleMobileSidebar() {
-        const sidebar = document.getElementById("mobile-sidebar");
-        const overlay = document.getElementById("mobile-overlay");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.querySelector(".mobile-overlay");
 
         if (sidebar && overlay) {
-            const isOpen = sidebar.classList.contains("open");
+            const isOpen = sidebar.classList.contains("mobile-open");
 
             if (isOpen) {
                 this.closeMobileSidebar();
             } else {
-                sidebar.classList.add("open");
-                overlay.classList.add("show");
+                sidebar.classList.add("mobile-open");
+                overlay.classList.add("active");
                 document.body.style.overflow = "hidden";
             }
         }
     }
 
     closeMobileSidebar() {
-        const sidebar = document.getElementById("mobile-sidebar");
-        const overlay = document.getElementById("mobile-overlay");
+        const sidebar = document.getElementById("sidebar");
+        const overlay = document.querySelector(".mobile-overlay");
 
         if (sidebar && overlay) {
-            sidebar.classList.remove("open");
-            overlay.classList.remove("show");
+            sidebar.classList.remove("mobile-open");
+            overlay.classList.remove("active");
             document.body.style.overflow = "auto";
         }
     }
@@ -4087,13 +4204,6 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                 <div style="margin-bottom: 32px; ">
                     <div style=" width: 100%; display: flex; justify-content: end; align-items: center; margin-bottom: 16px;">
                         <div style="display: flex;  gap: 12px;">
-                            <button onclick="dashboard.showUploadModal()"
-                                    style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #dc2626; color: white; padding: 12px 16px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 0.2s; font-family: 'Inter', sans-serif;"
-                                    onmouseover="this.style.backgroundColor='#b91c1c'"
-                                    onmouseout="this.style.backgroundColor='#dc2626'">
-                                <i class="fas fa-upload" style="font-size: 14px;"></i>
-                                <span>Upload Documents</span>
-                            </button>
                             <button onclick="dashboard.showAuditLog()"
                                     style="display: flex; align-items: center; justify-content: center; gap: 8px; background: #dbeafe; color: #2563eb; padding: 12px 16px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: 'Inter', sans-serif;"
                                     onmouseover="this.style.backgroundColor='#bfdbfe'"
@@ -4186,13 +4296,22 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                         <p style="margin: 0;">Mode: ${registration.mode}</p>
                     </div>
                 </div>
-                <button onclick="dashboard.handleEditClick('${type}', '${registration.rgId}')"
-                        style="height: 48px; background: #16a34a; color: white; padding: 8px 16px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 0.2s; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px;"
-                        onmouseover="this.style.backgroundColor='#15803d'"
-                        onmouseout="this.style.backgroundColor='#16a34a'">
-                    <i class="fas fa-edit" style="font-size: 14px;"></i>
-                    EDIT
-                </button>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="dashboard.showUploadModalForRegistration('${registration.rgId}')"
+                            style="height: 40px; background: #dc2626; color: white; padding: 8px 16px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 0.2s; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px;"
+                            onmouseover="this.style.backgroundColor='#b91c1c'"
+                            onmouseout="this.style.backgroundColor='#dc2626'">
+                        <i class="fas fa-upload" style="font-size: 14px;"></i>
+                        UPLOAD
+                    </button>
+                    <button onclick="dashboard.handleEditClick('${type}', '${registration.rgId}')"
+                            style="height: 40px; background: #16a34a; color: white; padding: 8px 16px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; transition: background-color 0.2s; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 8px;"
+                            onmouseover="this.style.backgroundColor='#15803d'"
+                            onmouseout="this.style.backgroundColor='#16a34a'">
+                        <i class="fas fa-edit" style="font-size: 14px;"></i>
+                        EDIT
+                    </button>
+                </div>
             </div>
         `
             )
@@ -8680,6 +8799,8 @@ class RegistrationsManager {
 function toggleMobileSidebar() {
     if (window.dashboard) {
         window.dashboard.toggleMobileSidebar();
+    } else {
+        console.log('Dashboard not ready yet');
     }
 }
 
