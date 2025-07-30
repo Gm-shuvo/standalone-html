@@ -19,7 +19,7 @@ class EditRecordsMockService {
             },
             {
                 id: 2,
-                rgId: "RG-4000182596",
+                rgId: "RG-6000182595",
                 userId: 1,
                 type: "education",
                 subtype: "Fees",
@@ -32,7 +32,7 @@ class EditRecordsMockService {
             },
             {
                 id: 3,
-                rgId: "RG-6000182595",
+                rgId: "RG-4000182596",
                 userId: 1,
                 type: "society",
                 subtype: "Maintenance",
@@ -586,17 +586,17 @@ class RedGiraffeDashboard {
         this.chartData = {
             paymentDistribution: {
                 yearly: {
-                    labels: ["Tenant", "Education", "Society", "Others"],
+                    labels: ["Rent", "Education", "Society", "Others"],
                     data: [45, 25, 20, 10],
                     backgroundColor: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24"]
                 },
                 quarterly: {
-                    labels: ["Tenant", "Education", "Society", "Others"],
+                    labels: ["Rent", "Education", "Society", "Others"],
                     data: [50, 30, 15, 5],
                     backgroundColor: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24"]
                 },
                 monthly: {
-                    labels: ["Tenant", "Education", "Society", "Others"],
+                    labels: ["Rent", "Education", "Society", "Others"],
                     data: [60, 20, 15, 5],
                     backgroundColor: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24"]
                 }
@@ -623,7 +623,7 @@ class RedGiraffeDashboard {
                 redpoints: {
                     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
                     datasets: [{
-                        label: "RedPoints Earned",
+                        label: "Cash Points Earned",
                         data: [120, 190, 150, 250, 220, 300],
                         borderColor: "#45b7d1",
                         backgroundColor: "rgba(69, 183, 209, 0.1)"
@@ -2310,7 +2310,7 @@ class RedGiraffeDashboard {
         // Get data based on current filter
         const currentPeriod = this.currentFilters?.paymentPeriod || 'yearly';
         const chartData = this.chartData?.paymentDistribution?.[currentPeriod] || {
-            labels: ["Tenant", "Education", "Society", "Others"],
+            labels: ["Rent", "Education", "Society", "Others"],
             data: [45, 25, 20, 10],
             backgroundColor: ["#ff6b6b", "#4ecdc4", "#45b7d1", "#f9ca24"]
         };
@@ -3029,7 +3029,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                     <h3 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Tenant Details</h3>
                 </div>
                 <div style="padding: 20px;">
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                    <div style="display: grid; gap: 16px;">
                         <div>
                             <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Name</label>
                             <div style="color: #111827; font-size: 14px; font-weight: 500;">${tenantDetails.name || 'N/A'}</div>
@@ -3165,13 +3165,8 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
 
             <!-- Owner Account Details (Editable Fields) -->
             <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
-                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
                     <h3 style="font-size: 16px; font-weight: 600; color: #b91c1c; margin: 0;">Owner Account Details</h3>
-                    <button type="button" onclick="dashboard.addOwnerAccount()"
-                            style="background: #16a34a; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                        <i class="fas fa-plus" style="font-size: 12px;"></i>
-                        Add Account
-                    </button>
                 </div>
                 <div style="padding: 20px;">
                     <div id="owner-accounts-container">
@@ -3644,14 +3639,8 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
 
         return accountDetails.map((account, index) => `
             <div class="owner-account-item" data-account-id="${account.id}" style="border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 16px; background: #f9fafb;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <div style="margin-bottom: 16px;">
                     <h4 style="font-size: 16px; font-weight: 600; color: #111827; margin: 0;">Account #${index + 1}</h4>
-                    ${accountDetails.length > 1 ? `
-                        <button type="button" onclick="dashboard.removeOwnerAccount(${account.id})"
-                                style="background: #dc2626; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;">
-                            <i class="fas fa-trash" style="margin-right: 4px;"></i>Remove
-                        </button>
-                    ` : ''}
                 </div>
 
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
@@ -3726,37 +3715,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
         `).join('');
     }
 
-    addOwnerAccount() {
-        const newAccount = {
-            id: Date.now(),
-            accountHolderName: '',
-            accountNumber: '',
-            accountType: 'Savings',
-            ifscCode: '',
-            bankName: '',
-            panNumber: ''
-        };
 
-        this.ownerAccounts.push(newAccount);
-
-        // Re-render the accounts section
-        const container = document.getElementById('owner-accounts-container');
-        if (container) {
-            container.innerHTML = this.renderOwnerAccounts(this.ownerAccounts);
-        }
-    }
-
-    removeOwnerAccount(accountId) {
-        if (this.ownerAccounts.length > 1) {
-            this.ownerAccounts = this.ownerAccounts.filter(account => account.id !== accountId);
-
-            // Re-render the accounts section
-            const container = document.getElementById('owner-accounts-container');
-            if (container) {
-                container.innerHTML = this.renderOwnerAccounts(this.ownerAccounts);
-            }
-        }
-    }
 
     processOwnerAccountsFromForm(formData) {
         const accounts = [];
@@ -6632,6 +6591,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
             gstNumber: false,
             gstDetails: "",
             deliveryOption: "self",
+            cardDeliveryOptions: {}, // Individual card delivery options
             activeTab: "description",
             receiverName: "",
             receiverMobile: "",
@@ -6951,125 +6911,158 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
 
     renderDeliveryOptions() {
         const {
-            deliveryOption,
+            quantity,
+            cardDeliveryOptions,
             receiverName,
             receiverMobile,
             receiverEmail,
             receiverMessage,
         } = this.giftCardFormState;
 
-        return `
-            <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 20px;">
-                <div style="background: #f9fafb; padding: 12px 16px; border-bottom: 1px solid #e5e7eb;">
-                    <h3 style="font-weight: 600; color: #111827; margin: 0; font-size: 16px;">GIFT CARD - 1</h3>
-                </div>
-                <div style="padding: 16px;">
-                    <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 16px;">
-                        <h4 style="font-weight: 500; color: #374151; margin: 0;">Delivery Options</h4>
-                        <div style="display: flex; gap: 16px;">
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input
-                                    type="radio"
-                                    name="deliveryOption"
-                                    value="gift"
-                                    ${deliveryOption === "gift" ? "checked" : ""
-            }
-                                    onchange="dashboard.updateGiftCardForm('deliveryOption', 'gift')"
-                                    style="width: 16px; height: 16px;"
-                                />
-                                <span style="font-size: 14px; color: #374151;">Send as Gift</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input
-                                    type="radio"
-                                    name="deliveryOption"
-                                    value="self"
-                                    ${deliveryOption === "self" ? "checked" : ""
-            }
-                                    onchange="dashboard.updateGiftCardForm('deliveryOption', 'self')"
-                                    style="width: 16px; height: 16px;"
-                                />
-                                <span style="font-size: 14px; color: #374151;">Buy for Self</span>
-                            </label>
-                        </div>
+        const giftCardCount = parseInt(quantity || "1");
+        let giftCardsHTML = "";
+
+        // Generate gift card sections based on quantity
+        for (let i = 1; i <= giftCardCount; i++) {
+            const currentDeliveryOption = cardDeliveryOptions[i] || "self";
+
+            giftCardsHTML += `
+                <div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 20px;">
+                    <div style="background: #f9fafb; padding: 12px 16px; border-bottom: 1px solid #e5e7eb;">
+                        <h3 style="font-weight: 600; color: #111827; margin: 0; font-size: 16px;">GIFT CARD - ${i}</h3>
                     </div>
-
-                    ${deliveryOption === "gift"
-                ? `
-                        <div style="border-top: 1px solid #e5e7eb; padding-top: 16px;">
-                            <h5 style="font-weight: 500; color: #ef4444; margin: 0 0 16px 0; font-size: 14px;">Gift Recipient Details</h5>
-
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                                <div>
-                                    <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
-                                        Receiver's Name <span style="color: #ef4444;">*</span>
-                                    </label>
+                    <div style="padding: 16px;">
+                        <div style="display: flex; align-items: center; gap: 24px; margin-bottom: 16px;">
+                            <h4 style="font-weight: 500; color: #374151; margin: 0;">Delivery Options</h4>
+                            <div style="display: flex; gap: 16px;">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                                     <input
-                                        type="text"
-                                        value="${receiverName}"
-                                        onchange="dashboard.updateGiftCardForm('receiverName', this.value)"
-                                        style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
-                                        placeholder="Enter receiver's full name"
+                                        type="radio"
+                                        name="deliveryOption_${i}"
+                                        value="gift"
+                                        ${currentDeliveryOption === "gift" ? "checked" : ""}
+                                        onchange="dashboard.updateGiftCardForm('deliveryOption', 'gift', ${i})"
+                                        style="width: 16px; height: 16px;"
                                     />
-                                </div>
-
-                                <div>
-                                    <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
-                                        Mobile Number <span style="color: #ef4444;">*</span>
-                                    </label>
+                                    <span style="font-size: 14px; color: #374151;">Send as Gift</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                                     <input
-                                        type="tel"
-                                        value="${receiverMobile}"
-                                        onchange="dashboard.updateGiftCardForm('receiverMobile', this.value)"
-                                        style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
-                                        placeholder="Enter receiver's mobile number"
+                                        type="radio"
+                                        name="deliveryOption_${i}"
+                                        value="self"
+                                        ${currentDeliveryOption === "self" ? "checked" : ""}
+                                        onchange="dashboard.updateGiftCardForm('deliveryOption', 'self', ${i})"
+                                        style="width: 16px; height: 16px;"
                                     />
-                                </div>
-                            </div>
-
-                            <div style="margin-bottom: 16px;">
-                                <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
-                                    Email ID <span style="color: #ef4444;">*</span>
+                                    <span style="font-size: 14px; color: #374151;">Buy for Self</span>
                                 </label>
-                                <input
-                                    type="email"
-                                    value="${receiverEmail}"
-                                    onchange="dashboard.updateGiftCardForm('receiverEmail', this.value)"
-                                    style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
-                                    placeholder="Enter receiver's email address"
-                                />
-                            </div>
-
-                            <div>
-                                <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
-                                    Message for Receiver <span style="color: #ef4444;">*</span>
-                                </label>
-                                <textarea
-                                    value="${receiverMessage}"
-                                    onchange="dashboard.updateGiftCardForm('receiverMessage', this.value)"
-                                    style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: none; height: 80px;"
-                                    placeholder="Enter a personal message for the receiver"
-                                >${receiverMessage}</textarea>
                             </div>
                         </div>
-                    `
-                : ""
-            }
+
+                        ${currentDeliveryOption === "gift"
+                            ? `
+                                <div style="border-top: 1px solid #e5e7eb; padding-top: 16px;">
+                                    <h5 style="font-weight: 500; color: #ef4444; margin: 0 0 16px 0; font-size: 14px;">Gift Recipient Details</h5>
+
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                                        <div>
+                                            <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
+                                                Receiver's Name <span style="color: #ef4444;">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value="${receiverName}"
+                                                onchange="dashboard.updateGiftCardForm('receiverName', this.value)"
+                                                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                                placeholder="Enter receiver's full name"
+                                            />
+                                        </div>
+
+                                        <div>
+                                            <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
+                                                Mobile Number <span style="color: #ef4444;">*</span>
+                                            </label>
+                                            <input
+                                                type="tel"
+                                                value="${receiverMobile}"
+                                                onchange="dashboard.updateGiftCardForm('receiverMobile', this.value)"
+                                                style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                                placeholder="Enter receiver's mobile number"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-bottom: 16px;">
+                                        <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
+                                            Email ID <span style="color: #ef4444;">*</span>
+                                        </label>
+                                        <input
+                                            type="email"
+                                            value="${receiverEmail}"
+                                            onchange="dashboard.updateGiftCardForm('receiverEmail', this.value)"
+                                            style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
+                                            placeholder="Enter receiver's email address"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 4px; font-size: 14px;">
+                                            Message for Receiver <span style="color: #ef4444;">*</span>
+                                        </label>
+                                        <textarea
+                                            value="${receiverMessage}"
+                                            onchange="dashboard.updateGiftCardForm('receiverMessage', this.value)"
+                                            style="width: 100%; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: none; height: 80px;"
+                                            placeholder="Enter a personal message for the receiver"
+                                        >${receiverMessage}</textarea>
+                                    </div>
+                                </div>
+                            `
+                            : ""
+                        }
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
+
+        return giftCardsHTML;
     }
 
-    updateGiftCardForm(field, value) {
+    updateGiftCardForm(field, value, cardIndex = null) {
         if (!this.giftCardFormState) return;
-        this.giftCardFormState[field] = value;
 
-        // Re-render the modal with updated values
+        // Handle individual card delivery options
+        if (field === 'deliveryOption' && cardIndex !== null) {
+            if (!this.giftCardFormState.cardDeliveryOptions) {
+                this.giftCardFormState.cardDeliveryOptions = {};
+            }
+            this.giftCardFormState.cardDeliveryOptions[cardIndex] = value;
+        } else {
+            this.giftCardFormState[field] = value;
+        }
+
         const card = this.giftCardFormState.card;
-        this.showModal(
-            "gift-card-detail-modal",
-            this.renderGiftCardDetailModal(card)
-        );
+
+        // Special handling for quantity changes - close and reopen modal
+        if (field === 'quantity') {
+            // Close the current modal first
+            this.closeModal();
+
+            // Small delay to ensure modal is closed before reopening
+            setTimeout(() => {
+                this.showModal(
+                    "gift-card-detail-modal",
+                    this.renderGiftCardDetailModal(card)
+                );
+            }, 100);
+        } else {
+            // For other fields, just re-render the modal
+            this.showModal(
+                "gift-card-detail-modal",
+                this.renderGiftCardDetailModal(card)
+            );
+        }
     }
 
     proceedToPurchase() {
@@ -7079,7 +7072,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
             quantity,
             gstNumber,
             gstDetails,
-            deliveryOption,
+            cardDeliveryOptions,
             receiverName,
             receiverMobile,
             receiverEmail,
@@ -7100,7 +7093,19 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
             return;
         }
 
-        if (deliveryOption === "gift") {
+        // Check if any card is set to gift and validate recipient details
+        const giftCardCount = parseInt(quantity || "1");
+        let hasGiftCards = false;
+
+        for (let i = 1; i <= giftCardCount; i++) {
+            const cardDeliveryOption = cardDeliveryOptions[i] || "self";
+            if (cardDeliveryOption === "gift") {
+                hasGiftCards = true;
+                break;
+            }
+        }
+
+        if (hasGiftCards) {
             if (
                 !receiverName.trim() ||
                 !receiverMobile.trim() ||
@@ -7108,7 +7113,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                 !receiverMessage.trim()
             ) {
                 this.showNotification(
-                    "Please fill in all required gift recipient details",
+                    "Please fill in all required gift recipient details for gift cards",
                     "error"
                 );
                 return;
@@ -7484,9 +7489,21 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
             });
 
             // Find and activate the clicked tab within dashboard section
-            const clickedTab = Array.from(dashboardTabs).find((item) =>
-                item.textContent.toLowerCase().includes(tab.toLowerCase())
-            );
+            let clickedTab = null;
+            if (tab === "analytics") {
+                clickedTab = Array.from(dashboardTabs).find((item) =>
+                    item.textContent.toLowerCase().includes("analytics")
+                );
+            } else if (tab === "transactions-history") {
+                clickedTab = Array.from(dashboardTabs).find((item) =>
+                    item.textContent.toLowerCase().includes("transaction")
+                );
+            } else if (tab === "reports") {
+                clickedTab = Array.from(dashboardTabs).find((item) =>
+                    item.textContent.toLowerCase().includes("reports")
+                );
+            }
+
             if (clickedTab) {
                 clickedTab.classList.add("active");
             }
@@ -7707,95 +7724,158 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                 </div>
 
                 <!-- Expanded Section -->
-                <div id="expanded-${transactionId}" style="display: none; padding: 20px; background: #f9fafb; border-top: 1px solid #e5e7eb;">
-                    <h4 style="font-weight: 500; font-size: 14px; color: #6b7280; margin-bottom: 16px; font-family: 'Inter', sans-serif;">
-                        Payment Status
-                    </h4>
+                <div id="expanded-${transactionId}" style="display: none; padding: 0; background: #f8fafc; border-top: 1px solid #e5e7eb;">
 
-                    <!-- Payment Status Line -->
-                    <div style="position: relative; margin: 16px 0;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative;">
-                                <div style="height: 32px; width: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #10b981; color: white; transition: all 0.5s;">
-                                    ✓
-                                </div>
-                                <span style="font-size: 12px; text-align: center; max-width: 80px; font-family: 'Inter', sans-serif;">RG ID Registered</span>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative;">
-                                <div style="height: 32px; width: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #10b981; color: white; transition: all 0.5s;">
-                                    ✓
-                                </div>
-                                <span style="font-size: 12px; text-align: center; max-width: 80px; font-family: 'Inter', sans-serif;">Bill Generated</span>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative;">
-                                <div style="height: 32px; width: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #10b981; color: white; transition: all 0.5s;">
-                                    ✓
-                                </div>
-                                <span style="font-size: 12px; text-align: center; max-width: 80px; font-family: 'Inter', sans-serif;">Payment Received</span>
-                            </div>
-                            <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative;">
-                                <div style="height: 32px; width: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: ${isCompleted ? '#10b981' : '#d1d5db'}; color: ${isCompleted ? 'white' : '#6b7280'}; transition: all 0.5s;">
-                                    ${isCompleted ? '✓' : '4'}
-                                </div>
-                                <span style="font-size: 12px; text-align: center; max-width: 80px; font-family: 'Inter', sans-serif;">Settlement Complete</span>
-                            </div>
+                    <!-- Section 1: Payment Status -->
+                    <div style="padding: 20px; border-bottom: 1px solid #e5e7eb; background: white;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                            <i class="fas fa-tasks" style="color: #ef4444; font-size: 16px;"></i>
+                            <h4 style="font-weight: 600; font-size: 16px; color: #ef4444; margin: 0; font-family: 'Inter', sans-serif;">
+                                Payment Status
+                            </h4>
                         </div>
-                        <div style="position: absolute; height: 4px; top: 16px; left: 0; right: 0; background: #e5e7eb; z-index: 0;">
-                            <div style="height: 100%; background: #10b981; transition: all 0.5s; width: ${isCompleted ? '100%' : '75%'};"></div>
+
+                        <!-- Payment Status Progress Line -->
+                        <div style="position: relative; margin: 20px 0;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative; flex: 1;">
+                                    <div style="height: 36px; width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #10b981; color: white; font-weight: 600; font-size: 14px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                                        <i class="fas fa-check" style="font-size: 14px;"></i>
+                                    </div>
+                                    <span style="font-size: 12px; text-align: center; color: #374151; font-weight: 500; font-family: 'Inter', sans-serif;">RG ID Registered</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative; flex: 1;">
+                                    <div style="height: 36px; width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #10b981; color: white; font-weight: 600; font-size: 14px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                                        <i class="fas fa-check" style="font-size: 14px;"></i>
+                                    </div>
+                                    <span style="font-size: 12px; text-align: center; color: #374151; font-weight: 500; font-family: 'Inter', sans-serif;">Bill Generated</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative; flex: 1;">
+                                    <div style="height: 36px; width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: #10b981; color: white; font-weight: 600; font-size: 14px; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);">
+                                        <i class="fas fa-check" style="font-size: 14px;"></i>
+                                    </div>
+                                    <span style="font-size: 12px; text-align: center; color: #374151; font-weight: 500; font-family: 'Inter', sans-serif;">Payment Received</span>
+                                </div>
+                                <div style="display: flex; flex-direction: column; align-items: center; z-index: 10; position: relative; flex: 1;">
+                                    <div style="height: 36px; width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: ${isCompleted ? '#10b981' : '#d1d5db'}; color: ${isCompleted ? 'white' : '#6b7280'}; font-weight: 600; font-size: 14px; ${isCompleted ? 'box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);' : ''}">
+                                        ${isCompleted ? '<i class="fas fa-check" style="font-size: 14px;"></i>' : '<i class="fas fa-clock" style="font-size: 14px;"></i>'}
+                                    </div>
+                                    <span style="font-size: 12px; text-align: center; color: #374151; font-weight: 500; font-family: 'Inter', sans-serif;">Rent Settled</span>
+                                </div>
+                            </div>
+                            <!-- Progress Line -->
+                            <div style="position: absolute; height: 3px; top: 18px; left: 18px; right: 18px; background: #e5e7eb; z-index: 0; border-radius: 2px;">
+                                <div style="height: 100%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 2px; transition: all 0.8s ease; width: ${isCompleted ? '100%' : '75%'};"></div>
+                            </div>
                         </div>
                     </div>
 
-                    ${isCompleted ? `
-                    <!-- Downloads section - only show when settlement is complete -->
-                    <div style="margin-top: 16px; padding: 16px; background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                        <h5 style="font-weight: 500; font-size: 14px; color: #ef4444; margin-bottom: 12px; font-family: 'Inter', sans-serif;">Downloads</h5>
-                        <div style="display: flex; gap: 12px;">
+                    <!-- Section 2: Downloads -->
+                    <div style="padding: 20px; border-bottom: 1px solid #e5e7eb; background: white;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                            <i class="fas fa-download" style="color: #ef4444; font-size: 16px;"></i>
+                            <h4 style="font-weight: 600; font-size: 16px; color: #ef4444; margin: 0; font-family: 'Inter', sans-serif;">
+                                Downloads
+                            </h4>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
                             <button
                                 onclick="dashboard.downloadRentReceipt('${transaction.id}')"
-                                style="background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; transition: background 0.2s;"
-                                onmouseover="this.style.background='#0f766e'"
-                                onmouseout="this.style.background='#0d9488'"
+                                style="background: #0891b2; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; transition: all 0.2s; box-shadow: 0 2px 4px rgba(8, 145, 178, 0.2);"
+                                onmouseover="this.style.background='#0e7490'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(8, 145, 178, 0.3)'"
+                                onmouseout="this.style.background='#0891b2'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(8, 145, 178, 0.2)'"
                             >
-                                <i class="fas fa-download" style="font-size: 14px;"></i>
-                                Rent Receipt #1 📄
+                                <i class="fas fa-file-pdf" style="font-size: 16px;"></i>
+                                Rent Receipt #1
+                                <i class="fas fa-download" style="font-size: 12px; opacity: 0.8;"></i>
                             </button>
                             <button
                                 onclick="dashboard.downloadInvoice('${transaction.id}')"
-                                style="background: #0d9488; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; transition: background 0.2s;"
-                                onmouseover="this.style.background='#0f766e'"
-                                onmouseout="this.style.background='#0d9488'"
+                                style="background: #0891b2; color: white; border: none; padding: 12px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Inter', sans-serif; transition: all 0.2s; box-shadow: 0 2px 4px rgba(8, 145, 178, 0.2);"
+                                onmouseover="this.style.background='#0e7490'; this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 8px rgba(8, 145, 178, 0.3)'"
+                                onmouseout="this.style.background='#0891b2'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(8, 145, 178, 0.2)'"
                             >
-                                <i class="fas fa-download" style="font-size: 14px;"></i>
-                                Invoice #1 📄
+                                <i class="fas fa-file-invoice" style="font-size: 16px;"></i>
+                                Invoice #1
+                                <i class="fas fa-download" style="font-size: 12px; opacity: 0.8;"></i>
                             </button>
                         </div>
                     </div>
-                    ` : ''}
 
-                    <!-- Transaction Details Grid -->
-                    <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 14px;">
-                        <div>
-                            <p style="color: #6b7280; font-family: 'Inter', sans-serif;">Type</p>
-                            <p style="font-weight: 500; font-family: 'Inter', sans-serif;">${transaction.type || 'Unknown'}</p>
+                    <!-- Section 3: Charges -->
+                    <div style="padding: 20px; border-bottom: 1px solid #e5e7eb; background: white;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                            <i class="fas fa-calculator" style="color: #ef4444; font-size: 16px;"></i>
+                            <h4 style="font-weight: 600; font-size: 16px; color: #ef4444; margin: 0; font-family: 'Inter', sans-serif;">
+                                Charges
+                            </h4>
                         </div>
-                        <div>
-                            <p style="color: #6b7280; font-family: 'Inter', sans-serif;">Order ID</p>
-                            <p style="font-weight: 500; font-family: 'Inter', sans-serif;">ORD-${Math.floor(Math.random() * 10000000)}</p>
-                        </div>
-                        <div>
-                            <p style="color: #6b7280; font-family: 'Inter', sans-serif;">Transaction Date</p>
-                            <p style="font-weight: 500; font-family: 'Inter', sans-serif;">${transaction.date}</p>
-                        </div>
-                        <div>
-                            <p style="color: #6b7280; font-family: 'Inter', sans-serif;">Cash Points Earned</p>
-                            <p style="font-weight: 500; font-family: 'Inter', sans-serif;">${Math.floor(parseFloat(transaction.amount.replace(/[₹,]/g, '')) * 0.01)}</p>
+
+                        <!-- Rent Charges Section -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+                            <h5 style="font-weight: 600; font-size: 14px; color: #475569; margin: 0 0 12px 0; font-family: 'Inter', sans-serif;">Rent Charges</h5>
+                            <div style="display: grid; gap: 8px; align-items: center;">
+                                <div style="display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
+                                    <span style="font-size: 14px; color: #64748b; font-family: 'Inter', sans-serif;">Rent Amount :</span>
+                                    <span style="font-size: 14px; font-weight: 600; color: #1e293b; font-family: 'Inter', sans-serif;">₹${(parseFloat(transaction.amount.replace(/[₹,]/g, '')) - 100).toLocaleString()}.00</span>
+                                </div>
+                                <div style="display: flex; align-items: center; padding: 8px 0;">
+                                    <span style="font-size: 14px; color: #64748b; font-family: 'Inter', sans-serif;">RentPay Charges :</span>
+                                    <span style="font-size: 14px; font-weight: 600; color: #1e293b; font-family: 'Inter', sans-serif;">₹100.00</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div style="margin-top: 16px; display: flex; justify-content: flex-end;">
-                        <button style="background: white; border: 1px solid #d1d5db; color: #374151; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='white'">
-                            View Details
-                        </button>
+                    <!-- Section 4: Rent Transaction -->
+                    <div style="padding: 20px; background: white;">
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+                            <i class="fas fa-home" style="color: #ef4444; font-size: 16px;"></i>
+                            <h4 style="font-weight: 600; font-size: 16px; color: #ef4444; margin: 0; font-family: 'Inter', sans-serif;">
+                                Rent Transactions
+                            </h4>
+                        </div>
+
+                        <!-- Transaction Table -->
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+                            <div style="background: #e2e8f0; padding: 12px 16px; border-bottom: 1px solid #cbd5e1;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; font-size: 13px; font-weight: 600; color: #475569; font-family: 'Inter', sans-serif;">
+                                    <span>Account Name</span>
+                                    <span>Account Number</span>
+                                    <span>IFSC</span>
+                                    <span>Amount</span>
+                                </div>
+                            </div>
+                            <div style="padding: 16px; background: white;">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; align-items: center; font-size: 14px; font-family: 'Inter', sans-serif;">
+                                    <span style="font-weight: 500; color: #1e293b;">Mukul Dani</span>
+                                    <span style="color: #64748b; font-family: 'Monaco', monospace;">006301529829</span>
+                                    <span style="color: #64748b; font-family: 'Monaco', monospace;">ICIC0000063</span>
+                                    <span style="font-weight: 600; color: #059669;">₹${(parseFloat(transaction.amount.replace(/[₹,]/g, '')) - 100).toLocaleString()}.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional Transaction Details -->
+                        <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 14px;">
+                            <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
+                                <p style="color: #64748b; margin: 0 0 4px 0; font-size: 12px; font-family: 'Inter', sans-serif;">Order ID</p>
+                                <p style="font-weight: 600; color: #1e293b; margin: 0; font-family: 'Monaco', monospace; font-size: 13px;">${transaction.id.replace('RG-', 'ORD-')}</p>
+                            </div>
+                            <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
+                                <p style="color: #64748b; margin: 0 0 4px 0; font-size: 12px; font-family: 'Inter', sans-serif;">Due Date</p>
+                                <p style="font-weight: 600; color: #1e293b; margin: 0; font-family: 'Inter', sans-serif;">${transaction.date}</p>
+                            </div>
+                            <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
+                                <p style="color: #64748b; margin: 0 0 4px 0; font-size: 12px; font-family: 'Inter', sans-serif;">Settlement Date</p>
+                                <p style="font-weight: 600; color: #1e293b; margin: 0; font-family: 'Inter', sans-serif;">${isCompleted ? transaction.date : 'Pending'}</p>
+                            </div>
+                            <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
+                                <p style="color: #64748b; margin: 0 0 4px 0; font-size: 12px; font-family: 'Inter', sans-serif;">Cash Points Earned</p>
+                                <p style="font-weight: 600; color: #059669; margin: 0; font-family: 'Inter', sans-serif;">${Math.floor(parseFloat(transaction.amount.replace(/[₹,]/g, '')) * 0.01)}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -8184,6 +8264,7 @@ class RegistrationsManager {
         this.expandedRgId = null;
         this.showAllByType = {};
         this.selectedRegistrationType = null;
+        this.expandedRowDetails = {}; // Track expanded row details
 
         this.init();
     }
@@ -8247,6 +8328,40 @@ class RegistrationsManager {
                 dueDate: "15/01/2025",
                 frequency: "Monthly",
                 endDate: "15/12/2025",
+                // Detailed information for expandable row
+                tenantDetails: {
+                    userType: "Company",
+                    name: "Mr. Piyush jgh Kumar",
+                    dob: "23/07/1971",
+                    mobileNo: "919560714492",
+                    email: "kumar1993piyush@gmail.com",
+                    panNo: "AWQQQ1224F",
+                    address: "test",
+                    city: "new",
+                    pinCode: "119900"
+                },
+                tenancyDetails: {
+                    rentAmount: "₹10.00",
+                    frequency: "Monthly",
+                    dueDate: "21/06/2025",
+                    tenancyEndDate: "21/07/2025",
+                    cardIssuingBankName: "HDFC Bank",
+                    gstin: ""
+                },
+                ownerDetails: {
+                    name: "Mrs. knjbh j test",
+                    email: "test@7676@exsete.com",
+                    mobileNo: "",
+                    panNo: "JJJJG6666F"
+                },
+                accountDetails: {
+                    accountHolder: "test",
+                    accountNo: "111111",
+                    accountType: "Savings",
+                    rentAmount: "₹10.00",
+                    ifsc: "IFSC0111111",
+                    panNo: "JJJJG6666F"
+                }
             },
             {
                 id: 2,
@@ -8260,6 +8375,40 @@ class RegistrationsManager {
                 dueDate: "10/01/2025",
                 frequency: "Monthly",
                 endDate: "10/12/2025",
+                // Detailed information for expandable row
+                tenantDetails: {
+                    userType: "Individual",
+                    name: "Ms. Priya Sharma",
+                    dob: "15/03/1985",
+                    mobileNo: "919876543210",
+                    email: "priya.sharma@gmail.com",
+                    panNo: "BXPPS1234K",
+                    address: "123 MG Road, Bangalore",
+                    city: "Bangalore",
+                    pinCode: "560001"
+                },
+                tenancyDetails: {
+                    rentAmount: "₹32,000.00",
+                    frequency: "Monthly",
+                    dueDate: "10/01/2025",
+                    tenancyEndDate: "10/12/2025",
+                    cardIssuingBankName: "SBI Bank",
+                    gstin: "29BXPPS1234K1ZX"
+                },
+                ownerDetails: {
+                    name: "Mr. Rajesh Kumar",
+                    email: "rajesh.kumar@property.com",
+                    mobileNo: "919123456789",
+                    panNo: "AABPR1234C"
+                },
+                accountDetails: {
+                    accountHolder: "Rajesh Kumar",
+                    accountNo: "123456789012",
+                    accountType: "Current",
+                    rentAmount: "₹32,000.00",
+                    ifsc: "SBIN0001234",
+                    panNo: "AABPR1234C"
+                }
             },
             {
                 id: 3,
@@ -8273,6 +8422,40 @@ class RegistrationsManager {
                 dueDate: "05/01/2025",
                 frequency: "Monthly",
                 endDate: "05/12/2025",
+                // Detailed information for expandable row
+                tenantDetails: {
+                    userType: "Individual",
+                    name: "Mr. Amit Singh",
+                    dob: "12/08/1990",
+                    mobileNo: "919988776655",
+                    email: "amit.singh@email.com",
+                    panNo: "CXYZS5678P",
+                    address: "456 Park Street, Delhi",
+                    city: "Delhi",
+                    pinCode: "110001"
+                },
+                tenancyDetails: {
+                    rentAmount: "₹28,000.00",
+                    frequency: "Monthly",
+                    dueDate: "05/01/2025",
+                    tenancyEndDate: "05/12/2025",
+                    cardIssuingBankName: "ICICI Bank",
+                    gstin: "07CXYZS5678P1ZY"
+                },
+                ownerDetails: {
+                    name: "Mrs. Sunita Verma",
+                    email: "sunita.verma@property.com",
+                    mobileNo: "919876543210",
+                    panNo: "BCDPQ9876L"
+                },
+                accountDetails: {
+                    accountHolder: "Sunita Verma",
+                    accountNo: "987654321098",
+                    accountType: "Savings",
+                    rentAmount: "₹28,000.00",
+                    ifsc: "ICIC0001234",
+                    panNo: "BCDPQ9876L"
+                }
             },
             {
                 id: 4,
@@ -8286,6 +8469,40 @@ class RegistrationsManager {
                 dueDate: "25/01/2025",
                 frequency: "Monthly",
                 endDate: "25/12/2025",
+                // Detailed information for expandable row
+                tenantDetails: {
+                    userType: "Company",
+                    name: "Ms. Neha Gupta",
+                    dob: "05/11/1988",
+                    mobileNo: "919123456789",
+                    email: "neha.gupta@company.com",
+                    panNo: "DEFGH1234M",
+                    address: "789 Business District, Mumbai",
+                    city: "Mumbai",
+                    pinCode: "400001"
+                },
+                tenancyDetails: {
+                    rentAmount: "₹22,000.00",
+                    frequency: "Monthly",
+                    dueDate: "25/01/2025",
+                    tenancyEndDate: "25/12/2025",
+                    cardIssuingBankName: "Axis Bank",
+                    gstin: "27DEFGH1234M1ZX"
+                },
+                ownerDetails: {
+                    name: "Mr. Ravi Patel",
+                    email: "ravi.patel@realty.com",
+                    mobileNo: "919876543211",
+                    panNo: "EFGHI5678N"
+                },
+                accountDetails: {
+                    accountHolder: "Ravi Patel",
+                    accountNo: "456789123456",
+                    accountType: "Current",
+                    rentAmount: "₹22,000.00",
+                    ifsc: "UTIB0001234",
+                    panNo: "EFGHI5678N"
+                }
             },
             {
                 id: 5,
@@ -8299,6 +8516,40 @@ class RegistrationsManager {
                 dueDate: "12/01/2025",
                 frequency: "Monthly",
                 endDate: "12/12/2025",
+                // Detailed information for expandable row
+                tenantDetails: {
+                    userType: "Individual",
+                    name: "Dr. Kavita Sharma",
+                    dob: "18/04/1985",
+                    mobileNo: "919876543212",
+                    email: "kavita.sharma@hospital.com",
+                    panNo: "GHIJK9876Q",
+                    address: "321 Medical Colony, Chennai",
+                    city: "Chennai",
+                    pinCode: "600001"
+                },
+                tenancyDetails: {
+                    rentAmount: "₹35,000.00",
+                    frequency: "Monthly",
+                    dueDate: "12/01/2025",
+                    tenancyEndDate: "12/12/2025",
+                    cardIssuingBankName: "Kotak Bank",
+                    gstin: "33GHIJK9876Q1ZW"
+                },
+                ownerDetails: {
+                    name: "Mr. Suresh Kumar",
+                    email: "suresh.kumar@estates.com",
+                    mobileNo: "919876543213",
+                    panNo: "HIJKL1234R"
+                },
+                accountDetails: {
+                    accountHolder: "Suresh Kumar",
+                    accountNo: "789123456789",
+                    accountType: "Savings",
+                    rentAmount: "₹35,000.00",
+                    ifsc: "KKBK0001234",
+                    panNo: "HIJKL1234R"
+                }
             },
             {
                 id: 6,
@@ -8312,6 +8563,40 @@ class RegistrationsManager {
                 dueDate: "20/01/2025",
                 frequency: "Monthly",
                 endDate: "20/12/2025",
+                // Detailed information for expandable row
+                tenantDetails: {
+                    userType: "Individual",
+                    name: "Mr. Rohit Mehta",
+                    dob: "22/09/1992",
+                    mobileNo: "919876543214",
+                    email: "rohit.mehta@tech.com",
+                    panNo: "IJKLM5678S",
+                    address: "654 Tech Park, Hyderabad",
+                    city: "Hyderabad",
+                    pinCode: "500001"
+                },
+                tenancyDetails: {
+                    rentAmount: "₹30,000.00",
+                    frequency: "Monthly",
+                    dueDate: "20/01/2025",
+                    tenancyEndDate: "20/12/2025",
+                    cardIssuingBankName: "Yes Bank",
+                    gstin: "36IJKLM5678S1ZV"
+                },
+                ownerDetails: {
+                    name: "Mrs. Anita Reddy",
+                    email: "anita.reddy@properties.com",
+                    mobileNo: "919876543215",
+                    panNo: "JKLMN9876T"
+                },
+                accountDetails: {
+                    accountHolder: "Anita Reddy",
+                    accountNo: "321654987321",
+                    accountType: "Savings",
+                    rentAmount: "₹30,000.00",
+                    ifsc: "YESB0001234",
+                    panNo: "JKLMN9876T"
+                }
             },
             {
                 id: 7,
@@ -8325,19 +8610,40 @@ class RegistrationsManager {
                 dueDate: "18/01/2025",
                 frequency: "Monthly",
                 endDate: "18/12/2025",
-            },
-            {
-                id: 8,
-                rgId: "RG-0000182575",
-                userId: 1,
-                type: "tenant",
-                subtype: "Rent",
-                mode: "Credit Card",
-                status: "Approved",
-                amount: "33000",
-                dueDate: "22/01/2025",
-                frequency: "Monthly",
-                endDate: "22/12/2025",
+                // Detailed information for expandable row
+                tenantDetails: {
+                    userType: "Company",
+                    name: "Mr. Vikash Agarwal",
+                    dob: "30/06/1987",
+                    mobileNo: "919876543216",
+                    email: "vikash.agarwal@startup.com",
+                    panNo: "KLMNO1234U",
+                    address: "987 Innovation Hub, Pune",
+                    city: "Pune",
+                    pinCode: "411001"
+                },
+                tenancyDetails: {
+                    rentAmount: "₹27,000.00",
+                    frequency: "Monthly",
+                    dueDate: "18/01/2025",
+                    tenancyEndDate: "18/12/2025",
+                    cardIssuingBankName: "IndusInd Bank",
+                    gstin: "27KLMNO1234U1ZU"
+                },
+                ownerDetails: {
+                    name: "Mr. Deepak Joshi",
+                    email: "deepak.joshi@realestate.com",
+                    mobileNo: "919876543217",
+                    panNo: "LMNOP5678V"
+                },
+                accountDetails: {
+                    accountHolder: "Deepak Joshi",
+                    accountNo: "654321987654",
+                    accountType: "Current",
+                    rentAmount: "₹27,000.00",
+                    ifsc: "INDB0001234",
+                    panNo: "LMNOP5678V"
+                }
             },
             // Education registrations (6 total - to test show more/less)
             {
@@ -8352,6 +8658,53 @@ class RegistrationsManager {
                 dueDate: "15/02/2025",
                 frequency: "Quarterly",
                 endDate: "15/06/2025",
+                // Detailed information for expandable row
+                studentDetails: {
+                    gender: "Male",
+                    dateOfBirth: "15/10/1995",
+                    email: "test.srsj@redgirraffe.com",
+                    mobileNo: "919876445544",
+                    whatsappNo: "919876445542",
+                    alternateNo: "919876445542",
+                    panNo: "TESTA12342",
+                    addressLine1: "sdf",
+                    addressLine2: "",
+                    state: "sdf",
+                    city: "sdf",
+                    pincode: "110048",
+                    studentName: "sksdf",
+                    admissionNo: "654sdv",
+                    studentGender: "Male",
+                    studentDateOfBirth: "02/11/2001",
+                    class: "Montessori 1",
+                    applicantRelationship: "Brother"
+                },
+                studentFeesDetails: {
+                    feeAmount: "₹200.00",
+                    frequency: "Monthly",
+                    dueDate: "25/06/2024",
+                    currentSessionEndDate: "25/06/2025",
+                    gstin: "",
+                    cardIssuingBank: "Axis Bank"
+                },
+                instituteDetails: {
+                    instituteName: "sdf",
+                    website: "",
+                    phoneNumber: "",
+                    email: "sdf@exsete.com",
+                    addressLine1: "sdf",
+                    addressLine2: "hjk",
+                    state: "hj",
+                    city: "sdf",
+                    pincode: "110048"
+                },
+                instituteAccountDetails: {
+                    accountHolder: "sdf",
+                    accountNo: "123",
+                    accountType: "Savings",
+                    feeAmount: "₹200.00",
+                    ifsc: "ICIC0000014"
+                }
             },
             {
                 id: 10,
@@ -8365,6 +8718,53 @@ class RegistrationsManager {
                 dueDate: "20/02/2025",
                 frequency: "Quarterly",
                 endDate: "20/06/2025",
+                // Detailed information for expandable row
+                studentDetails: {
+                    gender: "Female",
+                    dateOfBirth: "22/08/1990",
+                    email: "priya.student@gmail.com",
+                    mobileNo: "919876543220",
+                    whatsappNo: "919876543220",
+                    alternateNo: "919876543221",
+                    panNo: "STUDE1234B",
+                    addressLine1: "123 Student Colony",
+                    addressLine2: "Near University",
+                    state: "Karnataka",
+                    city: "Bangalore",
+                    pincode: "560001",
+                    studentName: "Priya Sharma",
+                    admissionNo: "STU2024001",
+                    studentGender: "Female",
+                    studentDateOfBirth: "22/08/1990",
+                    class: "MBA 2nd Year",
+                    applicantRelationship: "Self"
+                },
+                studentFeesDetails: {
+                    feeAmount: "₹50,000.00",
+                    frequency: "Quarterly",
+                    dueDate: "20/02/2025",
+                    currentSessionEndDate: "20/06/2025",
+                    gstin: "29STUDE1234B1ZX",
+                    cardIssuingBank: "SBI Bank"
+                },
+                instituteDetails: {
+                    instituteName: "Bangalore Management Institute",
+                    website: "www.bmi.edu.in",
+                    phoneNumber: "080-12345678",
+                    email: "admissions@bmi.edu.in",
+                    addressLine1: "456 Education Street",
+                    addressLine2: "University Area",
+                    state: "Karnataka",
+                    city: "Bangalore",
+                    pincode: "560002"
+                },
+                instituteAccountDetails: {
+                    accountHolder: "Bangalore Management Institute",
+                    accountNo: "987654321012",
+                    accountType: "Current",
+                    feeAmount: "₹50,000.00",
+                    ifsc: "SBIN0012345"
+                }
             },
             {
                 id: 11,
@@ -8378,6 +8778,53 @@ class RegistrationsManager {
                 dueDate: "25/02/2025",
                 frequency: "Quarterly",
                 endDate: "25/06/2025",
+                // Detailed information for expandable row
+                studentDetails: {
+                    gender: "Male",
+                    dateOfBirth: "10/05/1992",
+                    email: "rahul.tech@gmail.com",
+                    mobileNo: "919876543222",
+                    whatsappNo: "919876543222",
+                    alternateNo: "919876543223",
+                    panNo: "TECHR1234C",
+                    addressLine1: "789 Tech Park",
+                    addressLine2: "IT Corridor",
+                    state: "Tamil Nadu",
+                    city: "Chennai",
+                    pincode: "600032",
+                    studentName: "Rahul Kumar",
+                    admissionNo: "TECH2024002",
+                    studentGender: "Male",
+                    studentDateOfBirth: "10/05/1992",
+                    class: "B.Tech 3rd Year",
+                    applicantRelationship: "Self"
+                },
+                studentFeesDetails: {
+                    feeAmount: "₹42,000.00",
+                    frequency: "Quarterly",
+                    dueDate: "25/02/2025",
+                    currentSessionEndDate: "25/06/2025",
+                    gstin: "33TECHR1234C1ZY",
+                    cardIssuingBank: "HDFC Bank"
+                },
+                instituteDetails: {
+                    instituteName: "Chennai Institute of Technology",
+                    website: "www.cit.edu.in",
+                    phoneNumber: "044-12345678",
+                    email: "admissions@cit.edu.in",
+                    addressLine1: "123 Tech Campus",
+                    addressLine2: "Engineering Block",
+                    state: "Tamil Nadu",
+                    city: "Chennai",
+                    pincode: "600044"
+                },
+                instituteAccountDetails: {
+                    accountHolder: "Chennai Institute of Technology",
+                    accountNo: "456123789456",
+                    accountType: "Current",
+                    feeAmount: "₹42,000.00",
+                    ifsc: "HDFC0001234"
+                }
             },
             {
                 id: 12,
@@ -8391,6 +8838,16 @@ class RegistrationsManager {
                 dueDate: "28/02/2025",
                 frequency: "Quarterly",
                 endDate: "28/06/2025",
+                studentDetails: {
+                    gender: "Female", dateOfBirth: "12/09/1993", email: "anita.med@gmail.com", mobileNo: "919876543224",
+                    whatsappNo: "919876543224", alternateNo: "919876543225", panNo: "MEDIC1234D", addressLine1: "456 Medical Street",
+                    addressLine2: "Hospital Area", state: "Maharashtra", city: "Mumbai", pincode: "400012",
+                    studentName: "Anita Sharma", admissionNo: "MED2024003", studentGender: "Female", studentDateOfBirth: "12/09/1993",
+                    class: "MBBS 4th Year", applicantRelationship: "Self"
+                },
+                studentFeesDetails: { feeAmount: "₹48,000.00", frequency: "Quarterly", dueDate: "28/02/2025", currentSessionEndDate: "28/06/2025", gstin: "27MEDIC1234D1ZX", cardIssuingBank: "ICICI Bank" },
+                instituteDetails: { instituteName: "Mumbai Medical College", website: "www.mmc.edu.in", phoneNumber: "022-12345678", email: "admissions@mmc.edu.in", addressLine1: "789 Medical Campus", addressLine2: "Health Sciences", state: "Maharashtra", city: "Mumbai", pincode: "400020" },
+                instituteAccountDetails: { accountHolder: "Mumbai Medical College", accountNo: "789456123789", accountType: "Current", feeAmount: "₹48,000.00", ifsc: "ICIC0001234" }
             },
             {
                 id: 13,
@@ -8404,6 +8861,16 @@ class RegistrationsManager {
                 dueDate: "05/03/2025",
                 frequency: "Quarterly",
                 endDate: "05/07/2025",
+                studentDetails: {
+                    gender: "Male", dateOfBirth: "25/11/1991", email: "vikram.law@gmail.com", mobileNo: "919876543226",
+                    whatsappNo: "919876543226", alternateNo: "919876543227", panNo: "LAWST1234E", addressLine1: "321 Law Street",
+                    addressLine2: "Court Complex", state: "Delhi", city: "New Delhi", pincode: "110001",
+                    studentName: "Vikram Singh", admissionNo: "LAW2024004", studentGender: "Male", studentDateOfBirth: "25/11/1991",
+                    class: "LLB 2nd Year", applicantRelationship: "Self"
+                },
+                studentFeesDetails: { feeAmount: "₹46,000.00", frequency: "Quarterly", dueDate: "05/03/2025", currentSessionEndDate: "05/07/2025", gstin: "07LAWST1234E1ZW", cardIssuingBank: "Punjab National Bank" },
+                instituteDetails: { instituteName: "Delhi Law College", website: "www.dlc.edu.in", phoneNumber: "011-12345678", email: "admissions@dlc.edu.in", addressLine1: "654 Law Campus", addressLine2: "Justice Block", state: "Delhi", city: "New Delhi", pincode: "110003" },
+                instituteAccountDetails: { accountHolder: "Delhi Law College", accountNo: "321789456321", accountType: "Current", feeAmount: "₹46,000.00", ifsc: "PUNB0001234" }
             },
             {
                 id: 14,
@@ -8417,6 +8884,146 @@ class RegistrationsManager {
                 dueDate: "10/03/2025",
                 frequency: "Quarterly",
                 endDate: "10/07/2025",
+                studentDetails: {
+                    gender: "Female", dateOfBirth: "08/07/1994", email: "meera.arts@gmail.com", mobileNo: "919876543228",
+                    whatsappNo: "919876543228", alternateNo: "919876543229", panNo: "ARTST1234F", addressLine1: "987 Arts Colony",
+                    addressLine2: "Cultural District", state: "Rajasthan", city: "Jaipur", pincode: "302001",
+                    studentName: "Meera Gupta", admissionNo: "ART2024005", studentGender: "Female", studentDateOfBirth: "08/07/1994",
+                    class: "MA Fine Arts", applicantRelationship: "Self"
+                },
+                studentFeesDetails: { feeAmount: "₹47,000.00", frequency: "Quarterly", dueDate: "10/03/2025", currentSessionEndDate: "10/07/2025", gstin: "08ARTST1234F1ZV", cardIssuingBank: "Bank of Baroda" },
+                instituteDetails: { instituteName: "Jaipur Arts University", website: "www.jau.edu.in", phoneNumber: "0141-12345678", email: "admissions@jau.edu.in", addressLine1: "147 Arts Campus", addressLine2: "Creative Block", state: "Rajasthan", city: "Jaipur", pincode: "302004" },
+                instituteAccountDetails: { accountHolder: "Jaipur Arts University", accountNo: "147852963147", accountType: "Current", feeAmount: "₹47,000.00", ifsc: "BARB0001234" }
+            },
+            // Society Maintenance registrations (5 total)
+            {
+                id: 15,
+                rgId: "RG-4000182596",
+                userId: 1,
+                type: "society",
+                subtype: "Maintenance",
+                mode: "Credit Card",
+                status: "Approved",
+                amount: "8500",
+                dueDate: "01/02/2025",
+                frequency: "Monthly",
+                endDate: "01/12/2025",
+                // Detailed information for expandable row
+                payerDetails: {
+                    payerType: "Tenant",
+                    userType: "Individual",
+                    name: "Mr. Test Rick",
+                    gender: "Male",
+                    dateOfBirth: "15/10/1996",
+                    email: "test.srsj@redgirraffe.com",
+                    mobileNo: "919876445544",
+                    alternateNo: "919876445542",
+                    panNo: "TESTA12342"
+                },
+                payerPropertyAddressDetails: {
+                    apartmentNumber: "s015",
+                    addressLine1: "sdf",
+                    addressLine2: "sdf",
+                    street: "sdf",
+                    state: "sfsdf",
+                    city: "sdfds",
+                    pincode: "110048"
+                },
+                societyMaintenanceChargesDetails: {
+                    amount: "₹110.00",
+                    frequency: "Monthly",
+                    startDate: "24/04/2024",
+                    dueDate: "12/09/2024",
+                    endDate: "25/06/2025",
+                    gstin: "",
+                    cardIssuingBank: "Axis Bank"
+                },
+                societyAgencyDetails: {
+                    societyAgencyName: "DPS",
+                    email: "sdfds@exsete.com",
+                    phoneLandlineNumber: "",
+                    pan: "HFHFH3223F"
+                },
+                societyAgencyAccountDetails: {
+                    accountHolder: "sdf",
+                    accountNo: "147",
+                    accountType: "Current",
+                    maintenanceAmount: "₹110.00",
+                    ifsc: "ICIC0000012",
+                    panNo: ""
+                }
+            },
+            {
+                id: 16,
+                rgId: "RG-4000182597",
+                userId: 1,
+                type: "society",
+                subtype: "Maintenance",
+                mode: "UPI",
+                status: "Approved",
+                amount: "9200",
+                dueDate: "05/02/2025",
+                frequency: "Monthly",
+                endDate: "05/12/2025",
+                payerDetails: { payerType: "Owner", userType: "Individual", name: "Mrs. Priya Sharma", gender: "Female", dateOfBirth: "22/08/1985", email: "priya.sharma@gmail.com", mobileNo: "919876543230", alternateNo: "919876543231", panNo: "OWNER1234A" },
+                payerPropertyAddressDetails: { apartmentNumber: "A-201", addressLine1: "Green Valley Apartments", addressLine2: "Sector 15", street: "MG Road", state: "Haryana", city: "Gurgaon", pincode: "122001" },
+                societyMaintenanceChargesDetails: { amount: "₹9,200.00", frequency: "Monthly", startDate: "01/01/2024", dueDate: "05/02/2025", endDate: "05/12/2025", gstin: "06OWNER1234A1ZX", cardIssuingBank: "HDFC Bank" },
+                societyAgencyDetails: { societyAgencyName: "Green Valley Society", email: "admin@greenvalley.com", phoneLandlineNumber: "0124-1234567", pan: "SOCTY1234B" },
+                societyAgencyAccountDetails: { accountHolder: "Green Valley Society", accountNo: "987654321098", accountType: "Current", maintenanceAmount: "₹9,200.00", ifsc: "HDFC0001234", panNo: "SOCTY1234B" }
+            },
+            {
+                id: 17,
+                rgId: "RG-4000182598",
+                userId: 1,
+                type: "society",
+                subtype: "Maintenance",
+                mode: "Net Banking",
+                status: "Pending",
+                amount: "7800",
+                dueDate: "10/02/2025",
+                frequency: "Monthly",
+                endDate: "10/12/2025",
+                payerDetails: { payerType: "Tenant", userType: "Company", name: "Mr. Rajesh Kumar", gender: "Male", dateOfBirth: "15/03/1988", email: "rajesh.kumar@techcorp.com", mobileNo: "919876543232", alternateNo: "919876543233", panNo: "TENANT1234C" },
+                payerPropertyAddressDetails: { apartmentNumber: "B-305", addressLine1: "Blue Heights Complex", addressLine2: "Phase 2", street: "Cyber City", state: "Karnataka", city: "Bangalore", pincode: "560100" },
+                societyMaintenanceChargesDetails: { amount: "₹7,800.00", frequency: "Monthly", startDate: "15/02/2024", dueDate: "10/02/2025", endDate: "10/12/2025", gstin: "29TENANT1234C1ZY", cardIssuingBank: "SBI Bank" },
+                societyAgencyDetails: { societyAgencyName: "Blue Heights Residents Association", email: "admin@blueheights.org", phoneLandlineNumber: "080-9876543", pan: "ASSOC1234D" },
+                societyAgencyAccountDetails: { accountHolder: "Blue Heights RWA", accountNo: "456789123456", accountType: "Savings", maintenanceAmount: "₹7,800.00", ifsc: "SBIN0012345", panNo: "ASSOC1234D" }
+            },
+            {
+                id: 18,
+                rgId: "RG-4000182599",
+                userId: 1,
+                type: "society",
+                subtype: "Maintenance",
+                mode: "Credit Card",
+                status: "Approved",
+                amount: "8900",
+                dueDate: "15/02/2025",
+                frequency: "Monthly",
+                endDate: "15/12/2025",
+                payerDetails: { payerType: "Owner", userType: "Individual", name: "Dr. Anita Verma", gender: "Female", dateOfBirth: "08/12/1980", email: "dr.anita@hospital.com", mobileNo: "919876543234", alternateNo: "919876543235", panNo: "DOCTR1234E" },
+                payerPropertyAddressDetails: { apartmentNumber: "C-102", addressLine1: "Sunrise Towers", addressLine2: "Medical District", street: "Hospital Road", state: "Maharashtra", city: "Pune", pincode: "411001" },
+                societyMaintenanceChargesDetails: { amount: "₹8,900.00", frequency: "Monthly", startDate: "01/03/2024", dueDate: "15/02/2025", endDate: "15/12/2025", gstin: "27DOCTR1234E1ZW", cardIssuingBank: "ICICI Bank" },
+                societyAgencyDetails: { societyAgencyName: "Sunrise Towers Management", email: "management@sunrise.com", phoneLandlineNumber: "020-7654321", pan: "MGMNT1234F" },
+                societyAgencyAccountDetails: { accountHolder: "Sunrise Management Pvt Ltd", accountNo: "789123456789", accountType: "Current", maintenanceAmount: "₹8,900.00", ifsc: "ICIC0001234", panNo: "MGMNT1234F" }
+            },
+            {
+                id: 19,
+                rgId: "RG-4000182600",
+                userId: 1,
+                type: "society",
+                subtype: "Maintenance",
+                mode: "UPI",
+                status: "Rejected",
+                amount: "8300",
+                dueDate: "20/02/2025",
+                frequency: "Monthly",
+                endDate: "20/12/2025",
+                payerDetails: { payerType: "Tenant", userType: "Individual", name: "Mr. Vikash Gupta", gender: "Male", dateOfBirth: "25/07/1990", email: "vikash.gupta@startup.com", mobileNo: "919876543236", alternateNo: "919876543237", panNo: "RENTER1234G" },
+                payerPropertyAddressDetails: { apartmentNumber: "D-404", addressLine1: "Golden Heights", addressLine2: "New Town", street: "IT Park Road", state: "West Bengal", city: "Kolkata", pincode: "700156" },
+                societyMaintenanceChargesDetails: { amount: "₹8,300.00", frequency: "Monthly", startDate: "10/04/2024", dueDate: "20/02/2025", endDate: "20/12/2025", gstin: "19RENTER1234G1ZV", cardIssuingBank: "Axis Bank" },
+                societyAgencyDetails: { societyAgencyName: "Golden Heights Welfare Society", email: "welfare@goldenheights.in", phoneLandlineNumber: "033-2468135", pan: "WELFR1234H" },
+                societyAgencyAccountDetails: { accountHolder: "Golden Heights Welfare Society", accountNo: "123456789012", accountType: "Savings", maintenanceAmount: "₹8,300.00", ifsc: "UTIB0001234", panNo: "WELFR1234H" }
             },
         ];
     }
@@ -8488,30 +9095,37 @@ class RegistrationsManager {
             visibleRegistrations.forEach((registration) => {
                 const statusClass = this.getStatusClass(registration.status);
                 const statusColor = this.getStatusColor(registration.status);
+                const isExpanded = this.expandedRowDetails[registration.rgId];
+                const expandIcon = isExpanded ? 'fa-chevron-up' : 'fa-chevron-down';
+
+                // Main row
                 html += `
-                    <tr style="border-bottom: 1px solid #f3f4f6;">
-                        <td style="padding: 16px 24px; font-weight: 500; color: #111827; font-size: 14px;">${registration.rgId
-                    }</td>
-                        <td style="padding: 16px 24px; color: #6b7280; font-size: 14px; text-transform: capitalize;">${registration.subtype || "Maintenance"
-                    }</td>
-                        <td style="padding: 16px 24px; color: #6b7280; font-size: 14px;">${registration.mode
-                    }</td>
-                        <td style="padding: 16px 24px;">
-                            <span style="background: ${statusColor.bg
-                    }; color: ${statusColor.text
-                    }; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">${registration.status
-                    }</span>
+                    <tr style="border-bottom: 1px solid #f3f4f6; cursor: pointer;" onclick="registrations.toggleRowExpansion('${registration.rgId}')">
+                        <td style="padding: 16px 24px; font-weight: 500; color: #111827; font-size: 14px;">
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas ${expandIcon}" style="color: #6b7280; font-size: 12px; transition: transform 0.2s;"></i>
+                                ${registration.rgId}
+                            </div>
                         </td>
-                        <td style="padding: 16px 24px; font-weight: 600; color: #111827; font-size: 14px;">₹${parseInt(
-                        registration.amount
-                    ).toLocaleString()}</td>
+                        <td style="padding: 16px 24px; color: #6b7280; font-size: 14px; text-transform: capitalize;">${registration.subtype || "Maintenance"}</td>
+                        <td style="padding: 16px 24px; color: #6b7280; font-size: 14px;">${registration.mode}</td>
                         <td style="padding: 16px 24px;">
-                            <button onclick="registrations.handlePayNow('${registration.rgId
-                    }')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500;">
+                            <span style="background: ${statusColor.bg}; color: ${statusColor.text}; padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: 500;">${registration.status}</span>
+                        </td>
+                        <td style="padding: 16px 24px; font-weight: 600; color: #111827; font-size: 14px;">₹${parseInt(registration.amount).toLocaleString()}</td>
+                        <td style="padding: 16px 24px;" onclick="event.stopPropagation();">
+                            <button onclick="registrations.handlePayNow('${registration.rgId}')" style="background: #10b981; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; font-weight: 500;">
                                 Pay Now
                             </button>
                         </td>
                     </tr>`;
+
+                // Expandable details row (for rent/tenant, education, and society types with detailed data)
+                if (isExpanded && ((registration.type === 'tenant' && registration.tenantDetails) ||
+                                   (registration.type === 'education' && registration.studentDetails) ||
+                                   (registration.type === 'society' && registration.payerDetails))) {
+                    html += this.renderExpandedRowDetails(registration);
+                }
             });
 
             html += `
@@ -8628,61 +9242,604 @@ class RegistrationsManager {
     }
 
     toggleShowAll(type) {
-        // Store the current scroll position relative to the category
-        const categoryElement = document.querySelector(`[data-category="${type}"]`);
-        const scrollPosition = window.pageYOffset;
-
         // Toggle the state
         this.showAllByType[type] = !this.showAllByType[type];
         const isExpanding = this.showAllByType[type];
 
-        // Add a subtle loading effect
-        const container = document.getElementById("registrations-container");
-        if (container) {
-            container.style.opacity = "0.8";
-            container.style.transition = "opacity 0.2s ease";
+        // Get category element for smooth scrolling reference
+        const categoryElement = document.querySelector(`[data-category="${type}"]`);
+
+        // Re-render immediately without delays
+        this.renderRegistrations();
+
+        // Smooth scroll to maintain user context when expanding
+        if (isExpanding && categoryElement) {
+            // Use requestAnimationFrame for smooth scrolling
+            requestAnimationFrame(() => {
+                const updatedCategoryElement = document.querySelector(
+                    `[data-category="${type}"]`
+                );
+                if (updatedCategoryElement) {
+                    updatedCategoryElement.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                        inline: "nearest",
+                    });
+                }
+            });
         }
 
-        // Re-render with a slight delay for smooth transition
-        setTimeout(() => {
-            this.renderRegistrations();
+        // Debug log for development
+        const typeLabel = this.getTypeLabel(type);
+        const registrationCount = this.registrations.filter(
+            (r) => r.type === type
+        ).length;
+        console.log(`${typeLabel} section ${isExpanding ? 'expanded' : 'collapsed'} - showing ${isExpanding ? registrationCount : 1} registrations`);
+    }
 
-            // Restore opacity with animation
-            if (container) {
-                container.style.opacity = "1";
-            }
+    toggleRowExpansion(rgId) {
+        // Toggle the expanded state for this specific row
+        this.expandedRowDetails[rgId] = !this.expandedRowDetails[rgId];
 
-            // Smooth scroll behavior when expanding
-            if (isExpanding) {
-                // Find the updated category element and scroll to it
-                setTimeout(() => {
-                    const updatedCategoryElement = document.querySelector(
-                        `[data-category="${type}"]`
-                    );
-                    if (updatedCategoryElement) {
-                        updatedCategoryElement.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start",
-                            inline: "nearest",
-                        });
-                    }
-                }, 50);
-            }
+        // Re-render to show/hide the expanded details
+        this.renderRegistrations();
 
-            // Show notification for user feedback
-            const action = isExpanding ? "expanded" : "collapsed";
-            const typeLabel = this.getTypeLabel(type);
-            const registrationCount = this.registrations.filter(
-                (r) => r.type === type
-            ).length;
+        // Log for debugging
+        console.log(`Row ${rgId} ${this.expandedRowDetails[rgId] ? 'expanded' : 'collapsed'}`);
+    }
 
-            if (window.dashboard && window.dashboard.showNotification) {
-                const message = isExpanding
-                    ? `Showing all ${registrationCount} ${typeLabel} registrations`
-                    : `${typeLabel} section collapsed`;
-                window.dashboard.showNotification(message, "info");
-            }
-        }, 150);
+    renderExpandedRowDetails(registration) {
+        if (registration.type === 'tenant') {
+            return this.renderRentExpandedDetails(registration);
+        } else if (registration.type === 'education') {
+            return this.renderEducationExpandedDetails(registration);
+        } else if (registration.type === 'society') {
+            return this.renderSocietyExpandedDetails(registration);
+        }
+        return '';
+    }
+
+    renderRentExpandedDetails(registration) {
+        const { tenantDetails, tenancyDetails, ownerDetails, accountDetails } = registration;
+
+        return `
+            <tr style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+                <td colspan="6" style="padding: 0;">
+                    <div class="expandable-details-container" style="padding: 24px; margin: 0;">
+                        <!-- Tenant Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #ef4444; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #ef4444;">
+                                Tenant Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">User Type:</span>
+                                    <span style="color: #6b7280;">${tenantDetails.userType}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">D.O.B:</span>
+                                    <span style="color: #6b7280;">${tenantDetails.dob}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Name:</span>
+                                    <span style="color: #6b7280;">${tenantDetails.name}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Email:</span>
+                                    <span style="color: #6b7280;">${tenantDetails.email}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Mobile No.:</span>
+                                    <span style="color: #6b7280;">${tenantDetails.mobileNo}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Address:</span>
+                                    <span style="color: #6b7280;">${tenantDetails.address}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">PAN No.:</span>
+                                    <span style="color: #6b7280;">${tenantDetails.panNo}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">PIN Code:</span>
+                                    <span style="color: #6b7280;">${tenantDetails.pinCode}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">City:</span>
+                                    <span style="color: #6b7280;">${tenantDetails.city}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tenancy Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #ef4444; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #ef4444;">
+                                Tenancy Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Rent Amount:</span>
+                                    <span style="color: #6b7280;">${tenancyDetails.rentAmount}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Frequency:</span>
+                                    <span style="color: #6b7280;">${tenancyDetails.frequency}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Due Date:</span>
+                                    <span style="color: #6b7280;">${tenancyDetails.dueDate}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Tenancy End Date:</span>
+                                    <span style="color: #6b7280;">${tenancyDetails.tenancyEndDate}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Card Issuing Bank Name:</span>
+                                    <span style="color: #6b7280;">${tenancyDetails.cardIssuingBankName}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">GSTIN:</span>
+                                    <span style="color: #6b7280;">${tenancyDetails.gstin || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Owner Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 style="color: #ef4444; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #ef4444;">
+                                Owner Details
+                            </h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Name:</span>
+                                    <span style="color: #6b7280;">${ownerDetails.name}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Email:</span>
+                                    <span style="color: #6b7280;">${ownerDetails.email}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Mobile No.:</span>
+                                    <span style="color: #6b7280;">${ownerDetails.mobileNo || 'N/A'}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">PAN No.:</span>
+                                    <span style="color: #6b7280;">${ownerDetails.panNo}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Account Details Section -->
+                        <div>
+                            <h4 style="color: #ef4444; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #ef4444;">
+                                Account 1 Details
+                            </h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Account Holder:</span>
+                                    <span style="color: #6b7280;">${accountDetails.accountHolder}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Account No.:</span>
+                                    <span style="color: #6b7280;">${accountDetails.accountNo}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Account Type:</span>
+                                    <span style="color: #6b7280;">${accountDetails.accountType}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Rent Amount:</span>
+                                    <span style="color: #6b7280;">${accountDetails.rentAmount}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">IFSC:</span>
+                                    <span style="color: #6b7280;">${accountDetails.ifsc}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">PAN No.:</span>
+                                    <span style="color: #6b7280;">${accountDetails.panNo}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+    }
+
+    renderEducationExpandedDetails(registration) {
+        const { studentDetails, studentFeesDetails, instituteDetails, instituteAccountDetails } = registration;
+
+        return `
+            <tr style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+                <td colspan="6" style="padding: 0;">
+                    <div class="expandable-details-container" style="padding: 24px; margin: 0;">
+                        <!-- Student Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #3b82f6; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #3b82f6;">
+                                Student Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Gender:</span>
+                                    <span style="color: #6b7280;">${studentDetails.gender}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Date of Birth:</span>
+                                    <span style="color: #6b7280;">${studentDetails.dateOfBirth}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Email:</span>
+                                    <span style="color: #6b7280;">${studentDetails.email}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Mobile No.:</span>
+                                    <span style="color: #6b7280;">${studentDetails.mobileNo}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">WhatsApp No.:</span>
+                                    <span style="color: #6b7280;">${studentDetails.whatsappNo}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Alternate no.:</span>
+                                    <span style="color: #6b7280;">${studentDetails.alternateNo}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">PAN No.:</span>
+                                    <span style="color: #6b7280;">${studentDetails.panNo}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Address Line 1:</span>
+                                    <span style="color: #6b7280;">${studentDetails.addressLine1}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Address Line 2:</span>
+                                    <span style="color: #6b7280;">${studentDetails.addressLine2 || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">State:</span>
+                                    <span style="color: #6b7280;">${studentDetails.state}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">City:</span>
+                                    <span style="color: #6b7280;">${studentDetails.city}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Pincode:</span>
+                                    <span style="color: #6b7280;">${studentDetails.pincode}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Student Details Section (Additional) -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #3b82f6; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #3b82f6;">
+                                Student Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Student Name:</span>
+                                    <span style="color: #6b7280;">${studentDetails.studentName}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Admission No / Roll No:</span>
+                                    <span style="color: #6b7280;">${studentDetails.admissionNo}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Gender:</span>
+                                    <span style="color: #6b7280;">${studentDetails.studentGender}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Student Date of Birth:</span>
+                                    <span style="color: #6b7280;">${studentDetails.studentDateOfBirth}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Class:</span>
+                                    <span style="color: #6b7280;">${studentDetails.class}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Applicant Relationship with Student:</span>
+                                    <span style="color: #6b7280;">${studentDetails.applicantRelationship}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Student Fees Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #3b82f6; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #3b82f6;">
+                                Student Fees Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Fee Amount:</span>
+                                    <span style="color: #6b7280;">${studentFeesDetails.feeAmount}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Frequency:</span>
+                                    <span style="color: #6b7280;">${studentFeesDetails.frequency}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Due Date:</span>
+                                    <span style="color: #6b7280;">${studentFeesDetails.dueDate}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Current Session End Date:</span>
+                                    <span style="color: #6b7280;">${studentFeesDetails.currentSessionEndDate}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">GSTIN:</span>
+                                    <span style="color: #6b7280;">${studentFeesDetails.gstin || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Card Issuing Bank:</span>
+                                    <span style="color: #6b7280;">${studentFeesDetails.cardIssuingBank}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Institute Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #3b82f6; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #3b82f6;">
+                                Institute Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Institute Name:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.instituteName}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Email:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.email}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Website:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.website || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Address Line 1:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.addressLine1}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Phone Number:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.phoneNumber || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">State:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.state}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Address Line 2:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.addressLine2 || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Pincode:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.pincode}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">City:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.city}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Institute Account Details Section -->
+                        <div>
+                            <h4 class="expandable-section-header" style="color: #3b82f6; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #3b82f6;">
+                                Institute Account Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Account Holder:</span>
+                                    <span style="color: #6b7280;">${instituteAccountDetails.accountHolder}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Account No.:</span>
+                                    <span style="color: #6b7280;">${instituteAccountDetails.accountNo}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Account Type:</span>
+                                    <span style="color: #6b7280;">${instituteAccountDetails.accountType}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Fee Amount:</span>
+                                    <span style="color: #6b7280;">${instituteAccountDetails.feeAmount}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">IFSC:</span>
+                                    <span style="color: #6b7280;">${instituteAccountDetails.ifsc}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
+    }
+
+    renderSocietyExpandedDetails(registration) {
+        const { payerDetails, payerPropertyAddressDetails, societyMaintenanceChargesDetails, societyAgencyDetails, societyAgencyAccountDetails } = registration;
+
+        return `
+            <tr style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
+                <td colspan="6" style="padding: 0;">
+                    <div class="expandable-details-container" style="padding: 24px; margin: 0;">
+                        <!-- Payer Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #10b981; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #10b981;">
+                                Payer Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Payer Type:</span>
+                                    <span style="color: #6b7280;">${payerDetails.payerType}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">User Type:</span>
+                                    <span style="color: #6b7280;">${payerDetails.userType}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Name:</span>
+                                    <span style="color: #6b7280;">${payerDetails.name}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Gender:</span>
+                                    <span style="color: #6b7280;">${payerDetails.gender}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Date of Birth:</span>
+                                    <span style="color: #6b7280;">${payerDetails.dateOfBirth}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Email:</span>
+                                    <span style="color: #6b7280;">${payerDetails.email}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Mobile No.:</span>
+                                    <span style="color: #6b7280;">${payerDetails.mobileNo}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Alternate no.:</span>
+                                    <span style="color: #6b7280;">${payerDetails.alternateNo}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">PAN No.:</span>
+                                    <span style="color: #6b7280;">${payerDetails.panNo}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payer Property Address Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #10b981; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #10b981;">
+                                Payer Property Address Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Apartment Number:</span>
+                                    <span style="color: #6b7280;">${payerPropertyAddressDetails.apartmentNumber}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Address Line 1:</span>
+                                    <span style="color: #6b7280;">${payerPropertyAddressDetails.addressLine1}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Address Line 2:</span>
+                                    <span style="color: #6b7280;">${payerPropertyAddressDetails.addressLine2 || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Street:</span>
+                                    <span style="color: #6b7280;">${payerPropertyAddressDetails.street}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">State:</span>
+                                    <span style="color: #6b7280;">${payerPropertyAddressDetails.state}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">City:</span>
+                                    <span style="color: #6b7280;">${payerPropertyAddressDetails.city}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Pincode:</span>
+                                    <span style="color: #6b7280;">${payerPropertyAddressDetails.pincode}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Society Maintenance Charges Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #10b981; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #10b981;">
+                                Society Maintenance Charges Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Amount:</span>
+                                    <span style="color: #6b7280;">${societyMaintenanceChargesDetails.amount}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Frequency:</span>
+                                    <span style="color: #6b7280;">${societyMaintenanceChargesDetails.frequency}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Start Date:</span>
+                                    <span style="color: #6b7280;">${societyMaintenanceChargesDetails.startDate}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Due Date:</span>
+                                    <span style="color: #6b7280;">${societyMaintenanceChargesDetails.dueDate}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">End Date:</span>
+                                    <span style="color: #6b7280;">${societyMaintenanceChargesDetails.endDate}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">GSTIN:</span>
+                                    <span style="color: #6b7280;">${societyMaintenanceChargesDetails.gstin || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Card Issuing Bank:</span>
+                                    <span style="color: #6b7280;">${societyMaintenanceChargesDetails.cardIssuingBank}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Society/Agency Details Section -->
+                        <div style="margin-bottom: 24px;">
+                            <h4 class="expandable-section-header" style="color: #10b981; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #10b981;">
+                                Society/Agency Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Society/Agency Name:</span>
+                                    <span style="color: #6b7280;">${societyAgencyDetails.societyAgencyName}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Phone/Landline Number:</span>
+                                    <span style="color: #6b7280;">${societyAgencyDetails.phoneLandlineNumber || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Email:</span>
+                                    <span style="color: #6b7280;">${societyAgencyDetails.email}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">PAN:</span>
+                                    <span style="color: #6b7280;">${societyAgencyDetails.pan}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Society/Agency Account Details Section -->
+                        <div>
+                            <h4 class="expandable-section-header" style="color: #10b981; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #10b981;">
+                                Society/Agency Account Details
+                            </h4>
+                            <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Account Holder:</span>
+                                    <span style="color: #6b7280;">${societyAgencyAccountDetails.accountHolder}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Account No.:</span>
+                                    <span style="color: #6b7280;">${societyAgencyAccountDetails.accountNo}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Account Type:</span>
+                                    <span style="color: #6b7280;">${societyAgencyAccountDetails.accountType}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Maintenance Amount:</span>
+                                    <span style="color: #6b7280;">${societyAgencyAccountDetails.maintenanceAmount}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">IFSC:</span>
+                                    <span style="color: #6b7280;">${societyAgencyAccountDetails.ifsc}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">PAN No.:</span>
+                                    <span style="color: #6b7280;">${societyAgencyAccountDetails.panNo || 'N/A'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>`;
     }
 
     handlePayNow(rgId) {
