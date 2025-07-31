@@ -242,6 +242,11 @@ class RedGiraffeDashboard {
         this.initializeChartData();
 
         this.init();
+
+        // Run tests on initialization to verify the logic
+        setTimeout(() => {
+            this.testSettlementStatusLogic();
+        }, 1000);
     }
 
     initializeGiftCardsData() {
@@ -661,6 +666,7 @@ class RedGiraffeDashboard {
                 amount: 14000,
                 date: new Date("2025-01-15"),
                 status: "UPCOMING",
+                isSettled: false, // No green tick - settlement pending
             },
             {
                 id: 9,
@@ -669,6 +675,7 @@ class RedGiraffeDashboard {
                 amount: 32000,
                 date: new Date("2025-01-10"),
                 status: "UPCOMING",
+                isSettled: false, // No green tick - settlement pending
             },
             // Scheduled payments
             {
@@ -678,6 +685,7 @@ class RedGiraffeDashboard {
                 amount: 10000,
                 date: new Date("2025-02-10"),
                 status: "SCHEDULED",
+                isSettled: false, // No green tick - settlement pending
             },
             {
                 id: 3,
@@ -686,6 +694,7 @@ class RedGiraffeDashboard {
                 amount: 18000,
                 date: new Date("2025-03-12"),
                 status: "SCHEDULED",
+                isSettled: false, // No green tick - settlement pending
             },
             {
                 id: 11,
@@ -694,6 +703,7 @@ class RedGiraffeDashboard {
                 amount: 45000,
                 date: new Date("2025-02-15"),
                 status: "SCHEDULED",
+                isSettled: false, // No green tick - settlement pending
             },
             {
                 id: 13,
@@ -702,6 +712,7 @@ class RedGiraffeDashboard {
                 amount: 22000,
                 date: new Date("2025-03-20"),
                 status: "SCHEDULED",
+                isSettled: false, // No green tick - settlement pending
             },
             // Completed payments
             {
@@ -711,6 +722,7 @@ class RedGiraffeDashboard {
                 amount: 14000,
                 date: new Date("2024-12-15"),
                 status: "PAID",
+                isSettled: true, // Green tick - settlement completed
             },
             {
                 id: 5,
@@ -719,6 +731,7 @@ class RedGiraffeDashboard {
                 amount: 14000,
                 date: new Date("2024-11-15"),
                 status: "PAID",
+                isSettled: false, // No green tick - settlement pending
             },
             {
                 id: 10,
@@ -727,6 +740,7 @@ class RedGiraffeDashboard {
                 amount: 32000,
                 date: new Date("2024-12-10"),
                 status: "PAID",
+                isSettled: true, // Green tick - settlement completed
             },
             {
                 id: 6,
@@ -735,6 +749,7 @@ class RedGiraffeDashboard {
                 amount: 10000,
                 date: new Date("2024-11-10"),
                 status: "PAID",
+                isSettled: true, // Green tick - settlement completed
             },
             {
                 id: 12,
@@ -743,6 +758,7 @@ class RedGiraffeDashboard {
                 amount: 45000,
                 date: new Date("2024-11-15"),
                 status: "PAID",
+                isSettled: false, // No green tick - settlement pending
             },
             {
                 id: 7,
@@ -751,6 +767,7 @@ class RedGiraffeDashboard {
                 amount: 18000,
                 date: new Date("2024-12-12"),
                 status: "PAID",
+                isSettled: true, // Green tick - settlement completed
             },
             {
                 id: 14,
@@ -759,6 +776,7 @@ class RedGiraffeDashboard {
                 amount: 22000,
                 date: new Date("2024-12-20"),
                 status: "PAID",
+                isSettled: false, // No green tick - settlement pending
             },
             // Failed payments
             {
@@ -768,6 +786,7 @@ class RedGiraffeDashboard {
                 amount: 10000,
                 date: new Date("2024-10-10"),
                 status: "FAILED",
+                isSettled: false, // No green tick - payment failed
             },
             // Additional transactions to match the React implementation
             {
@@ -777,6 +796,7 @@ class RedGiraffeDashboard {
                 amount: 14000,
                 date: new Date("2024-10-15"),
                 status: "PAID",
+                isSettled: true, // Green tick - settlement completed
             },
             {
                 id: 16,
@@ -785,6 +805,7 @@ class RedGiraffeDashboard {
                 amount: 10000,
                 date: new Date("2024-09-10"),
                 status: "PAID",
+                isSettled: false, // No green tick - settlement pending
             },
             {
                 id: 17,
@@ -793,6 +814,7 @@ class RedGiraffeDashboard {
                 amount: 18000,
                 date: new Date("2024-11-12"),
                 status: "PAID",
+                isSettled: true, // Green tick - settlement completed
             },
             {
                 id: 18,
@@ -801,6 +823,7 @@ class RedGiraffeDashboard {
                 amount: 32000,
                 date: new Date("2024-11-10"),
                 status: "PAID",
+                isSettled: false, // No green tick - settlement pending
             },
             {
                 id: 19,
@@ -809,6 +832,7 @@ class RedGiraffeDashboard {
                 amount: 45000,
                 date: new Date("2024-10-15"),
                 status: "PAID",
+                isSettled: true, // Green tick - settlement completed
             },
             {
                 id: 20,
@@ -817,6 +841,7 @@ class RedGiraffeDashboard {
                 amount: 22000,
                 date: new Date("2024-11-20"),
                 status: "PAID",
+                isSettled: false, // No green tick - settlement pending
             },
         ];
     }
@@ -1200,11 +1225,16 @@ class RedGiraffeDashboard {
             // Get transaction type icon and color
             const typeInfo = this.getTransactionTypeInfo(transaction.type);
 
-            // Get status badge styling
-            const statusInfo = this.getTransactionStatusInfo(transaction.status);
+            // Get status badge styling using settlement status logic
+            const statusInfo = this.getTransactionStatusInfo(transaction.status, transaction);
 
             // Format date
             const formattedDate = this.formatTransactionDate(transaction.date);
+
+            // Add green tick icon for settled transactions
+            const settlementIcon = transaction.isSettled ?
+                '<i class="fas fa-check-circle" style="color: #10b981; margin-left: 8px;" title="Settlement Completed"></i>' :
+                '';
 
             row.innerHTML = `
                 <td>
@@ -1225,6 +1255,7 @@ class RedGiraffeDashboard {
                     <span class="transaction-status-badge ${statusInfo.class}">
                         ${statusInfo.label}
                     </span>
+                    ${settlementIcon}
                 </td>
             `;
 
@@ -1246,8 +1277,113 @@ class RedGiraffeDashboard {
         }
     }
 
+    // Get settlement status based on transaction ID pattern and settlement indicator
+    getSettlementStatus(transaction) {
+        const { rgId, isSettled } = transaction;
+
+        // Extract transaction type from RG ID pattern
+        const rgIdMatch = rgId.match(/^RG-([046])/);
+        if (!rgIdMatch) {
+            return { class: "scheduled", label: "Unknown Status" };
+        }
+
+        const transactionTypeCode = rgIdMatch[1];
+
+        // Determine transaction type and status based on settlement indicator
+        switch (transactionTypeCode) {
+            case "0": // Rent transactions
+                return {
+                    class: isSettled ? "paid" : "pending",
+                    label: isSettled ? "Rent Payment Settled" : "Rent Settlement Pending"
+                };
+            case "4": // Maintenance transactions
+                return {
+                    class: isSettled ? "paid" : "pending",
+                    label: isSettled ? "Maintenance Payment Settled" : "Maintenance Settlement Pending"
+                };
+            case "6": // Fee transactions
+                return {
+                    class: isSettled ? "paid" : "pending",
+                    label: isSettled ? "Fee Payment Settled" : "Fee Settlement Pending"
+                };
+            default:
+                return { class: "scheduled", label: "Unknown Status" };
+        }
+    }
+
+    // Get payment status step text based on transaction ID pattern and settlement status
+    getPaymentStatusStepText(transactionId, isCompleted) {
+        // Extract transaction type from RG ID pattern
+        const rgIdMatch = transactionId.match(/^RG-([046])/);
+        if (!rgIdMatch) {
+            return isCompleted ? "Payment Settled" : "Settlement Pending";
+        }
+
+        const transactionTypeCode = rgIdMatch[1];
+
+        // Determine step text based on transaction type and completion status
+        switch (transactionTypeCode) {
+            case "0": // Rent transactions
+                return isCompleted ? "Rent Payment Settled" : "Rent Settlement Pending";
+            case "4": // Maintenance transactions
+                return isCompleted ? "Maintenance Payment Settled" : "Maintenance Settlement Pending";
+            case "6": // Fee transactions
+                return isCompleted ? "Fee Payment Settled" : "Fee Settlement Pending";
+            default:
+                return isCompleted ? "Payment Settled" : "Settlement Pending";
+        }
+    }
+
+    // Get charges section title based on transaction ID pattern
+    getChargesSectionTitle(transactionId) {
+        const rgIdMatch = transactionId.match(/^RG-([046])/);
+        if (!rgIdMatch) {
+            return "Charges";
+        }
+
+        const transactionTypeCode = rgIdMatch[1];
+
+        switch (transactionTypeCode) {
+            case "0": // Rent transactions
+                return "Rent Charges";
+            case "4": // Maintenance transactions
+                return "Maintenance Charges";
+            case "6": // Fee transactions
+                return "Fee Charges";
+            default:
+                return "Charges";
+        }
+    }
+
+    // Get transactions section title based on transaction ID pattern
+    getTransactionsSectionTitle(transactionId) {
+        const rgIdMatch = transactionId.match(/^RG-([046])/);
+        if (!rgIdMatch) {
+            return "Transactions";
+        }
+
+        const transactionTypeCode = rgIdMatch[1];
+
+        switch (transactionTypeCode) {
+            case "0": // Rent transactions
+                return "Rent Transactions";
+            case "4": // Maintenance transactions
+                return "Maintenance Transactions";
+            case "6": // Fee transactions
+                return "Education Fee Transactions";
+            default:
+                return "Transactions";
+        }
+    }
+
     // Get transaction status badge styling
-    getTransactionStatusInfo(status) {
+    getTransactionStatusInfo(status, transaction = null) {
+        // If transaction object is provided, use settlement status logic
+        if (transaction) {
+            return this.getSettlementStatus(transaction);
+        }
+
+        // Fallback to original status logic for backward compatibility
         switch (status) {
             case "PAID":
                 return { class: "paid", label: "COMPLETED" };
@@ -1266,6 +1402,75 @@ class RedGiraffeDashboard {
     formatTransactionDate(date) {
         const options = { day: "2-digit", month: "short", year: "numeric" };
         return new Date(date).toLocaleDateString("en-GB", options);
+    }
+
+    // Test function to verify settlement status logic
+    testSettlementStatusLogic() {
+        console.log("Testing Settlement Status Logic:");
+
+        // Test cases for different transaction types and settlement statuses
+        const testCases = [
+            { rgId: "RG-0000182568", isSettled: true, expected: "Rent Payment Settled" },
+            { rgId: "RG-0000182568", isSettled: false, expected: "Rent Settlement Pending" },
+            { rgId: "RG-4000180380", isSettled: true, expected: "Maintenance Payment Settled" },
+            { rgId: "RG-4000180380", isSettled: false, expected: "Maintenance Settlement Pending" },
+            { rgId: "RG-6000182595", isSettled: true, expected: "Fee Payment Settled" },
+            { rgId: "RG-6000182595", isSettled: false, expected: "Fee Settlement Pending" },
+        ];
+
+        testCases.forEach((testCase, index) => {
+            const result = this.getSettlementStatus(testCase);
+            const passed = result.label === testCase.expected;
+            console.log(`Test ${index + 1}: ${passed ? '✅ PASS' : '❌ FAIL'} - ${testCase.rgId} (settled: ${testCase.isSettled}) -> "${result.label}"`);
+        });
+
+        console.log("\nTesting Payment Status Step Text Logic:");
+
+        // Test cases for payment status step text
+        const stepTestCases = [
+            { transactionId: "RG-0000182568", isCompleted: true, expected: "Rent Payment Settled" },
+            { transactionId: "RG-0000182568", isCompleted: false, expected: "Rent Settlement Pending" },
+            { transactionId: "RG-4000180380", isCompleted: true, expected: "Maintenance Payment Settled" },
+            { transactionId: "RG-4000180380", isCompleted: false, expected: "Maintenance Settlement Pending" },
+            { transactionId: "RG-6000182595", isCompleted: true, expected: "Fee Payment Settled" },
+            { transactionId: "RG-6000182595", isCompleted: false, expected: "Fee Settlement Pending" },
+        ];
+
+        stepTestCases.forEach((testCase, index) => {
+            const result = this.getPaymentStatusStepText(testCase.transactionId, testCase.isCompleted);
+            const passed = result === testCase.expected;
+            console.log(`Step Test ${index + 1}: ${passed ? '✅ PASS' : '❌ FAIL'} - ${testCase.transactionId} (completed: ${testCase.isCompleted}) -> "${result}"`);
+        });
+
+        console.log("\nTesting Charges Section Title Logic:");
+
+        // Test cases for charges section titles
+        const chargesTestCases = [
+            { transactionId: "RG-0000182568", expected: "Rent Charges" },
+            { transactionId: "RG-4000180380", expected: "Maintenance Charges" },
+            { transactionId: "RG-6000182595", expected: "Fee Charges" },
+        ];
+
+        chargesTestCases.forEach((testCase, index) => {
+            const result = this.getChargesSectionTitle(testCase.transactionId);
+            const passed = result === testCase.expected;
+            console.log(`Charges Test ${index + 1}: ${passed ? '✅ PASS' : '❌ FAIL'} - ${testCase.transactionId} -> "${result}"`);
+        });
+
+        console.log("\nTesting Transactions Section Title Logic:");
+
+        // Test cases for transactions section titles
+        const transactionsTestCases = [
+            { transactionId: "RG-0000182568", expected: "Rent Transactions" },
+            { transactionId: "RG-4000180380", expected: "Maintenance Transactions" },
+            { transactionId: "RG-6000182595", expected: "Education Fee Transactions" },
+        ];
+
+        transactionsTestCases.forEach((testCase, index) => {
+            const result = this.getTransactionsSectionTitle(testCase.transactionId);
+            const passed = result === testCase.expected;
+            console.log(`Transactions Test ${index + 1}: ${passed ? '✅ PASS' : '❌ FAIL'} - ${testCase.transactionId} -> "${result}"`);
+        });
     }
 
     async loadEditRecords() {
@@ -7579,7 +7784,10 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
     }
 
     loadDashboardTransactionHistory() {
-        // Mock transaction data
+        // Mock transaction data with different transaction types to demonstrate dynamic settlement text
+        // RG-4XXXXXXXXX = Maintenance transactions
+        // RG-6XXXXXXXXX = Fee transactions
+        // RG-0XXXXXXXXX = Rent transactions
         const mockTransactions = [
             {
                 id: "RG-4000180380",
@@ -7760,7 +7968,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                                     <div style="height: 36px; width: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; background: ${isCompleted ? '#10b981' : '#d1d5db'}; color: ${isCompleted ? 'white' : '#6b7280'}; font-weight: 600; font-size: 14px; ${isCompleted ? 'box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);' : ''}">
                                         ${isCompleted ? '<i class="fas fa-check" style="font-size: 14px;"></i>' : '<i class="fas fa-clock" style="font-size: 14px;"></i>'}
                                     </div>
-                                    <span style="font-size: 12px; text-align: center; color: #374151; font-weight: 500; font-family: 'Inter', sans-serif;">Rent Settled</span>
+                                    <span style="font-size: 12px; text-align: center; color: #374151; font-weight: 500; font-family: 'Inter', sans-serif;">${this.getPaymentStatusStepText(transaction.id, isCompleted)}</span>
                                 </div>
                             </div>
                             <!-- Progress Line -->
@@ -7808,13 +8016,13 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
                             <i class="fas fa-calculator" style="color: #ef4444; font-size: 16px;"></i>
                             <h4 style="font-weight: 600; font-size: 16px; color: #ef4444; margin: 0; font-family: 'Inter', sans-serif;">
-                                Charges
+                                ${this.getChargesSectionTitle(transaction.id)}
                             </h4>
                         </div>
 
-                        <!-- Rent Charges Section -->
+                        <!-- Dynamic Charges Section -->
                         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px;">
-                            <h5 style="font-weight: 600; font-size: 14px; color: #475569; margin: 0 0 12px 0; font-family: 'Inter', sans-serif;">Rent Charges</h5>
+                            <h5 style="font-weight: 600; font-size: 14px; color: #475569; margin: 0 0 12px 0; font-family: 'Inter', sans-serif;">${this.getChargesSectionTitle(transaction.id)}</h5>
                             <div style="display: grid; gap: 8px; align-items: center;">
                                 <div style="display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
                                     <span style="font-size: 14px; color: #64748b; font-family: 'Inter', sans-serif;">Rent Amount :</span>
@@ -7828,12 +8036,12 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                         </div>
                     </div>
 
-                    <!-- Section 4: Rent Transaction -->
+                    <!-- Section 4: Dynamic Transaction -->
                     <div style="padding: 20px; background: white;">
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
                             <i class="fas fa-home" style="color: #ef4444; font-size: 16px;"></i>
                             <h4 style="font-weight: 600; font-size: 16px; color: #ef4444; margin: 0; font-family: 'Inter', sans-serif;">
-                                Rent Transactions
+                                ${this.getTransactionsSectionTitle(transaction.id)}
                             </h4>
                         </div>
 
@@ -7850,8 +8058,8 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                             <div style="padding: 16px; background: white;">
                                 <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px; align-items: center; font-size: 14px; font-family: 'Inter', sans-serif;">
                                     <span style="font-weight: 500; color: #1e293b;">Mukul Dani</span>
-                                    <span style="color: #64748b; font-family: 'Monaco', monospace;">006301529829</span>
-                                    <span style="color: #64748b; font-family: 'Monaco', monospace;">ICIC0000063</span>
+                                    <span style="color: #64748b;">006301529829</span>
+                                    <span style="color: #64748b;">ICIC0000063</span>
                                     <span style="font-weight: 600; color: #059669;">₹${(parseFloat(transaction.amount.replace(/[₹,]/g, '')) - 100).toLocaleString()}.00</span>
                                 </div>
                             </div>
@@ -7861,7 +8069,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                         <div style="margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; font-size: 14px;">
                             <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
                                 <p style="color: #64748b; margin: 0 0 4px 0; font-size: 12px; font-family: 'Inter', sans-serif;">Order ID</p>
-                                <p style="font-weight: 600; color: #1e293b; margin: 0; font-family: 'Monaco', monospace; font-size: 13px;">${transaction.id.replace('RG-', 'ORD-')}</p>
+                                <p style="font-weight: 600; color: #1e293b; margin: 0; font-size: 13px;">${transaction.id.replace('RG-', 'ORD-')}</p>
                             </div>
                             <div style="padding: 12px; background: #f1f5f9; border-radius: 6px;">
                                 <p style="color: #64748b; margin: 0 0 4px 0; font-size: 12px; font-family: 'Inter', sans-serif;">Due Date</p>
@@ -9453,10 +9661,10 @@ class RegistrationsManager {
             <tr style="background: #f8fafc; border-bottom: 1px solid #e5e7eb;">
                 <td colspan="6" style="padding: 0;">
                     <div class="expandable-details-container" style="padding: 24px; margin: 0;">
-                        <!-- Student Details Section -->
+                        <!-- Applicant Details Section -->
                         <div style="margin-bottom: 24px;">
                             <h4 class="expandable-section-header" style="color: #3b82f6; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid #3b82f6;">
-                                Student Details
+                                Applicant Details
                             </h4>
                             <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
                                 <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
