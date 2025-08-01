@@ -84,7 +84,7 @@ class EditRecordsMockService {
                     }
                 ],
             },
-            "RG-4000182596": {
+            "RG-6000182595": {
                 registration: this.mockRegistrations[1],
                 studentDetails: {
                     name: "Mr. Piyush Kumar",
@@ -113,7 +113,7 @@ class EditRecordsMockService {
                     pincode: "110053"
                 },
             },
-            "RG-6000182595": {
+            "RG-4000182596": {
                 registration: this.mockRegistrations[2],
                 societyDetails: {
                     amount: "100000",
@@ -234,6 +234,7 @@ class RedGiraffeDashboard {
         this.selectedRegistration = null;
         this.selectedRegistrationForUpload = null;
         this.ownerAccounts = [];
+        this.selectedFiles = []; // Track selected files for upload
 
         // Initialize Gift Cards data
         this.initializeGiftCardsData();
@@ -4026,6 +4027,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
         this.activeEditForm = null;
         this.selectedRegistration = null;
         this.selectedRegistrationForUpload = null;
+        this.selectedFiles = []; // Reset selected files
     }
 
     showUploadModalForRegistration(registrationId) {
@@ -4036,7 +4038,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
     showUploadModal() {
         const registrationText = this.selectedRegistrationForUpload ? ` for ${this.selectedRegistrationForUpload}` : '';
         const modalHtml = `
-            <div style="background: white; border-radius: 12px; max-width: 600px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
+            <div style="background: white; border-radius: 12px; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative;">
                 <div style="padding: 24px; border-bottom: 1px solid #e5e7eb;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h2 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0; font-family: 'Inter', sans-serif;">Upload Documents${registrationText}</h2>
@@ -4047,10 +4049,29 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                     <form id="upload-form" onsubmit="dashboard.handleUploadDocuments(event)">
                         <div style="margin-bottom: 20px;">
                             <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 8px; font-family: 'Inter', sans-serif;">Select Documents</label>
-                            <input type="file" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                                   style="width: 100%; height: 200px; padding: 10px 12px; border: 2px dashed #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;">
-                            <p style="color: #6b7280; font-size: 12px; margin-top: 4px; font-family: 'Inter', sans-serif;">Accepted formats: PDF, DOC, DOCX, JPG, JPEG, PNG (Max 10MB each)</p>
+                            <div style="position: relative;">
+                                <input type="file" id="file-input" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                       onchange="dashboard.handleFileSelection(event)"
+                                       style="position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 2;">
+                                <div id="file-drop-zone" style="width: 100%; height: 120px; padding: 20px; border: 2px dashed #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f9fafb; cursor: pointer; transition: all 0.2s;"
+                                     ondragover="dashboard.handleDragOver(event)" ondrop="dashboard.handleFileDrop(event)" ondragleave="dashboard.handleDragLeave(event)">
+                                    <i class="fas fa-cloud-upload-alt" style="font-size: 24px; color: #6b7280; margin-bottom: 8px;"></i>
+                                    <p style="margin: 0; color: #6b7280; text-align: center;">
+                                        <span style="color: #2563eb; font-weight: 500;">Click to upload</span> or drag and drop files here
+                                    </p>
+                                    <p style="margin: 4px 0 0 0; color: #9ca3af; font-size: 12px;">PDF, DOC, DOCX, JPG, JPEG, PNG (Max 10MB each)</p>
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- File Preview Section -->
+                        <div id="file-preview-section" style="margin-bottom: 20px; display: none;">
+                            <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 8px; font-family: 'Inter', sans-serif;">Selected Files</label>
+                            <div id="file-preview-list" style="border: 1px solid #e5e7eb; border-radius: 6px; max-height: 200px; overflow-y: auto;">
+                                <!-- File previews will be inserted here -->
+                            </div>
+                        </div>
+
                         <div style="margin-bottom: 20px;">
                             <label style="display: block; color: #374151; font-size: 14px; font-weight: 500; margin-bottom: 8px; font-family: 'Inter', sans-serif;">Remarks</label>
                             <textarea name="remarks" rows="3" placeholder="Add any remarks about the documents..."
@@ -4063,7 +4084,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                             </label>
                         </div>
                         <div style="display: flex; gap: 12px;">
-                            <button type="submit" style="flex: 1; background: #dc2626; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
+                            <button type="submit" id="upload-submit-btn" disabled style="flex: 1; background: #9ca3af; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: not-allowed; font-family: 'Inter', sans-serif; transition: all 0.2s;">
                                 Upload Documents
                             </button>
                             <button type="button" onclick="dashboard.closeUploadModal()" style="flex: 1; background: #6b7280; color: white; padding: 12px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif;">
@@ -4075,20 +4096,239 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
             </div>
         `;
         this.showEditModal(modalHtml);
+        this.selectedFiles = []; // Reset selected files
+        this.updateUploadButton();
     }
 
     handleUploadDocuments(event) {
         event.preventDefault();
         const formData = new FormData(event.target);
-        const files = event.target.querySelector('input[type="file"]').files;
         const remarks = formData.get("remarks");
+
+        if (this.selectedFiles.length === 0) {
+            this.showNotification("Please select at least one file to upload.", "error");
+            return;
+        }
 
         const registrationText = this.selectedRegistrationForUpload ? ` for ${this.selectedRegistrationForUpload}` : '';
         this.showNotification(
-            `Successfully uploaded ${files.length} document(s)${registrationText}.`,
+            `Successfully uploaded ${this.selectedFiles.length} document(s)${registrationText}.`,
             "success"
         );
         this.closeUploadModal();
+    }
+
+    // File handling functions for upload modal
+    handleFileSelection(event) {
+        const files = Array.from(event.target.files);
+        this.addFilesToSelection(files);
+    }
+
+    handleDragOver(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const dropZone = document.getElementById('file-drop-zone');
+        if (dropZone) {
+            dropZone.style.borderColor = '#2563eb';
+            dropZone.style.backgroundColor = '#eff6ff';
+        }
+    }
+
+    handleDragLeave(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const dropZone = document.getElementById('file-drop-zone');
+        if (dropZone) {
+            dropZone.style.borderColor = '#d1d5db';
+            dropZone.style.backgroundColor = '#f9fafb';
+        }
+    }
+
+    handleFileDrop(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const dropZone = document.getElementById('file-drop-zone');
+        if (dropZone) {
+            dropZone.style.borderColor = '#d1d5db';
+            dropZone.style.backgroundColor = '#f9fafb';
+        }
+
+        const files = Array.from(event.dataTransfer.files);
+        this.addFilesToSelection(files);
+    }
+
+    addFilesToSelection(files) {
+        const validFiles = files.filter(file => {
+            // Check file type
+            const validTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+            if (!validTypes.includes(fileExtension)) {
+                this.showNotification(`File "${file.name}" has an invalid format. Please select PDF, DOC, DOCX, JPG, JPEG, or PNG files.`, "error");
+                return false;
+            }
+
+            // Check file size (10MB limit)
+            if (file.size > 10 * 1024 * 1024) {
+                this.showNotification(`File "${file.name}" is too large. Maximum size is 10MB.`, "error");
+                return false;
+            }
+
+            // Check if file already selected
+            if (this.selectedFiles.some(selectedFile => selectedFile.name === file.name && selectedFile.size === file.size)) {
+                this.showNotification(`File "${file.name}" is already selected.`, "warning");
+                return false;
+            }
+
+            return true;
+        });
+
+        // Add valid files to selection
+        this.selectedFiles.push(...validFiles);
+        this.updateFilePreview();
+        this.updateUploadButton();
+
+        if (validFiles.length > 0) {
+            this.showNotification(`Added ${validFiles.length} file(s) to upload queue.`, "success");
+        }
+    }
+
+    updateFilePreview() {
+        const previewSection = document.getElementById('file-preview-section');
+        const previewList = document.getElementById('file-preview-list');
+
+        if (!previewSection || !previewList) return;
+
+        if (this.selectedFiles.length === 0) {
+            previewSection.style.display = 'none';
+            return;
+        }
+
+        previewSection.style.display = 'block';
+        previewList.innerHTML = '';
+
+        this.selectedFiles.forEach((file, index) => {
+            const fileItem = document.createElement('div');
+            fileItem.style.cssText = `
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 12px 16px;
+                border-bottom: 1px solid #f3f4f6;
+                font-family: 'Inter', sans-serif;
+                transition: background-color 0.2s;
+            `;
+
+            fileItem.onmouseover = () => fileItem.style.backgroundColor = '#f9fafb';
+            fileItem.onmouseout = () => fileItem.style.backgroundColor = 'transparent';
+
+            const fileInfo = document.createElement('div');
+            fileInfo.style.cssText = 'display: flex; align-items: center; gap: 12px; flex: 1;';
+
+            // File icon based on type
+            const fileIcon = this.getFileIcon(file.name);
+            const iconElement = document.createElement('div');
+            iconElement.innerHTML = `<i class="${fileIcon.class}" style="color: ${fileIcon.color}; font-size: 20px;"></i>`;
+
+            // File details
+            const fileDetails = document.createElement('div');
+            fileDetails.style.cssText = 'flex: 1;';
+
+            const fileName = document.createElement('div');
+            fileName.textContent = file.name;
+            fileName.style.cssText = 'font-weight: 500; color: #111827; font-size: 14px; margin-bottom: 2px;';
+
+            const fileSize = document.createElement('div');
+            fileSize.textContent = this.formatFileSize(file.size);
+            fileSize.style.cssText = 'color: #6b7280; font-size: 12px;';
+
+            fileDetails.appendChild(fileName);
+            fileDetails.appendChild(fileSize);
+
+            // Remove button
+            const removeButton = document.createElement('button');
+            removeButton.innerHTML = '<i class="fas fa-times"></i>';
+            removeButton.style.cssText = `
+                background: #fee2e2;
+                color: #dc2626;
+                border: none;
+                border-radius: 4px;
+                width: 28px;
+                height: 28px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+            `;
+
+            removeButton.onmouseover = () => {
+                removeButton.style.backgroundColor = '#fecaca';
+                removeButton.style.color = '#b91c1c';
+            };
+            removeButton.onmouseout = () => {
+                removeButton.style.backgroundColor = '#fee2e2';
+                removeButton.style.color = '#dc2626';
+            };
+
+            removeButton.onclick = () => this.removeFile(index);
+            removeButton.title = 'Remove file';
+
+            fileInfo.appendChild(iconElement);
+            fileInfo.appendChild(fileDetails);
+            fileItem.appendChild(fileInfo);
+            fileItem.appendChild(removeButton);
+            previewList.appendChild(fileItem);
+        });
+    }
+
+    getFileIcon(fileName) {
+        const extension = fileName.split('.').pop().toLowerCase();
+
+        switch (extension) {
+            case 'pdf':
+                return { class: 'fas fa-file-pdf', color: '#dc2626' };
+            case 'doc':
+            case 'docx':
+                return { class: 'fas fa-file-word', color: '#2563eb' };
+            case 'jpg':
+            case 'jpeg':
+            case 'png':
+                return { class: 'fas fa-file-image', color: '#059669' };
+            default:
+                return { class: 'fas fa-file', color: '#6b7280' };
+        }
+    }
+
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    removeFile(index) {
+        this.selectedFiles.splice(index, 1);
+        this.updateFilePreview();
+        this.updateUploadButton();
+        this.showNotification("File removed from upload queue.", "info");
+    }
+
+    updateUploadButton() {
+        const uploadButton = document.getElementById('upload-submit-btn');
+        if (!uploadButton) return;
+
+        if (this.selectedFiles.length > 0) {
+            uploadButton.disabled = false;
+            uploadButton.style.background = '#dc2626';
+            uploadButton.style.cursor = 'pointer';
+            uploadButton.textContent = `Upload ${this.selectedFiles.length} Document${this.selectedFiles.length > 1 ? 's' : ''}`;
+        } else {
+            uploadButton.disabled = true;
+            uploadButton.style.background = '#9ca3af';
+            uploadButton.style.cursor = 'not-allowed';
+            uploadButton.textContent = 'Upload Documents';
+        }
     }
 
     showAuditLog() {
