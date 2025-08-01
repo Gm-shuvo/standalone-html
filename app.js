@@ -578,7 +578,7 @@ class RedGiraffeDashboard {
         // Initialize transfer points state
         this.transferPointsState = {
             step: "form", // form, confirmation, success
-            recipientType: "email", // email, phone, redgirraffe_id
+            recipientType: "existing", // existing, new
             recipientValue: "",
             amount: "",
             message: "",
@@ -6028,7 +6028,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
         // Reset transfer state
         this.transferPointsState = {
             step: "form",
-            recipientType: "email",
+            recipientType: "existing",
             recipientValue: "",
             amount: "",
             message: "",
@@ -6163,143 +6163,128 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
 
         // Form step
         return `
-            <div style="background: white; border-radius: 12px; max-width: 600px; width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-                <div style="padding: 24px; background: white; border-radius: 12px;">
-                    <h2 style="font-size: 20px; font-weight: 700; color: #111827; margin: 0 0 24px 0;">Transfer Cash Points</h2>
+            <div style="background: white; border-radius: 12px; max-width: 500px; width: 90vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); position: relative;">
+                <!-- Close Button -->
+                <button onclick="dashboard.closeModal()" style="position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 20px; color: #6b7280; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 4px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#f3f4f6'" onmouseout="this.style.backgroundColor='transparent'">
+                    ×
+                </button>
 
-                <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 6px; padding: 12px; margin-bottom: 24px;">
-                    <p style="color: #92400e; margin: 0; font-size: 14px;">
-                        <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
-                        The recipient will receive an email and SMS notification about this transfer.
-                    </p>
-                </div>
+                <div style="padding: 32px; background: white; border-radius: 12px;">
+                    <h2 style="font-size: 20px; font-weight: 600; color: #111827; margin: 0 0 24px 0; text-align: center; font-family: 'Inter', sans-serif;">Transfer Cash Points</h2>
 
-                <form onsubmit="dashboard.handleTransferForm(event)">
-                    <!-- Recipient Type -->
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px;">Recipient Type</label>
-                        <div style="display: flex; gap: 12px;">
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input
-                                    type="radio"
-                                    name="recipientType"
-                                    value="email"
-                                    ${recipientType === "email" ? "checked" : ""
-            }
-                                    onchange="dashboard.updateTransferPointsState({recipientType: this.value})"
-                                    style="margin: 0;"
-                                >
-                                <span style="color: #374151;">Email</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input
-                                    type="radio"
-                                    name="recipientType"
-                                    value="phone"
-                                    ${recipientType === "phone" ? "checked" : ""
-            }
-                                    onchange="dashboard.updateTransferPointsState({recipientType: this.value})"
-                                    style="margin: 0;"
-                                >
-                                <span style="color: #374151;">Phone</span>
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input
-                                    type="radio"
-                                    name="recipientType"
-                                    value="redgirraffe_id"
-                                    ${recipientType === "redgirraffe_id"
-                ? "checked"
-                : ""
-            }
-                                    onchange="dashboard.updateTransferPointsState({recipientType: this.value})"
-                                    style="margin: 0;"
-                                >
-                                <span style="color: #374151;">RedGirraffe ID</span>
-                            </label>
+                    <!-- Info Alert -->
+                    <div style="background: #fef3c7; border: 1px solid #f59e0b; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
+                        <p style="color: #92400e; margin: 0; font-size: 14px; font-family: 'Inter', sans-serif;">
+                            The recipient will receive an email and SMS notification about this transfer.
+                        </p>
+                    </div>
+
+                    <form onsubmit="dashboard.handleTransferForm(event)">
+                        <!-- Recipient Type -->
+                        <div style="margin-bottom: 24px;">
+                            <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 12px; font-size: 14px; font-family: 'Inter', sans-serif;">Recipient Type</label>
+                            <div style="display: flex; gap: 24px;">
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Inter', sans-serif;">
+                                    <input
+                                        type="radio"
+                                        name="recipientType"
+                                        value="existing"
+                                        ${recipientType === "existing" ? "checked" : ""}
+                                        onchange="dashboard.updateTransferPointsState({recipientType: this.value})"
+                                        style="margin: 0; width: 16px; height: 16px; accent-color: #2563eb;"
+                                    >
+                                    <span style="color: #374151; font-size: 14px;">Existing RedGirraffe User</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Inter', sans-serif;">
+                                    <input
+                                        type="radio"
+                                        name="recipientType"
+                                        value="new"
+                                        ${recipientType === "new" ? "checked" : ""}
+                                        onchange="dashboard.updateTransferPointsState({recipientType: this.value})"
+                                        style="margin: 0; width: 16px; height: 16px; accent-color: #2563eb;"
+                                    >
+                                    <span style="color: #374151; font-size: 14px;">New User</span>
+                                </label>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Recipient Value -->
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px;">
-                            ${recipientType === "email"
-                ? "Email Address"
-                : recipientType === "phone"
-                    ? "Phone Number"
-                    : "RedGirraffe ID"
-            }
-                        </label>
-                        <input
-                            type="${recipientType === "email"
-                ? "email"
-                : recipientType === "phone"
-                    ? "tel"
-                    : "text"
-            }"
-                            value="${recipientValue}"
-                            onchange="dashboard.updateTransferPointsState({recipientValue: this.value})"
-                            placeholder="${recipientType === "email"
-                ? "Enter email address"
-                : recipientType === "phone"
-                    ? "Enter phone number"
-                    : "Enter RedGirraffe ID"
-            }"
-                            style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
-                            required
-                        >
-                    </div>
-
-                    <!-- Transfer Amount -->
-                    <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px;">Transfer Amount</label>
-                        <input
-                            type="number"
-                            value="${amount}"
-                            onchange="dashboard.updateTransferPointsState({amount: this.value})"
-                            placeholder="Enter number of points to transfer"
-                            min="${minTransfer}"
-                            max="${maxTransfer}"
-                            style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px;"
-                            required
-                        >
-                        <div style="display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; color: #6b7280;">
-                            <span>Available balance: ${currentBalance.toLocaleString()} Points</span>
-                            <span>Minimum transfer: ${minTransfer} Points</span>
+                        <!-- Transfer Amount -->
+                        <div style="margin-bottom: 24px;">
+                            <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 8px; font-size: 14px; font-family: 'Inter', sans-serif;">Transfer Amount</label>
+                            <input
+                                type="number"
+                                value="${amount}"
+                                onchange="dashboard.updateTransferPointsState({amount: this.value})"
+                                placeholder="Enter number of points to transfer"
+                                min="${minTransfer}"
+                                max="${maxTransfer}"
+                                style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;"
+                                required
+                            >
+                            <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #6b7280; font-family: 'Inter', sans-serif;">
+                                <span>Available balance: ${currentBalance.toLocaleString()} Cash Points</span>
+                                <span>Minimum transfer: ${minTransfer} Points</span>
+                            </div>
                         </div>
-                        <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">
-                            Maximum transfer: ${maxTransfer.toLocaleString()} Points
+
+                        <!-- Search User Section -->
+                        <div style="margin-bottom: 24px;">
+                            <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 8px; font-size: 14px; font-family: 'Inter', sans-serif;">Email or Mobile</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input
+                                    type="text"
+                                    value="${recipientValue}"
+                                    onchange="dashboard.updateTransferPointsState({recipientValue: this.value})"
+                                    placeholder="Enter email address or mobile number"
+                                    style="flex: 1; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif;"
+                                    required
+                                >
+                                <button
+                                    type="button"
+                                    onclick="dashboard.searchUser()"
+                                    style="background: #f87171; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; transition: background-color 0.2s;"
+                                    onmouseover="this.style.backgroundColor='#ef4444'"
+                                    onmouseout="this.style.backgroundColor='#f87171'"
+                                >
+                                    Search
+                                </button>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Message -->
-                    <div style="margin-bottom: 24px;">
-                        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 8px;">Message (Optional)</label>
-                        <textarea
-                            value="${message}"
-                            onchange="dashboard.updateTransferPointsState({message: this.value})"
-                            placeholder="Add a personal message to the recipient"
-                            rows="3"
-                            style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: vertical;"
-                        ></textarea>
-                    </div>
+                        <!-- Message -->
+                        <div style="margin-bottom: 32px;">
+                            <label style="display: block; font-weight: 500; color: #374151; margin-bottom: 8px; font-size: 14px; font-family: 'Inter', sans-serif;">Message (Optional)</label>
+                            <textarea
+                                value="${message}"
+                                onchange="dashboard.updateTransferPointsState({message: this.value})"
+                                placeholder="Add a personal message to the recipient"
+                                rows="4"
+                                style="width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 14px; resize: vertical; font-family: 'Inter', sans-serif;"
+                            ></textarea>
+                        </div>
 
-                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
-                        <button
-                            type="button"
-                            onclick="dashboard.closeModal()"
-                            style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500;"
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="submit"
-                            style="background: #ef4444; color: white; border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-weight: 600;"
-                        >
-                            Continue
-                        </button>
-                    </div>
-                </form>
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 12px; justify-content: center;">
+                            <button
+                                type="button"
+                                onclick="dashboard.closeModal()"
+                                style="background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 500; font-size: 14px; font-family: 'Inter', sans-serif; transition: background-color 0.2s;"
+                                onmouseover="this.style.backgroundColor='#e5e7eb'"
+                                onmouseout="this.style.backgroundColor='#f3f4f6'"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 14px; font-family: 'Inter', sans-serif; transition: background-color 0.2s;"
+                                onmouseover="this.style.backgroundColor='#dc2626'"
+                                onmouseout="this.style.backgroundColor='#ef4444'"
+                            >
+                                Transfer Points
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
         `;
@@ -6321,6 +6306,30 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
         if (modalBody) {
             modalBody.innerHTML = modalContent;
         }
+    }
+
+    searchUser() {
+        const { recipientValue } = this.transferPointsState;
+
+        if (!recipientValue.trim()) {
+            this.showNotification("Please enter an email address or mobile number", "error");
+            return;
+        }
+
+        // Simulate user search
+        this.showNotification("Searching for user...", "info");
+
+        setTimeout(() => {
+            // Mock search result - in real implementation, this would be an API call
+            const isEmail = recipientValue.includes('@');
+            const isMobile = /^\d{10}$/.test(recipientValue.replace(/\D/g, ''));
+
+            if (isEmail || isMobile) {
+                this.showNotification(`User found: ${recipientValue}`, "success");
+            } else {
+                this.showNotification("Please enter a valid email address or 10-digit mobile number", "error");
+            }
+        }, 1000);
     }
 
     handleTransferForm(event) {
