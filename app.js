@@ -3149,9 +3149,9 @@ class RedGiraffeDashboard {
             case "tenant":
                 return "Edit Rent Details";
             case "education":
-                return "Edit Education Details";
+                return "Edit Education Fee Registration ";
             case "society":
-                return "Edit Society Details";
+                return "Edit Maintenance Registration";
             default:
                 return "Edit Registration";
         }
@@ -3368,7 +3368,7 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                 </div>
             </div>
 
-            <!-- Owner Account Details (Editable Fields) -->
+            <!-- Owner Account Details (Read-only) -->
             <div style="background: white; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; margin-bottom: 24px;">
                 <div style="background: #f9fafb; padding: 16px; border-bottom: 1px solid #e5e7eb;">
                     <h3 style="font-size: 16px; font-weight: 600; color: #b91c1c; margin: 0;">Owner Account Details</h3>
@@ -3851,69 +3851,62 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
                     <!-- Account Holder Name -->
                     <div>
-                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-edit" style="font-size: 12px;"></i>
-                            Account Holder Name: *
+                        <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Account Holder Name
                         </label>
-                        <input type="text" name="accountHolderName_${account.id}" value="${account.accountHolderName || ''}"
-                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
-                               placeholder="Enter account holder name" required>
+                        <div style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: #f9fafb; color: #111827;">
+                            ${account.accountHolderName || 'N/A'}
+                        </div>
                     </div>
 
                     <!-- Account Number -->
                     <div>
-                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-edit" style="font-size: 12px;"></i>
-                            Account Number: *
+                        <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Account Number
                         </label>
-                        <input type="text" name="accountNumber_${account.id}" value="${account.accountNumber || ''}"
-                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
-                               placeholder="Enter account number" required>
+                        <div style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: #f9fafb; color: #111827;">
+                            ${account.accountNumber || 'N/A'}
+                        </div>
                     </div>
 
                     <!-- Account Type -->
                     <div>
-                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-edit" style="font-size: 12px;"></i>
-                            Account Type: *
+                        <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Account Type
                         </label>
-                        <select name="accountType_${account.id}" style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
-                            <option value="Savings" ${account.accountType === "Savings" ? "selected" : ""}>Savings</option>
-                            <option value="Current" ${account.accountType === "Current" ? "selected" : ""}>Current</option>
-                        </select>
+                        <div style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: #f9fafb; color: #111827;">
+                            ${account.accountType || 'N/A'}
+                        </div>
                     </div>
 
                     <!-- IFSC Code -->
                     <div>
-                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-edit" style="font-size: 12px;"></i>
-                            IFSC Code: *
+                        <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            IFSC Code
                         </label>
-                        <input type="text" name="ifscCode_${account.id}" value="${account.ifscCode || ''}"
-                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
-                               placeholder="Enter IFSC code" required>
+                        <div style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: #f9fafb; color: #111827;">
+                            ${account.ifscCode || 'N/A'}
+                        </div>
                     </div>
 
                     <!-- Bank Name -->
                     <div>
-                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-edit" style="font-size: 12px;"></i>
-                            Bank Name:
+                        <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Bank Name
                         </label>
-                        <input type="text" name="bankName_${account.id}" value="${account.bankName || ''}"
-                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
-                               placeholder="Enter bank name">
+                        <div style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: #f9fafb; color: #111827;">
+                            ${account.bankName || 'N/A'}
+                        </div>
                     </div>
 
                     <!-- PAN Number -->
                     <div>
-                        <label style="display: block; color: #2563eb; font-size: 14px; font-weight: 500; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
-                            <i class="fas fa-edit" style="font-size: 12px;"></i>
-                            PAN Number:
+                        <label style="display: block; color: #6b7280; font-size: 12px; font-weight: 500; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">
+                            PAN Number
                         </label>
-                        <input type="text" name="panNumber_${account.id}" value="${account.panNumber || ''}"
-                               style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;"
-                               placeholder="Enter PAN number">
+                        <div style="padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: #f9fafb; color: #111827;">
+                            ${account.panNumber || 'N/A'}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -8885,7 +8878,11 @@ class RegistrationsManager {
                     studentGender: "Male",
                     studentDateOfBirth: "02/11/2001",
                     class: "Montessori 1",
-                    applicantRelationship: "Brother"
+                    applicantRelationship: "Brother",
+                    payerName: "Mr. John Doe",
+                    feeType: "Tuition Fee",
+                    name: "Student Registration",
+                    payerGSTIN: "07AAHCR5014K1ZB"
                 },
                 studentFeesDetails: {
                     feeAmount: "₹200.00",
@@ -8945,7 +8942,11 @@ class RegistrationsManager {
                     studentGender: "Female",
                     studentDateOfBirth: "22/08/1990",
                     class: "MBA 2nd Year",
-                    applicantRelationship: "Self"
+                    applicantRelationship: "Self",
+                    payerName: "Mrs. Priya Sharma",
+                    feeType: "MBA Fee",
+                    name: "MBA Program Registration",
+                    payerGSTIN: "29STUDE1234B1ZC"
                 },
                 studentFeesDetails: {
                     feeAmount: "₹50,000.00",
@@ -9668,6 +9669,22 @@ class RegistrationsManager {
                             </h4>
                             <div class="expandable-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; font-size: 14px;">
                                 <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Payer Name:</span>
+                                    <span style="color: #6b7280;">${studentDetails.payerName || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Fee Type:</span>
+                                    <span style="color: #6b7280;">${studentDetails.feeType || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Name:</span>
+                                    <span style="color: #6b7280;">${studentDetails.name || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">Payer GSTIN:</span>
+                                    <span style="color: #6b7280;">${studentDetails.payerGSTIN || 'N/A'}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
                                     <span style="font-weight: 500; color: #374151;">Gender:</span>
                                     <span style="color: #6b7280;">${studentDetails.gender}</span>
                                 </div>
@@ -9715,6 +9732,7 @@ class RegistrationsManager {
                                     <span style="font-weight: 500; color: #374151;">Pincode:</span>
                                     <span style="color: #6b7280;">${studentDetails.pincode}</span>
                                 </div>
+                                
                             </div>
                         </div>
 
@@ -9774,10 +9792,6 @@ class RegistrationsManager {
                                     <span style="color: #6b7280;">${studentFeesDetails.currentSessionEndDate}</span>
                                 </div>
                                 <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
-                                    <span style="font-weight: 500; color: #374151;">GSTIN:</span>
-                                    <span style="color: #6b7280;">${studentFeesDetails.gstin || 'N/A'}</span>
-                                </div>
-                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
                                     <span style="font-weight: 500; color: #374151;">Card Issuing Bank:</span>
                                     <span style="color: #6b7280;">${studentFeesDetails.cardIssuingBank}</span>
                                 </div>
@@ -9826,6 +9840,7 @@ class RegistrationsManager {
                                     <span style="font-weight: 500; color: #374151;">City:</span>
                                     <span style="color: #6b7280;">${instituteDetails.city}</span>
                                 </div>
+                                
                             </div>
                         </div>
 
@@ -9854,6 +9869,10 @@ class RegistrationsManager {
                                 <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
                                     <span style="font-weight: 500; color: #374151;">IFSC:</span>
                                     <span style="color: #6b7280;">${instituteAccountDetails.ifsc}</span>
+                                </div>
+                                <div class="expandable-detail-row" style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                                    <span style="font-weight: 500; color: #374151;">PAN No.:</span>
+                                    <span style="color: #6b7280;">${instituteDetails.panNo || 'N/A'}</span>
                                 </div>
                             </div>
                         </div>
