@@ -13,6 +13,7 @@ class EditRecordsMockService {
                 mode: "Credit Card",
                 status: "Approved",
                 amount: "25000",
+                birthDate: "06/12/2005",
                 dueDate: "15/01/2025",
                 frequency: "Monthly",
                 endDate: "15/12/2025",
@@ -26,6 +27,7 @@ class EditRecordsMockService {
                 mode: "Credit Card",
                 status: "Approved",
                 amount: "50000",
+                birthDate: "06/12/2005",
                 dueDate: "10/02/2025",
                 frequency: "Half Yearly",
                 endDate: "10/08/2025",
@@ -39,6 +41,7 @@ class EditRecordsMockService {
                 mode: "Credit Card",
                 status: "Approved",
                 amount: "100000",
+                birthDate: "06/12/2005",
                 dueDate: "12/03/2025",
                 frequency: "Half Yearly",
                 endDate: "31/03/2025",
@@ -1351,6 +1354,26 @@ class RedGiraffeDashboard {
                 return "Maintenance Charges";
             case "6": // Fee transactions
                 return "Fee Charges";
+            default:
+                return "Charges";
+        }
+    }
+
+    getLabelSectionTitle(transactionId) {
+        const rgIdMatch = transactionId.match(/^RG-([046])/);
+        if (!rgIdMatch) {
+            return "Charges";
+        }
+
+        const transactionTypeCode = rgIdMatch[1];
+
+        switch (transactionTypeCode) {
+            case "0": // Rent transactions
+                return "Rent";
+            case "4": // Maintenance transactions
+                return "Maintenance";
+            case "6": // Fee transactions
+                return "Fee";
             default:
                 return "Charges";
         }
@@ -3259,8 +3282,8 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                                 <i class="fas fa-edit" style="font-size: 12px;"></i>
                                 Date of Birth/Incorporation: *
                             </label>
-                            <input type="date" name="dateOfBirth" value="${tenantDetails.dob || '2005-12-06'}"
-                                   style="width: 100%; padding: 10px 12px; border: 1px solid #bfdbfe; border-radius: 6px; font-size: 14px; background: #dbeafe;" required>
+                            <div style="color: #111827; font-size: 14px; font-weight: 500;">8/10/1998</div>
+
                         </div>
 
                         <div style="grid-column: 1 / -1;">
@@ -8267,11 +8290,11 @@ I/We hereby undertake and indemnify RedGiraffe.com and the Bank from any claims,
                             <h5 style="font-weight: 600; font-size: 14px; color: #475569; margin: 0 0 12px 0; font-family: 'Inter', sans-serif;">${this.getChargesSectionTitle(transaction.id)}</h5>
                             <div style="display: grid; gap: 8px; align-items: center;">
                                 <div style="display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #e2e8f0;">
-                                    <span style="font-size: 14px; color: #64748b; font-family: 'Inter', sans-serif;">Rent Amount :</span>
+                                    <span style="font-size: 14px; color: #64748b; font-family: 'Inter', sans-serif;"> ${this.getLabelSectionTitle(transaction.id)} Amount :</span>
                                     <span style="font-size: 14px; font-weight: 600; color: #1e293b; font-family: 'Inter', sans-serif;">₹${(parseFloat(transaction.amount.replace(/[₹,]/g, '')) - 100).toLocaleString()}.00</span>
                                 </div>
                                 <div style="display: flex; align-items: center; padding: 8px 0;">
-                                    <span style="font-size: 14px; color: #64748b; font-family: 'Inter', sans-serif;">RentPay Charges :</span>
+                                    <span style="font-size: 14px; color: #64748b; font-family: 'Inter', sans-serif;"> ${this.getLabelSectionTitle(transaction.id)}Pay Charges :</span>
                                     <span style="font-size: 14px; font-weight: 600; color: #1e293b; font-family: 'Inter', sans-serif;">₹100.00</span>
                                 </div>
                             </div>
